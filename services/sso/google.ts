@@ -1,16 +1,18 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { OAUTH_BASE_URL } from '@/constants/BaseUrl';
-import { OAUTH_SUCCESS_MARKER } from '@/constants/Auth';
+import { OAUTH_SUCCESS } from '@/constants/Auth';
+import { AuthSessionResult } from 'expo-auth-session';
 
-export async function handleSignInWithGoogle(response: any) {
+export async function handleSignInWithGoogle(response: AuthSessionResult) {
     const user = await AsyncStorage.getItem('@user');
     if (!user) {
-        if (response?.type === OAUTH_SUCCESS_MARKER) {
-            const userInfo = await getUserInfo(
-                response.authentication?.accessToken
-            );
-            return userInfo;
+        if (response.type === OAUTH_SUCCESS) {
+            const tokenResponse = response.authentication;
+            if (tokenResponse) {
+                const userInfo = await getUserInfo(tokenResponse.accessToken);
+                return userInfo;
+            }
         }
     } else {
         return user;

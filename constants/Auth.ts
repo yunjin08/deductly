@@ -1,1 +1,1 @@
-export const OAUTH_SUCCESS_MARKER = 'success';
+export const OAUTH_SUCCESS = 'success';

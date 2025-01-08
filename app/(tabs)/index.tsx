@@ -9,15 +9,18 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function HomeScreen() {
     const [userInfo, setUserInfo] = useState(null);
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [request, response, promptAsync] = Google.useAuthRequest({
         iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
     });
 
     useEffect(() => {
-        handleSignInWithGoogle(response).then((user) => {
-            setUserInfo(user);
-        });
+        if (response) {
+            handleSignInWithGoogle(response).then((user) => {
+                setUserInfo(user);
+            });
+        }
     }, [response]);
 
     return (
