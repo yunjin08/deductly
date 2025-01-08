@@ -2,7 +2,7 @@ name: CI workflow
 on: push
 
 jobs:
-    run-linter-and-tests:
+    lint:
         runs-on: ubuntu-latest
 
         steps:
