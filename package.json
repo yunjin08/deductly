@@ -8,7 +8,7 @@
         "android": "expo start --android",
         "ios": "expo start --ios",
         "web": "expo start --web",
-        "test": "vitest --no-watch",
+        "test": "jest --watchAll",
         "lint": "expo lint",
         "format": "npx prettier . --write",
         "prepare": "husky",
