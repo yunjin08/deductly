@@ -1,0 +1,38 @@
+name: Deployment
+run-name: Run by @${{ github.actor }}
+
+on:
+    workflow_dispatch:
+jobs:
+    upload:
+        name: Build and upload to TestFlight
+        runs-on: macos-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v1
+            - name: Cache pods
+              uses: actions/cache@v2
+              env:
+                  cache-name: cache-pods
+              with:
+                  path: ~/.cocoapods/repos
+                  key: base-cocopods-repo
+                  restore-keys: base-cocopods-repo
+            - name: Set up environment
+              env:
+                  DECRYPTION_PASS_CERTIFICATE: '${{ secrets.DECRYPTION_PASS_CERTIFICATE }}'
+                  DECRYPTION_PASS_PROFILE: '${{ secrets.DECRYPTION_PASS_PROFILE }}'
+                  KEYCHAIN_EXPORT: '${{ secrets.KEYCHAIN_EXPORT }}'
+              run: |
+                  # install project dependencies
+                  cd ios # Position yourself inside the file that contains your podfile
+                  pod install
+                  cd ..
+                  # add a distribution certificate to the keychain
+                  ./.github/scripts/set_certificates.sh
+            - name: Run fastlane
+              env:
+                  APP_SPECIFIC_PASS: '${{ secrets.APP_SPECIFIC_PASS }}'
+              run: |
+                  # build and upload to Apple Store Connect (caffeinate is used to prevent the mac from falling asleep)
+                  caffeinate fastlane prod # Run fastline script

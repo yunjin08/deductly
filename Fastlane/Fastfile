@@ -1,0 +1,60 @@
+# Set the default platform to iOS
+default_platform(:ios)
+
+# Get the version number and build number from environment variables
+VERSION_NUMBER = ENV['INPUT_VERSION_NUMBER']
+BUILD_NUMBER = ENV['INPUT_BUILD_NUMBER']
+
+# Get the Apple Special Password from an environment variable
+APPLE_SPECIAL_PASS = ENV['APP_SPECIFIC_PASS']
+
+# Define the iOS platform
+platform :ios do
+  # Define the before_all block that runs before all other actions
+  before_all do
+    # Set the FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD environment variable
+    # to the value of the APPLE_SPECIAL_PASS variable
+    ENV["FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD"] = "#{APPLE_SPECIAL_PASS}"
+    # Set the ITMSTRANSPORTER_FORCE_ITMS_PACKAGE_UPLOAD environment variable to 'true'
+    ENV['ITMSTRANSPORTER_FORCE_ITMS_PACKAGE_UPLOAD'] = 'true'
+  end
+  
+  # Define a lane called 'prod'
+  desc "Your App description"
+	lane :prod do
+		disable_automatic_code_signing(
+			  path: "PutYourPathHere!!!", # Path to the .xcodeproj, for example: ./BBL/BBL.xcodeproj
+			  team_id: "PutYourTeamIdHere!!!", # Team Id, for example: KLD9S9KY48
+		)
+		update_app_identifier(
+			  xcodeproj: "PutYourPathHere!!!", # Path to the .xcodeproj, for example: ./BBL/BBL.xcodeproj
+			  plist_path: "PutYourPlistPathHere!!!", # Path to your Info.plist, for example: ./BBL/Info.plist
+			  app_identifier: "PutYourAppIdentifierHere!!!" # Your app id(bundle id), for example: com.azikus.bbl
+		)
+		update_project_provisioning(
+			  xcodeproj: "PutYourPathHere!!!", # Path to the .xcodeproj, for example: ./BBL/BBL.xcodeproj
+			  profile: "./.github/certs/app.mobileprovision",
+			  build_configuration: "Release",
+			  code_signing_identity: "Apple Distribution"
+	        )
+		build_ios_app(
+			  workspace: "PutYourPathHere!!!", # Path to the .xcworkspace, for example: ./BBL/BBL.xcworkspace
+			  configuration: "Release",
+			  scheme: "PutYourSchereHere!!!", # Your scheme, for example: BBL
+			  clean: true,
+			  output_name: "app.ipa",
+			  export_method: "app-store",
+			  export_xcargs: "-allowProvisioningUpdates",
+			  export_options: {
+			    compileBitcode: true
+			  }
+ 		)
+		upload_to_testflight(
+			  username: "PutYourTestFlightEmailHere!!!", # Your TestFlight account email, for example: kresimir.bakovic@azikus.com
+			  apple_id: "PutYourAppleId!!!", # Your app's appleId, you can find it under App Information->General Information->Apple ID for example: 1658552212
+			  skip_submission: true,
+			  skip_waiting_for_build_processing: true,
+			  itc_provider: "PutYourTeamIdHere!!!" # Team Id, for example: KLD9S9KY48
+		)
+	end
+end
