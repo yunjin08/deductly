@@ -7,7 +7,7 @@ import { handleSignInWithGoogle } from '@/services/sso/google';
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function HomeScreen() {
+export default function LoginScreen() {
     const [userInfo, setUserInfo] = useState(null);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
