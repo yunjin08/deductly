@@ -11,8 +11,7 @@
         "test": "jest --watchAll",
         "lint": "expo lint",
         "format": "npx prettier . --write",
-        "prepare": "husky",
-        "coverage": "vitest run --coverage"
+        "prepare": "husky"
     },
     "jest": {
         "preset": "jest-expo"
