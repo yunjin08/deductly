@@ -50,6 +50,7 @@
         "@types/react": "~18.3.12",
         "@types/react-test-renderer": "^18.3.0",
         "@vitejs/plugin-react": "^4.3.4",
+        "@vitest/coverage-c8": "^0.33.0",
         "eslint": "^8.57.0",
         "eslint-config-expo": "~8.0.1",
         "husky": "^9.1.7",
@@ -59,7 +60,7 @@
         "prettier": "3.4.2",
         "react-test-renderer": "18.3.1",
         "typescript": "^5.3.3",
-        "vitest": "^2.1.8"
+        "vitest": "^0.33.0"
     },
     "private": true
 }
