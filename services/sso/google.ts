@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { OAUTH_BASE_URL } from '@/constants/BaseUrl';
 import { OAUTH_SUCCESS } from '@/constants/Auth';
-import { AccessTokenRequest, AuthSessionResult } from 'expo-auth-session';
+import { AuthSessionResult } from 'expo-auth-session';
 
 export async function handleSignInWithGoogle(response: AuthSessionResult) {
     const jwt_token = await AsyncStorage.getItem('@jwt');
