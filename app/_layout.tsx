@@ -9,8 +9,11 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-
+import axios from 'axios';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { LOCALHOST } from '@/constants/BaseUrl';
+
+axios.defaults.baseURL = LOCALHOST;
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

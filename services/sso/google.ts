@@ -10,7 +10,13 @@ export async function handleSignInWithGoogle(response: AuthSessionResult) {
         if (response.type === OAUTH_SUCCESS) {
             const tokenResponse = response.authentication;
             if (tokenResponse) {
+                await axios.post('/sso/google/', {
+                    id_token: tokenResponse.idToken,
+                });
+                console.log('AFTER /sso/google');
+
                 const userInfo = await getUserInfo(tokenResponse.accessToken);
+
                 return userInfo;
             }
         }
@@ -23,6 +29,7 @@ export const getUserInfo = async (token: any) => {
     if (!token) return;
     try {
         const response = await axios.get(OAUTH_BASE_URL, {
+            baseURL: '',
             headers: {
                 Authorization: `Bearer ${token}`,
             },

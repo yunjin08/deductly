@@ -17,6 +17,7 @@ export default function LoginScreen() {
 
     useEffect(() => {
         if (response) {
+            console.log('INSIDE USE EFFECT');
             handleSignInWithGoogle(response).then((user) => {
                 setUserInfo(user);
             });
