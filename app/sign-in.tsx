@@ -107,6 +107,12 @@ const SignInScreen = () => {
                 >
                     <Text style={styles.buttonText}>Login</Text>
                 </TouchableOpacity>
+                <View style={styles.signUpRedirect}>
+                    <Text>No account yet?</Text>
+                    <Link href="/sign-up" style={styles.signUpButton}>
+                        Sign Up
+                    </Link>
+                </View>
                 <View style={styles.ssoButtonContainer}>
                     <TouchableOpacity
                         style={styles.ssoButton}
@@ -213,6 +219,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 12,
     },
+
     passwordContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -222,12 +229,26 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         backgroundColor: '#f9f9f9',
     },
+
     passwordInput: {
         flex: 1,
         height: 50,
         fontSize: 16,
     },
+
     eyeIcon: {
         padding: 8,
+    },
+
+    signUpRedirect: {
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 5,
+    },
+
+    signUpButton: {
+        color: '#1fddee',
+        borderBottomWidth: 1,
+        borderBottomColor: '#1fddee',
     },
 });
