@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useState } from 'react';
+import { Link } from 'expo-router';
 
 const SignUpScreen = () => {
     const [username, setUsername] = useState('');
@@ -87,6 +88,12 @@ const SignUpScreen = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+            <View style={styles.signInRedirect}>
+                <Text>Already have an account?</Text>
+                <Link href="/sign-in" style={styles.signInButton}>
+                    Sign In
+                </Link>
+            </View>
             <TouchableOpacity style={styles.createAccountButton}>
                 <Text style={styles.createAccountText}>Create Account</Text>
             </TouchableOpacity>
@@ -158,5 +165,17 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
         textAlign: 'center',
+    },
+
+    signInRedirect: {
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 5,
+    },
+
+    signInButton: {
+        color: '#1fddee',
+        borderBottomWidth: 1,
+        borderBottomColor: '#1fddee',
     },
 });
