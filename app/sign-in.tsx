@@ -14,11 +14,12 @@ import { Image } from 'expo-image';
 import WelcomeBackground from '@/assets/images/welcome-background.png';
 import { Link, router } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
+import { login } from '@/services/login';
 
 WebBrowser.maybeCompleteAuthSession();
 
 const SignInScreen = () => {
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isSecure, setIsSecure] = useState(true);
 
@@ -48,6 +49,13 @@ const SignInScreen = () => {
         await AsyncStorage.removeItem('@jwt');
     };
 
+    const handleLoginButtonPress = async () => {
+        const token = await login(username, password);
+        if (token) {
+            router.push('/(protected)/(tabs)/home');
+        }
+    };
+
     return (
         <View style={styles.screenContainer}>
             <Image
@@ -61,10 +69,9 @@ const SignInScreen = () => {
                 <View style={styles.textInputContainer}>
                     <TextInput
                         style={styles.textInput}
-                        onChangeText={setEmail}
-                        value={email}
-                        placeholder="Email"
-                        keyboardType="email-address"
+                        onChangeText={setUsername}
+                        value={username}
+                        placeholder="Username"
                         autoCapitalize="none"
                     />
                     <View style={styles.passwordContainer}>
@@ -93,11 +100,13 @@ const SignInScreen = () => {
                         Forgot Password?
                     </Link>
                 </View>
-                <Link href="/home" asChild>
-                    <TouchableOpacity style={styles.button}>
-                        <Text style={styles.buttonText}>Login</Text>
-                    </TouchableOpacity>
-                </Link>
+
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={handleLoginButtonPress}
+                >
+                    <Text style={styles.buttonText}>Login</Text>
+                </TouchableOpacity>
                 <View style={styles.ssoButtonContainer}>
                     <TouchableOpacity
                         style={styles.ssoButton}
