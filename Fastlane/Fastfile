@@ -20,7 +20,7 @@ platform :ios do
   end
   
   # Define a lane called 'prod'
-  desc "Your App description"
+  desc "A platform streamlining tax deduction applications"
 	lane :prod do
 		disable_automatic_code_signing(
 			  path: "PutYourPathHere!!!", # Path to the .xcodeproj, for example: ./BBL/BBL.xcodeproj

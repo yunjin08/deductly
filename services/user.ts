@@ -20,8 +20,6 @@ export const listUsers = async () => {
             },
         });
 
-        console.log(response.data);
-
         const users = response.data.objects.map((user: any) => {
             return user.username;
         });
