@@ -7,7 +7,8 @@ import {
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { register } from '@/services/auth';
 
 const SignUpScreen = () => {
     const [username, setUsername] = useState('');
@@ -18,6 +19,27 @@ const SignUpScreen = () => {
     const [repeatedPassword, setRepeatedPassword] = useState('');
     const [isSecure, setIsSecure] = useState(true);
     const [isSecureRepeated, setIsSecureRepeated] = useState(true);
+
+    const handleCreateAccountButton = async () => {
+        const registrationData = {
+            username,
+            firstName,
+            lastName,
+            email,
+            password,
+        };
+
+        const registeredUsername = await register(registrationData);
+
+        if (registeredUsername) {
+            router.push({
+                pathname: '/sign-in',
+                params: {
+                    registeredUsername,
+                },
+            });
+        }
+    };
 
     return (
         <View style={styles.screenContainer}>
@@ -94,7 +116,10 @@ const SignUpScreen = () => {
                     Sign In
                 </Link>
             </View>
-            <TouchableOpacity style={styles.createAccountButton}>
+            <TouchableOpacity
+                style={styles.createAccountButton}
+                onPress={handleCreateAccountButton}
+            >
                 <Text style={styles.createAccountText}>Create Account</Text>
             </TouchableOpacity>
         </View>

@@ -12,14 +12,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { handleSignInWithGoogle } from '@/services/sso/google';
 import { Image } from 'expo-image';
 import WelcomeBackground from '@/assets/images/welcome-background.png';
-import { Link, router } from 'expo-router';
+import { Link, router, useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
-import { login } from '@/services/login';
+import { login } from '@/services/auth';
 
 WebBrowser.maybeCompleteAuthSession();
 
 const SignInScreen = () => {
-    const [username, setUsername] = useState('');
+    const { registeredUsername } = useLocalSearchParams();
+    const [username, setUsername] = useState(
+        (registeredUsername as string) || ''
+    );
     const [password, setPassword] = useState('');
     const [isSecure, setIsSecure] = useState(true);
 
