@@ -4,7 +4,6 @@ import {
     TextInput,
     View,
     TouchableOpacity,
-    Dimensions,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useState } from 'react';
