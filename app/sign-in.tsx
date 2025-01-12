@@ -15,6 +15,7 @@ import WelcomeBackground from '@/assets/images/welcome-background.png';
 import { Link, router, useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { login } from '@/services/auth';
+import { isAxiosError } from 'axios';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -25,6 +26,8 @@ const SignInScreen = () => {
     );
     const [password, setPassword] = useState('');
     const [isSecure, setIsSecure] = useState(true);
+
+    const [error, setError] = useState<string>();
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [request, response, promptAsync] = Google.useAuthRequest({
@@ -53,9 +56,17 @@ const SignInScreen = () => {
     };
 
     const handleLoginButtonPress = async () => {
-        const token = await login(username, password);
-        if (token) {
-            router.push('/(protected)/(tabs)/home');
+        try {
+            const token = await login(username, password);
+            if (token) {
+                router.push('/(protected)/(tabs)/home');
+            }
+        } catch (error) {
+            if (isAxiosError(error) || error instanceof Error) {
+                setError([error.name, error.message].join(': '));
+            } else {
+                setError('Caught something that is not an error');
+            }
         }
     };
 
@@ -135,6 +146,11 @@ const SignInScreen = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+            {error && (
+                <View style={styles.errorContainer}>
+                    <Text style={styles.errorText}>{error}</Text>
+                </View>
+            )}
         </View>
     );
 };
@@ -148,6 +164,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         alignItems: 'center',
         textAlign: 'center',
+        position: 'relative',
     },
 
     image: {
@@ -253,5 +270,19 @@ const styles = StyleSheet.create({
         color: '#1fddee',
         borderBottomWidth: 1,
         borderBottomColor: '#1fddee',
+    },
+
+    errorContainer: {
+        padding: 10,
+        backgroundColor: 'red',
+        borderRadius: 5,
+        position: 'absolute',
+        bottom: 50,
+    },
+
+    errorText: {
+        color: 'white',
+        textAlign: 'center',
+        fontSize: 10,
     },
 });

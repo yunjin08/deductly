@@ -10,21 +10,28 @@ export async function handleSignInWithGoogle(response: AuthSessionResult) {
         if (response.type === OAUTH_SUCCESS) {
             const tokenResponse = response.authentication;
             if (tokenResponse) {
-                const jwtResponse = await axios.post('/sso/google/', {
-                    id_token: tokenResponse.idToken,
-                });
+                try {
+                    const jwtResponse = await axios.post('/sso/google/', {
+                        id_token: tokenResponse.idToken,
+                    });
 
-                const jwtToken = jwtResponse.data.token;
+                    const jwtToken = jwtResponse.data.token;
 
-                await AsyncStorage.setItem('@jwt', JSON.stringify(jwtToken));
+                    await AsyncStorage.setItem(
+                        '@jwt',
+                        JSON.stringify(jwtToken)
+                    );
 
-                const accessToken = tokenResponse.accessToken;
+                    const accessToken = tokenResponse.accessToken;
 
-                const email = await getUserInfo(accessToken);
+                    const email = await getUserInfo(accessToken);
 
-                await AsyncStorage.setItem('@email', email);
+                    await AsyncStorage.setItem('@email', email);
 
-                return jwtToken;
+                    return jwtToken;
+                } catch (error) {
+                    console.error(error);
+                }
             }
         }
     } else {

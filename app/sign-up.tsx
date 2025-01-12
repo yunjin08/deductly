@@ -4,11 +4,14 @@ import {
     TextInput,
     View,
     TouchableOpacity,
+    Dimensions,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Link, router } from 'expo-router';
 import { register } from '@/services/auth';
+import { isAxiosError } from 'axios';
+import { isValidEmail } from '@/utils/validator';
 
 const SignUpScreen = () => {
     const [username, setUsername] = useState('');
@@ -19,26 +22,90 @@ const SignUpScreen = () => {
     const [repeatedPassword, setRepeatedPassword] = useState('');
     const [isSecure, setIsSecure] = useState(true);
     const [isSecureRepeated, setIsSecureRepeated] = useState(true);
+    const [errors, setErrors] = useState([] as string[]);
 
     const handleCreateAccountButton = async () => {
-        const registrationData = {
-            username,
-            firstName,
-            lastName,
-            email,
-            password,
-        };
+        if (!areValidInputs()) return;
+        try {
+            const registrationData = {
+                username,
+                firstName,
+                lastName,
+                email,
+                password,
+            };
 
-        const registeredUsername = await register(registrationData);
+            const registeredUsername = await register(registrationData);
 
-        if (registeredUsername) {
-            router.push({
-                pathname: '/sign-in',
-                params: {
-                    registeredUsername,
-                },
-            });
+            if (registeredUsername) {
+                router.push({
+                    pathname: '/sign-in',
+                    params: {
+                        registeredUsername,
+                    },
+                });
+            }
+        } catch (error) {
+            if (isAxiosError(error) || error instanceof Error) {
+                setErrors([[error.name, error.message].join(': ')]);
+            } else {
+                setErrors(['Caught something that is not an error']);
+            }
         }
+    };
+
+    const areValidInputs = () => {
+        let areErrorsPresent = false;
+        if (!username) {
+            appendError('Username must not be empty');
+            areErrorsPresent = true;
+        }
+
+        if (!firstName) {
+            appendError('First Name must not be empty');
+            areErrorsPresent = true;
+        }
+
+        if (!lastName) {
+            appendError('Last Name must not be empty');
+            areErrorsPresent = true;
+        }
+
+        if (!email) {
+            appendError('Email must not be empty');
+            areErrorsPresent = true;
+        } else {
+            if (isValidEmail(email)) {
+                appendError('Invalid email format');
+                areErrorsPresent = true;
+            }
+        }
+
+        if (!password) {
+            appendError('Password must not be empty');
+            areErrorsPresent = true;
+        } else {
+            if (password !== repeatedPassword) {
+                appendError('Passwords do not match');
+                areErrorsPresent = true;
+            }
+        }
+
+        if (areErrorsPresent) {
+            return false;
+        } else {
+            return true;
+        }
+    };
+
+    const appendError = (error: string) => {
+        setErrors((prevError) => [...prevError, error]);
+    };
+
+    const handleRemoveError = (errorToRemove: string) => {
+        setErrors((prevErrors) =>
+            prevErrors.filter((error) => error !== errorToRemove)
+        );
     };
 
     return (
@@ -122,6 +189,24 @@ const SignUpScreen = () => {
             >
                 <Text style={styles.createAccountText}>Create Account</Text>
             </TouchableOpacity>
+            <View style={styles.errorGroupContainer}>
+                {errors.length > 0 &&
+                    errors.map((error) => {
+                        return (
+                            <View key={error} style={styles.errorContainer}>
+                                <Text style={styles.errorText}>{error}</Text>
+                                <TouchableOpacity
+                                    style={styles.closeButton}
+                                    onPress={() => handleRemoveError(error)} // Pass the index to identify which error to remove
+                                >
+                                    <Text style={styles.closeButtonText}>
+                                        X
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        );
+                    })}
+            </View>
         </View>
     );
 };
@@ -132,6 +217,7 @@ const styles = StyleSheet.create({
     screenContainer: {
         flex: 1,
         flexDirection: 'column',
+        alignItems: 'center',
         gap: 20,
         padding: 25,
     },
@@ -202,5 +288,45 @@ const styles = StyleSheet.create({
         color: '#1fddee',
         borderBottomWidth: 1,
         borderBottomColor: '#1fddee',
+    },
+
+    errorGroupContainer: {
+        position: 'absolute',
+        gap: 5,
+        width: '100%',
+        bottom: 50,
+    },
+
+    errorContainer: {
+        padding: 10,
+        position: 'relative',
+        display: 'flex',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        backgroundColor: 'red',
+        borderRadius: 5,
+    },
+
+    errorText: {
+        color: 'white',
+        textAlign: 'center',
+        fontSize: 10,
+    },
+
+    closeButton: {
+        position: 'absolute',
+        top: '50%',
+        transform: [
+            { translateY: '10%' }, // Adjust for half the height of the element
+        ],
+        right: 5,
+        width: 24,
+        height: 24,
+    },
+
+    closeButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 12,
     },
 });
