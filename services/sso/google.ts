@@ -11,6 +11,9 @@ export async function handleSignInWithGoogle(response: AuthSessionResult) {
             const tokenResponse = response.authentication;
             if (tokenResponse) {
                 try {
+                    if (!tokenResponse.idToken) {
+                        throw Error('No Google ID Token');
+                    }
                     const jwtResponse = await axios.post('/sso/google/', {
                         id_token: tokenResponse.idToken,
                     });
