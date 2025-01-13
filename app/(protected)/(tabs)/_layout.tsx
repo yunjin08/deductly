@@ -10,6 +10,7 @@ const TabsLayout = () => {
                 name="gallery"
                 options={{
                     headerTitle: 'Gallery',
+                    tabBarLabel: 'Gallery',
                     tabBarIcon: () => {
                         return (
                             <TouchableOpacity>
@@ -23,6 +24,7 @@ const TabsLayout = () => {
                 name="receipts"
                 options={{
                     headerTitle: 'Receipts',
+                    tabBarLabel: 'Receipts',
                     tabBarIcon: () => {
                         return (
                             <TouchableOpacity>
@@ -36,6 +38,7 @@ const TabsLayout = () => {
                 name="camera"
                 options={{
                     headerTitle: 'Camera',
+                    tabBarLabel: 'Camera',
                     tabBarIcon: () => {
                         return (
                             <TouchableOpacity>
@@ -49,6 +52,7 @@ const TabsLayout = () => {
                 name="documents"
                 options={{
                     headerTitle: 'Documents',
+                    tabBarLabel: 'Documents',
                     tabBarIcon: () => {
                         return (
                             <TouchableOpacity>
@@ -62,6 +66,7 @@ const TabsLayout = () => {
                 name="reports"
                 options={{
                     headerTitle: 'Reports',
+                    tabBarLabel: 'Reports',
                     tabBarIcon: () => {
                         return (
                             <TouchableOpacity>
