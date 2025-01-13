@@ -1,7 +1,7 @@
 import { Text } from 'react-native';
 
-const HomeScreen = () => {
+const DocumentsScreen = () => {
     return <Text>Documents</Text>;
 };
 
-export default HomeScreen;
+export default DocumentsScreen;

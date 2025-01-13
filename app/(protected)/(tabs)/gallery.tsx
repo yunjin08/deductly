@@ -1,7 +1,7 @@
 import { Text } from 'react-native';
 
-const HomeScreen = () => {
+const GalleryScreen = () => {
     return <Text>Gallery</Text>;
 };
 
-export default HomeScreen;
+export default GalleryScreen;
