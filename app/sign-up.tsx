@@ -315,9 +315,7 @@ const styles = StyleSheet.create({
     closeButton: {
         position: 'absolute',
         top: '50%',
-        transform: [
-            { translateY: '10%' }, // Adjust for half the height of the element
-        ],
+        transform: [{ translateY: '10%' }],
         right: 5,
         width: 24,
         height: 24,

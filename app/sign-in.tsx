@@ -27,7 +27,7 @@ const SignInScreen = () => {
     const [password, setPassword] = useState('');
     const [isSecure, setIsSecure] = useState(true);
 
-    const [error, setError] = useState<string>();
+    const [errors, setErrors] = useState([] as string[]);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [request, response, promptAsync] = Google.useAuthRequest({
@@ -56,18 +56,55 @@ const SignInScreen = () => {
     };
 
     const handleLoginButtonPress = async () => {
+        if (!areValidInputs()) return;
         try {
             const token = await login(username, password);
             if (token) {
                 router.push('/(protected)/(tabs)/home');
             }
         } catch (error) {
-            if (isAxiosError(error) || error instanceof Error) {
-                setError([error.name, error.message].join(': '));
+            if (isAxiosError(error)) {
+                const errorResponse = error.response;
+                if (errorResponse) {
+                    setErrors([errorResponse.data['error']]);
+                } else {
+                    setErrors([[error.name, error.message].join(': ')]);
+                }
+            } else if (error instanceof Error) {
+                setErrors([[error.name, error.message].join(': ')]);
             } else {
-                setError('Caught something that is not an error');
+                setErrors(['Caught something that is not an error']);
             }
         }
+    };
+
+    const areValidInputs = () => {
+        let areErrorsPresent = false;
+        if (!username) {
+            appendError('Username must not be empty');
+            areErrorsPresent = true;
+        }
+
+        if (!password) {
+            appendError('Password must not be empty');
+            areErrorsPresent = true;
+        }
+
+        if (areErrorsPresent) {
+            return false;
+        } else {
+            return true;
+        }
+    };
+
+    const appendError = (error: string) => {
+        setErrors((prevError) => [...prevError, error]);
+    };
+
+    const handleRemoveError = (errorToRemove: string) => {
+        setErrors((prevErrors) =>
+            prevErrors.filter((error) => error !== errorToRemove)
+        );
     };
 
     return (
@@ -145,12 +182,27 @@ const SignInScreen = () => {
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </View>
-            {error && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{error}</Text>
+                <View style={styles.errorGroupContainer}>
+                    {errors.length > 0 &&
+                        errors.map((error) => {
+                            return (
+                                <View key={error} style={styles.errorContainer}>
+                                    <Text style={styles.errorText}>
+                                        {error}
+                                    </Text>
+                                    <TouchableOpacity
+                                        style={styles.closeButton}
+                                        onPress={() => handleRemoveError(error)} // Pass the index to identify which error to remove
+                                    >
+                                        <Text style={styles.closeButtonText}>
+                                            X
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            );
+                        })}
                 </View>
-            )}
+            </View>
         </View>
     );
 };
@@ -181,6 +233,7 @@ const styles = StyleSheet.create({
         width: '100%',
         flex: 1,
         flexDirection: 'column',
+        alignItems: 'center',
         paddingHorizontal: 25,
         paddingTop: 40,
         gap: 25,
@@ -272,17 +325,41 @@ const styles = StyleSheet.create({
         borderBottomColor: '#1fddee',
     },
 
+    errorGroupContainer: {
+        position: 'absolute',
+        gap: 5,
+        width: '100%',
+        bottom: 50,
+    },
+
     errorContainer: {
         padding: 10,
+        position: 'relative',
+        display: 'flex',
+        justifyContent: 'center',
+        flexDirection: 'row',
         backgroundColor: 'red',
         borderRadius: 5,
-        position: 'absolute',
-        bottom: 50,
     },
 
     errorText: {
         color: 'white',
         textAlign: 'center',
         fontSize: 10,
+    },
+
+    closeButton: {
+        position: 'absolute',
+        top: '50%',
+        transform: [{ translateY: '10%' }],
+        right: 5,
+        width: 24,
+        height: 24,
+    },
+
+    closeButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 12,
     },
 });
