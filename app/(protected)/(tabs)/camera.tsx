@@ -17,7 +17,7 @@ const CameraScreen = () => {
                 <Text style={styles.message}>
                     We need your permission to show the camera
                 </Text>
-                <Button onPress={requestPermission} title="grant permission" />
+                <Button onPress={requestPermission} title="Grant Permission" />
             </View>
         );
     }
