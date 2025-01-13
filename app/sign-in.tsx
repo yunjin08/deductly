@@ -123,6 +123,7 @@ const SignInScreen = () => {
                         onChangeText={setUsername}
                         value={username}
                         placeholder="Username"
+                        placeholderTextColor="#888"
                         autoCapitalize="none"
                     />
                     <View style={styles.passwordContainer}>
@@ -132,6 +133,7 @@ const SignInScreen = () => {
                             value={password}
                             secureTextEntry={isSecure}
                             placeholder="Password"
+                            placeholderTextColor="#888"
                         />
                         <TouchableOpacity
                             onPress={() => setIsSecure(!isSecure)}

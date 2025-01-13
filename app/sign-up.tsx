@@ -116,18 +116,21 @@ const SignUpScreen = () => {
                     onChangeText={setUsername}
                     value={username}
                     placeholder="Username"
+                    placeholderTextColor="#888"
                 />
                 <TextInput
                     style={styles.textInput}
                     onChangeText={setFirstName}
                     value={firstName}
                     placeholder="First Name"
+                    placeholderTextColor="#888"
                 />
                 <TextInput
                     style={styles.textInput}
                     onChangeText={setLastName}
                     value={lastName}
                     placeholder="Last Name"
+                    placeholderTextColor="#888"
                 />
                 <TextInput
                     style={styles.textInput}
@@ -136,6 +139,7 @@ const SignUpScreen = () => {
                     placeholder="Email"
                     keyboardType="email-address"
                     autoCapitalize="none"
+                    placeholderTextColor="#888"
                 />
                 <View style={styles.passwordContainer}>
                     <TextInput
@@ -144,6 +148,7 @@ const SignUpScreen = () => {
                         value={password}
                         secureTextEntry={isSecure}
                         placeholder="Password"
+                        placeholderTextColor="#888"
                     />
                     <TouchableOpacity
                         onPress={() => setIsSecure(!isSecure)}
@@ -163,6 +168,7 @@ const SignUpScreen = () => {
                         value={repeatedPassword}
                         secureTextEntry={isSecureRepeated}
                         placeholder="Repeated Password"
+                        placeholderTextColor="#888"
                     />
                     <TouchableOpacity
                         onPress={() => setIsSecureRepeated(!isSecureRepeated)}
