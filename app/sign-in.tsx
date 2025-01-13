@@ -53,6 +53,12 @@ const SignInScreen = () => {
 
     const resetJWT = async () => {
         await AsyncStorage.removeItem('@jwt');
+        await AsyncStorage.removeItem('@email');
+    };
+
+    const handleLoginWithGoogleButton = () => {
+        resetJWT();
+        promptAsync();
     };
 
     const handleLoginButtonPress = async () => {
@@ -169,7 +175,7 @@ const SignInScreen = () => {
                 <View style={styles.ssoButtonContainer}>
                     <TouchableOpacity
                         style={styles.ssoButton}
-                        onPress={() => promptAsync()}
+                        onPress={handleLoginWithGoogleButton}
                     >
                         <Text style={styles.ssoButtonText}>
                             Sign in with Google
