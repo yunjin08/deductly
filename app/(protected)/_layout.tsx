@@ -12,6 +12,21 @@ const ProtectedLayout = () => {
         <AuthAwareLayout>
             <Stack>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen
+                    name="profile"
+                    options={{
+                        headerBackTitle: 'Back',
+                        headerTitle: 'Profile',
+                    }}
+                />
+                <Stack.Screen
+                    name="camera-modal"
+                    options={{
+                        headerTitle: 'Camera',
+                        presentation: 'modal',
+                        animation: 'fade_from_bottom',
+                    }}
+                />
             </Stack>
         </AuthAwareLayout>
     );

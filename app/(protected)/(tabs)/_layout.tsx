@@ -1,3 +1,4 @@
+import Header from '@/components/Header';
 import { FontAwesome6, FontAwesome } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
@@ -9,7 +10,6 @@ const TabsLayout = () => {
             <Tabs.Screen
                 name="gallery"
                 options={{
-                    headerTitle: 'Gallery',
                     tabBarLabel: 'Gallery',
                     tabBarIcon: () => {
                         return (
@@ -18,12 +18,12 @@ const TabsLayout = () => {
                             </TouchableOpacity>
                         );
                     },
+                    header: () => <Header />,
                 }}
             />
             <Tabs.Screen
                 name="receipts"
                 options={{
-                    headerTitle: 'Receipts',
                     tabBarLabel: 'Receipts',
                     tabBarIcon: () => {
                         return (
@@ -32,12 +32,13 @@ const TabsLayout = () => {
                             </TouchableOpacity>
                         );
                     },
+                    header: () => <Header />,
                 }}
             />
             <Tabs.Screen
                 name="camera"
                 options={{
-                    headerTitle: 'Camera',
+                    headerShown: false,
                     tabBarLabel: 'Camera',
                     tabBarIcon: () => {
                         return (
@@ -51,7 +52,6 @@ const TabsLayout = () => {
             <Tabs.Screen
                 name="documents"
                 options={{
-                    headerTitle: 'Documents',
                     tabBarLabel: 'Documents',
                     tabBarIcon: () => {
                         return (
@@ -60,12 +60,12 @@ const TabsLayout = () => {
                             </TouchableOpacity>
                         );
                     },
+                    header: () => <Header />,
                 }}
             />
             <Tabs.Screen
                 name="reports"
                 options={{
-                    headerTitle: 'Reports',
                     tabBarLabel: 'Reports',
                     tabBarIcon: () => {
                         return (
@@ -74,6 +74,7 @@ const TabsLayout = () => {
                             </TouchableOpacity>
                         );
                     },
+                    header: () => <Header />,
                 }}
             />
         </Tabs>
