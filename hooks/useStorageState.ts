@@ -12,7 +12,6 @@ function useAsyncState<T>(
             state: [boolean, T | null],
             action: T | null = null
         ): [boolean, T | null] => {
-            console.log('Updating state:', { loading: false, value: action });
             return [false, action];
         },
         initialValue
@@ -20,8 +19,6 @@ function useAsyncState<T>(
 }
 
 export async function setStorageItemAsync(key: string, value: any) {
-    console.log(`Setting storage key "${key}" to:`, value);
-
     const serializedValue = value ? JSON.stringify(value) : null;
 
     if (Platform.OS === 'web') {
@@ -49,7 +46,6 @@ export function useStorageState<T>(key: string): UseStateHook<T> {
 
     // Get
     useEffect(() => {
-        console.log('Retrieving value for key:', key);
         if (Platform.OS === 'web') {
             try {
                 if (typeof localStorage !== 'undefined') {
@@ -57,7 +53,6 @@ export function useStorageState<T>(key: string): UseStateHook<T> {
                     const parsedValue = storedValue
                         ? JSON.parse(storedValue)
                         : null;
-                    console.log(`Retrieved from localStorage:`, parsedValue);
                     setState(parsedValue);
                 }
             } catch (e) {
@@ -68,7 +63,6 @@ export function useStorageState<T>(key: string): UseStateHook<T> {
                 const parsedValue = storedValue
                     ? JSON.parse(storedValue)
                     : null;
-                console.log(`Retrieved from SecureStore:`, parsedValue);
                 setState(parsedValue);
             });
         }
