@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { handleSignInWithGoogle } from '@/services/sso/google';
 import { Image } from 'expo-image';
 import WelcomeBackground from '@/assets/images/welcome-background.png';
@@ -16,10 +15,12 @@ import { Link, router, useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { login } from '@/services/auth';
 import { isAxiosError } from 'axios';
+import { useSession } from '@/contexts/AuthContext';
 
 WebBrowser.maybeCompleteAuthSession();
 
 const SignInScreen = () => {
+    const { saveLoginData, resetLoginData } = useSession();
     const { registeredUsername } = useLocalSearchParams();
     const [username, setUsername] = useState(
         (registeredUsername as string) || ''
@@ -38,8 +39,11 @@ const SignInScreen = () => {
         const fetchData = async () => {
             if (response) {
                 try {
-                    const token = await handleSignInWithGoogle(response);
-                    if (token) {
+                    const data = await handleSignInWithGoogle(response);
+                    if (data && data.token && data.email) {
+                        const token = data.token;
+                        const email = data.email;
+                        saveLoginData({ token, email });
                         router.push('/(protected)/(tabs)/home');
                     }
                 } catch (error) {
@@ -49,23 +53,21 @@ const SignInScreen = () => {
         };
 
         fetchData();
-    }, [response]);
-
-    const resetJWT = async () => {
-        await AsyncStorage.removeItem('@jwt');
-        await AsyncStorage.removeItem('@email');
-    };
+    }, [response, saveLoginData]);
 
     const handleLoginWithGoogleButton = () => {
-        resetJWT();
+        resetLoginData();
         promptAsync();
     };
 
     const handleLoginButtonPress = async () => {
         if (!areValidInputs()) return;
         try {
-            const token = await login(username, password);
-            if (token) {
+            const data = await login(username, password);
+            if (data) {
+                const token = data.token;
+                const email = data.email;
+                saveLoginData({ token, email });
                 router.push('/(protected)/(tabs)/home');
             }
         } catch (error) {
@@ -179,14 +181,6 @@ const SignInScreen = () => {
                     >
                         <Text style={styles.ssoButtonText}>
                             Sign in with Google
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.ssoButton}
-                        onPress={() => resetJWT()}
-                    >
-                        <Text style={styles.ssoButtonText}>
-                            Refresh Async Storage
                         </Text>
                     </TouchableOpacity>
                 </View>

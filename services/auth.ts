@@ -1,5 +1,4 @@
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const login = async (username: string, password: string) => {
     try {
@@ -12,10 +11,10 @@ export const login = async (username: string, password: string) => {
         const jwtToken = data['token'];
         const email = data['email'];
 
-        await AsyncStorage.setItem('@jwt', JSON.stringify(jwtToken));
-        await AsyncStorage.setItem('@email', email);
-
-        return jwtToken;
+        return {
+            token: jwtToken,
+            email,
+        };
     } catch (error) {
         throw error;
     }
@@ -37,6 +36,6 @@ export const register = async (registrationData: any) => {
 
         return registeredUsername;
     } catch (error) {
-        console.error(error);
+        throw error;
     }
 };
