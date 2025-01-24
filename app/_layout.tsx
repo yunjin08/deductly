@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 import { SessionProvider } from '@/contexts/AuthContext';
 
-axios.defaults.baseURL = process.env.LOCAL_AREA_BASE_URL || LOCALHOST;
+axios.defaults.baseURL =
+    process.env.EXPO_PUBLIC_LOCAL_AREA_BASE_URL || LOCALHOST;
 
 const RootLayout = () => {
     const dismissKeyboard = () => {

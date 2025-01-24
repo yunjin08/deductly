@@ -1,58 +1,66 @@
 {
-    "expo": {
-        "name": "Deductly",
-        "slug": "deductly",
-        "version": "1.0.0",
-        "orientation": "portrait",
-        "icon": "./assets/images/logo.png",
-        "scheme": "myapp",
-        "userInterfaceStyle": "automatic",
-        "newArchEnabled": true,
-        "ios": {
-            "supportsTablet": true,
-            "bundleIdentifier": "com.maxellmilay.deductly",
-            "appleTeamId": "P4PJ866R36",
-            "infoPlist": {
-                "NSCameraUsageDescription": "This app requires camera access to scan and parse receipts."
-            }
-        },
-        "android": {
-            "adaptiveIcon": {
-                "foregroundImage": "./assets/images/adaptive-icon.png",
-                "backgroundColor": "#ffffff"
-            },
-            "package": "com.maxellmilay.deductly",
-            "permissions": [
-                "android.permission.CAMERA",
-                "android.permission.RECORD_AUDIO"
-            ]
-        },
-        "web": {
-            "bundler": "metro",
-            "output": "static",
-            "favicon": "./assets/images/favicon.png"
-        },
-        "plugins": [
-            "expo-router",
-            [
-                "expo-splash-screen",
-                {
-                    "image": "./assets/images/logo.png",
-                    "imageWidth": 200,
-                    "resizeMode": "contain",
-                    "backgroundColor": "#137982"
-                }
-            ],
-            [
-                "expo-camera",
-                {
-                    "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
-                }
-            ],
-            "expo-secure-store"
-        ],
-        "experiments": {
-            "typedRoutes": true
+  "expo": {
+    "name": "Deductly",
+    "slug": "deductly",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/logo.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.maxellmilay.deductly",
+      "appleTeamId": "P4PJ866R36",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app requires camera access to scan and parse receipts."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.maxellmilay.deductly",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/logo.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#137982"
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
+        }
+      ],
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "82e8fb93-36c9-4db9-8819-96c3f629baa8"
+      }
     }
+  }
 }

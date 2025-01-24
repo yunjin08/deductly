@@ -33,6 +33,7 @@ const SignInScreen = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [request, response, promptAsync] = Google.useAuthRequest({
         iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
+        androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
     });
 
     useEffect(() => {
