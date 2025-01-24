@@ -1,6 +1,5 @@
 import { Stack } from 'expo-router';
 import axios from 'axios';
-import { LOCALHOST } from '@/constants/BaseUrl';
 import {
     Keyboard,
     KeyboardAvoidingView,
@@ -10,8 +9,7 @@ import {
 } from 'react-native';
 import { SessionProvider } from '@/contexts/AuthContext';
 
-axios.defaults.baseURL =
-    process.env.EXPO_PUBLIC_LOCAL_AREA_BASE_URL || LOCALHOST;
+axios.defaults.baseURL = process.env.EXPO_PUBLIC_LOCAL_AREA_BASE_URL;
 
 const RootLayout = () => {
     const dismissKeyboard = () => {
