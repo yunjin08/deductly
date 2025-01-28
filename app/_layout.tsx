@@ -8,6 +8,7 @@ import {
     StyleSheet,
 } from 'react-native';
 import { SessionProvider } from '@/contexts/AuthContext';
+import '../global.css';
 
 axios.defaults.baseURL = process.env.EXPO_PUBLIC_LOCAL_AREA_BASE_URL;
 
