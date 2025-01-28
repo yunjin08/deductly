@@ -22,10 +22,13 @@ const SignUpScreen = () => {
     const [isSecure, setIsSecure] = useState(true);
     const [isSecureRepeated, setIsSecureRepeated] = useState(true);
     const [errors, setErrors] = useState([] as string[]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleCreateAccountButton = async () => {
         if (!areValidInputs()) return;
+
         try {
+            setIsSubmitting(true);
             const registrationData = {
                 username,
                 firstName,
@@ -35,6 +38,7 @@ const SignUpScreen = () => {
             };
 
             const registeredUsername = await register(registrationData);
+            console.log('registeredUsername', registeredUsername);
 
             if (registeredUsername) {
                 router.push({
@@ -74,7 +78,7 @@ const SignUpScreen = () => {
             appendError('Email must not be empty');
             areErrorsPresent = true;
         } else {
-            if (isValidEmail(email)) {
+            if (!isValidEmail(email)) {
                 appendError('Invalid email format');
                 areErrorsPresent = true;
             }
@@ -117,6 +121,7 @@ const SignUpScreen = () => {
                     value={username}
                     placeholder="Username"
                     placeholderTextColor="#888"
+                    autoCapitalize="none"
                 />
                 <TextInput
                     style={styles.textInput}
@@ -124,6 +129,7 @@ const SignUpScreen = () => {
                     value={firstName}
                     placeholder="First Name"
                     placeholderTextColor="#888"
+                    autoCapitalize="words"
                 />
                 <TextInput
                     style={styles.textInput}
@@ -149,6 +155,7 @@ const SignUpScreen = () => {
                         secureTextEntry={isSecure}
                         placeholder="Password"
                         placeholderTextColor="#888"
+                        autoCapitalize="none"
                     />
                     <TouchableOpacity
                         onPress={() => setIsSecure(!isSecure)}
@@ -192,7 +199,9 @@ const SignUpScreen = () => {
                 style={styles.createAccountButton}
                 onPress={handleCreateAccountButton}
             >
-                <Text style={styles.createAccountText}>Create Account</Text>
+                <Text style={styles.createAccountText}>
+                    {isSubmitting ? 'Creating Account...' : 'Create Account'}
+                </Text>
             </TouchableOpacity>
             <View style={styles.errorGroupContainer}>
                 {errors.length > 0 &&
