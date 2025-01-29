@@ -14,9 +14,11 @@ const TabsLayout = () => {
                     justifyContent: 'center',
                     alignItems: 'center',
                 },
-                tabBarActiveTintColor: '#4CD4E2',
-                tabBarInactiveTintColor: '#A0A0A0',
-                tabBarBackground: () => <View className="bg-gray-50 h-full" />,
+                headerShown: true,
+                header: () => <Header />,
+                tabBarActiveTintColor: 'bg-primary',
+                tabBarInactiveTintColor: '#FFFFFF',
+                tabBarBackground: () => <View className="bg-primary h-full" />,
                 tabBarIconStyle: {
                     marginTop: 0,
                 },
@@ -27,7 +29,7 @@ const TabsLayout = () => {
                 options={{
                     title: 'Gallery',
                     headerShown: false,
-                    tabBarLabel: '',
+                    tabBarLabel: 'Gallery',
                     tabBarIcon: ({ color, focused }) => (
                         <FontAwesome
                             name={focused ? 'image' : 'image'}
@@ -43,7 +45,7 @@ const TabsLayout = () => {
                 options={{
                     title: 'Receipts',
                     headerShown: false,
-                    tabBarLabel: '',
+                    tabBarLabel: 'Receipts',
                     tabBarIcon: ({ color, focused }) => (
                         <FontAwesome6
                             name={focused ? 'envelope' : 'envelope'}
@@ -61,10 +63,10 @@ const TabsLayout = () => {
                     headerShown: false,
                     tabBarLabel: '',
                     tabBarIcon: () => (
-                        <View className="w-15 h-15 bg-[#4CD4E2] rounded-full -mb-5 items-center justify-center">
+                        <View className="size-28 border-2 border-white bg-primary rounded-full mb-16 items-center justify-center">
                             <FontAwesome
                                 name="camera"
-                                size={24}
+                                size={28}
                                 color="white"
                             />
                         </View>
@@ -76,7 +78,7 @@ const TabsLayout = () => {
                 options={{
                     title: 'Documents',
                     headerShown: false,
-                    tabBarLabel: '',
+                    tabBarLabel: 'Documents',
                     tabBarIcon: ({ color, focused }) => (
                         <FontAwesome6
                             name={focused ? 'folder' : 'folder'}
@@ -92,7 +94,7 @@ const TabsLayout = () => {
                 options={{
                     title: 'Reports',
                     headerShown: false,
-                    tabBarLabel: '',
+                    tabBarLabel: 'Reports',
                     tabBarIcon: ({ color, focused }) => (
                         <FontAwesome6
                             name={focused ? 'chart-line' : 'chart-line'}
