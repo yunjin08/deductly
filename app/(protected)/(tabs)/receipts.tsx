@@ -1,7 +1,12 @@
 import { Text } from 'react-native';
+import ScrollableLayout from '@/components/ScrollableLayout';
 
 const ReceiptsScreen = () => {
-    return <Text>Receipts</Text>;
+    return (
+        <ScrollableLayout>
+            <Text>Receipts</Text>
+        </ScrollableLayout>
+    );
 };
 
 export default ReceiptsScreen;
