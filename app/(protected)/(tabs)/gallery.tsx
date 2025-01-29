@@ -2,6 +2,7 @@ import { View, Text } from 'react-native';
 import { listUsers } from '@/services/user';
 import { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import ScrollableLayout from '@/components/ScrollableLayout';
 
 const GalleryScreen = () => {
     const [users, setUsers] = useState([] as string[]);
@@ -13,13 +14,13 @@ const GalleryScreen = () => {
     }, []);
 
     return (
-        <SafeAreaView className="flex-1">
+        <ScrollableLayout>
             <View>
                 {users.map((user) => {
                     return <Text>hello world</Text>;
                 })}
             </View>
-        </SafeAreaView>
+        </ScrollableLayout>
     );
 };
 
