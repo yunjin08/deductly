@@ -1,7 +1,8 @@
 import { View, Text, TouchableOpacity, Image, FlatList } from 'react-native';
 import { Link } from 'expo-router';
 import { FontAwesome6 } from '@expo/vector-icons';
-import ScrollableLayout from '@/components/ScrollableLayout';
+import { ScrollableLayout } from '@/components/ScrollableLayout';
+import Header from '@/components/Header';
 
 // Mock data with more items
 const receipts = [
@@ -59,6 +60,7 @@ const document = [
 const HomeScreen = () => {
     const renderHeader = () => (
         <>
+            <Header />
             {/* Scan Section */}
             <View className="mt-4">
                 <Image
@@ -157,6 +159,7 @@ const HomeScreen = () => {
                 ListFooterComponent={renderFooter}
                 scrollEnabled={true}
                 style={{ flex: 1 }}
+                showsVerticalScrollIndicator={false}
             />
         </ScrollableLayout>
     );
