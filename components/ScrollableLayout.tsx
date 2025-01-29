@@ -1,21 +1,10 @@
-import { FlatList, ScrollView, View } from 'react-native';
-import Header from './Header';
+import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-type ScrollableLayoutProps = {
+
+export const ScrollableLayout = ({
+    children,
+}: {
     children: React.ReactNode;
+}) => {
+    return <SafeAreaView className="flex-1 px-6">{children}</SafeAreaView>;
 };
-
-const ScrollableLayout = ({ children }: ScrollableLayoutProps) => {
-    return (
-        <SafeAreaView>
-            <FlatList
-                data={[]}
-                renderItem={() => <View className="px-4">{children}</View>}
-                ListHeaderComponent={<Header />}
-                showsVerticalScrollIndicator={false}
-            />
-        </SafeAreaView>
-    );
-};
-
-export default ScrollableLayout;

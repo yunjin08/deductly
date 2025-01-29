@@ -1,5 +1,5 @@
 import { Text } from 'react-native';
-import ScrollableLayout from '@/components/ScrollableLayout';
+import { ScrollableLayout } from '@/components/ScrollableLayout';
 
 const DocumentsScreen = () => {
     return (
