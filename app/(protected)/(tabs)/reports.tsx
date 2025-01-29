@@ -1,7 +1,12 @@
 import { Text } from 'react-native';
+import ScrollableLayout from '@/components/ScrollableLayout';
 
 const ReportsScreen = () => {
-    return <Text>Reports</Text>;
+    return (
+        <ScrollableLayout>
+            <Text>Reports</Text>
+        </ScrollableLayout>
+    );
 };
 
 export default ReportsScreen;
