@@ -1,4 +1,3 @@
-import { ScrollableLayout } from '@/components/ScrollableLayout';
 import { DataPreview } from '@/components/DataPreview';
 
 // Mock data for receipts
@@ -36,14 +35,12 @@ const ReceiptsScreen = () => {
     };
 
     return (
-        <ScrollableLayout>
-            <DataPreview
-                data={mockReceipts}
-                title="Receipt List"
-                selectionTitle="Select Receipts"
-                onGenerateDocument={handleGenerateDocument}
-            />
-        </ScrollableLayout>
+        <DataPreview
+            data={mockReceipts}
+            title="Receipt List"
+            selectionTitle="Select Receipts"
+            onGenerateDocument={handleGenerateDocument}
+        />
     );
 };
 
