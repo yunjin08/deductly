@@ -112,7 +112,7 @@ const HomeScreen = () => {
                 data={document}
                 renderItem={({ item }) => (
                     <TouchableOpacity>
-                        <View className="w-32 h-32 bg-gray-50 rounded-xl items-center justify-center">
+                        <View className="w-80 h-48 bg-gray-50 rounded-xl items-center justify-center">
                             <View className="bg-primary/20 p-3 rounded-full">
                                 <FontAwesome6
                                     name="camera"
