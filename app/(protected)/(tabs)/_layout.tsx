@@ -65,7 +65,7 @@ const TabsLayout = () => {
                         headerShown: false,
                         tabBarLabel: '',
                         tabBarIcon: () => (
-                            <View className="size-28 border-2 border-gray-200 bg-primary rounded-full mb-16 items-center justify-center">
+                            <View className="size-24 border-2 border-gray-200 bg-primary rounded-full mb-16 items-center justify-center">
                                 <FontAwesome
                                     name="camera"
                                     size={28}
