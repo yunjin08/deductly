@@ -48,6 +48,26 @@ export interface Document {
     date_created: Date;
 }
 
+export interface DocumentsState {
+    documents: Document[];
+    selectedDocument: Document | null;
+    isLoading: boolean;
+    error: string | null;
+    uploadProgress?: number;
+    downloadProgress?: number;
+}
+
+export interface UploadDocumentPayload {
+    file: FormData;
+    title: string;
+    type: string;
+}
+
+export interface ShareDocumentPayload {
+    documentId: string;
+    userIds: string[];
+}
+
 export interface Image {
     image_id: string;
     title: string;
