@@ -11,23 +11,25 @@ const Header = () => {
 
     return (
         <View
-            className={`flex-row py-4 px-6 items-center ${
-                showHomeButton ? 'justify-between' : 'justify-end'
-            }`}
+            className={`flex-row py-4 px-6 items-center justify-end relative`}
         >
             {showHomeButton && (
-                <Link href="/(protected)/(tabs)/home" asChild>
+                <Link
+                    href="/(protected)/(tabs)/home"
+                    className="absolute top-0 left-0"
+                    asChild
+                >
                     <TouchableOpacity>
                         <View className="flex-row items-center">
                             <FontAwesome6
                                 name="chevron-left"
-                                size={20}
+                                size={16}
                                 color="#1fddee"
                                 className="mr-2"
                                 solid
                             />
-                            <View className="bg-[#1fddee] px-4 py-2 rounded-full">
-                                <Text className="text-white font-semibold text-base">
+                            <View>
+                                <Text className="text-primary font-semibold text-base">
                                     Home
                                 </Text>
                             </View>
