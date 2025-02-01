@@ -7,7 +7,6 @@ import {
     TouchableWithoutFeedback,
     StyleSheet,
 } from 'react-native';
-import { SessionProvider } from '@/contexts/AuthContext';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from '@/contexts/store';
@@ -28,40 +27,38 @@ const RootLayout = () => {
                         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                         style={styles.container}
                     >
-                        <SessionProvider>
-                            <Stack>
-                                {/* Public Routes */}
-                                <Stack.Screen
-                                    name="index"
-                                    options={{
-                                        headerTitle: 'Welcome',
-                                        headerShown: false,
-                                    }}
-                                />
-                                <Stack.Screen
-                                    name="sign-in"
-                                    options={{
-                                        headerTitle: 'Sign In',
-                                        headerShown: false,
-                                    }}
-                                />
-                                <Stack.Screen
-                                    name="sign-up"
-                                    options={{ headerTitle: 'Sign Up' }}
-                                />
-                                <Stack.Screen
-                                    name="reset-password"
-                                    options={{ headerTitle: 'Reset Password' }}
-                                />
+                        <Stack>
+                            {/* Public Routes */}
+                            <Stack.Screen
+                                name="index"
+                                options={{
+                                    headerTitle: 'Welcome',
+                                    headerShown: false,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="sign-in"
+                                options={{
+                                    headerTitle: 'Sign In',
+                                    headerShown: false,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="sign-up"
+                                options={{ headerTitle: 'Sign Up' }}
+                            />
+                            <Stack.Screen
+                                name="reset-password"
+                                options={{ headerTitle: 'Reset Password' }}
+                            />
 
-                                {/* Protected Routes */}
+                            {/* Protected Routes */}
 
-                                <Stack.Screen
-                                    name="(protected)"
-                                    options={{ headerShown: false }}
-                                />
-                            </Stack>
-                        </SessionProvider>
+                            <Stack.Screen
+                                name="(protected)"
+                                options={{ headerShown: false }}
+                            />
+                        </Stack>
                     </KeyboardAvoidingView>
                 </TouchableWithoutFeedback>
             </PersistGate>
