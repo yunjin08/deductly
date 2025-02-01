@@ -9,6 +9,39 @@ export interface Report {
     total_tax_deductions: number;
 }
 
+export interface ReportsState {
+    reports: Report[];
+    selectedReport: Report | null;
+    isLoading: boolean;
+    error: string | null;
+    filters: {
+        category?: string;
+        startDate?: Date;
+        endDate?: Date;
+    };
+    analytics: {
+        totalExpenditure: number;
+        totalDeductions: number;
+        categorizedExpenses: Record<string, number>;
+        monthlyTrends: Array<{
+            month: string;
+            expenditure: number;
+            deductions: number;
+        }>;
+    };
+    exportProgress: number;
+}
+
+export interface DateRangeParams {
+    startDate: Date;
+    endDate: Date;
+}
+
+export interface ExportParams {
+    reportId: string;
+    format: 'pdf' | 'csv' | 'excel';
+}
+
 // Account Types
 export interface User {
     user_id: string;
