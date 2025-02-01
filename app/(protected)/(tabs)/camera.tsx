@@ -4,7 +4,7 @@ import { CAMERA_FACE_DIRECTION } from '@/constants/Camera';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRef } from 'react';
 import { router } from 'expo-router';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 const CameraScreen = () => {
     const [permission, requestPermission] = useCameraPermissions();
     const cameraRef = useRef<CameraView>(null);
@@ -53,7 +53,7 @@ const CameraScreen = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <CameraView
                 ref={cameraRef}
                 style={styles.camera}
@@ -68,7 +68,7 @@ const CameraScreen = () => {
                     </TouchableOpacity>
                 </View>
             </CameraView>
-        </View>
+        </SafeAreaView>
     );
 };
 

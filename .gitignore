@@ -9,6 +9,10 @@ dist/
 web-build/
 expo-env.d.ts
 
+coverage/
+
+jest-results.json
+
 # Native
 *.orig.*
 *.jks

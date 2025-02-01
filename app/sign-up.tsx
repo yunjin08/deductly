@@ -67,7 +67,7 @@ const SignUpScreen = () => {
         if (!email) {
             validationErrors.push('Email must not be empty');
             return false;
-        } else if (isValidEmail(email)) {
+        } else if (!isValidEmail(email)) {
             validationErrors.push('Invalid email format');
             return false;
         }
@@ -102,6 +102,7 @@ const SignUpScreen = () => {
                     value={username}
                     placeholder="Username"
                     placeholderTextColor="#888"
+                    autoCapitalize="none"
                 />
                 <TextInput
                     style={styles.textInput}
@@ -109,6 +110,7 @@ const SignUpScreen = () => {
                     value={firstName}
                     placeholder="First Name"
                     placeholderTextColor="#888"
+                    autoCapitalize="words"
                 />
                 <TextInput
                     style={styles.textInput}
@@ -134,6 +136,7 @@ const SignUpScreen = () => {
                         secureTextEntry={isSecure}
                         placeholder="Password"
                         placeholderTextColor="#888"
+                        autoCapitalize="none"
                     />
                     <TouchableOpacity
                         onPress={() => setIsSecure(!isSecure)}
@@ -177,7 +180,9 @@ const SignUpScreen = () => {
                 style={styles.createAccountButton}
                 onPress={handleCreateAccountButton}
             >
-                <Text style={styles.createAccountText}>Create Account</Text>
+                <Text style={styles.createAccountText}>
+                    {isLoading ? 'Creating Account...' : 'Create Account'}
+                </Text>
             </TouchableOpacity>
             {isLoading && (
                 <View style={styles.loadingContainer}>
