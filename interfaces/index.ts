@@ -76,6 +76,28 @@ export interface Image {
     date_created: Date;
 }
 
+export interface GalleryState {
+    images: Image[];
+    selectedImage: Image | null;
+    isLoading: boolean;
+    error: string | null;
+    uploadProgress: number;
+    view: 'grid' | 'list';
+    sortBy: 'date' | 'name';
+    filterByUser?: string;
+}
+
+export interface ImageUploadOptions {
+    file: FormData;
+    title: string;
+}
+
+export interface ImageOptimizeOptions {
+    width?: number;
+    height?: number;
+    quality?: number;
+}
+
 // Receipt Types
 export interface Receipt {
     receipt_id: string;
