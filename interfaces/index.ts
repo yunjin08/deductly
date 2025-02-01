@@ -116,6 +116,35 @@ export interface Receipt {
     date_created: Date;
 }
 
+export interface ReceiptsState {
+    receipts: Receipt[];
+    selectedReceipt: Receipt | null;
+    receiptItems: Record<string, ReceiptItem[]>; // Keyed by receipt_id
+    isLoading: boolean;
+    error: string | null;
+    scanProgress: number;
+    filters: {
+        category?: string;
+        startDate?: Date;
+        endDate?: Date;
+        vendor?: string;
+    };
+    stats: {
+        totalExpenditure: number;
+        totalDeductions: number;
+    };
+}
+
+export interface ScanReceiptPayload {
+    imageData: FormData;
+    onProgress?: (progress: number) => void;
+}
+
+export interface DateRangeFilter {
+    startDate: Date;
+    endDate: Date;
+}
+
 export interface ReceiptItem {
     receipt_item_id: string;
     title: string;
