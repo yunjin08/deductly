@@ -33,26 +33,6 @@ export interface LoginData {
     password: string;
 }
 
-export const AUTH_ACTIONS = {
-    SAVE_LOGIN_DATA: 'auth/saveLoginData',
-    RESET_LOGIN_DATA: 'auth/resetLoginData',
-    SET_LOADING: 'auth/setLoading',
-} as const;
-
-export const saveLoginData = (data: { token: string; email: string }) => ({
-    type: AUTH_ACTIONS.SAVE_LOGIN_DATA,
-    payload: data,
-});
-
-export const resetLoginData = () => ({
-    type: AUTH_ACTIONS.RESET_LOGIN_DATA,
-});
-
-export const setLoading = (isLoading: boolean) => ({
-    type: AUTH_ACTIONS.SET_LOADING,
-    payload: isLoading,
-});
-
 export const registerUser = createAsyncThunk(
     'auth/register',
     async (data: RegisterData, { rejectWithValue }) => {

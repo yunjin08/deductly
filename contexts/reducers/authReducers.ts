@@ -1,9 +1,5 @@
-import { AUTH_ACTIONS, loginWithGoogle } from '@/contexts/actions/authActions';
-import type {
-    AuthState,
-    AuthAction,
-    Session,
-} from '@/contexts/actions/authActions';
+import { loginWithGoogle } from '@/contexts/actions/authActions';
+import type { AuthState, Session } from '@/contexts/actions/authActions';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { registerUser, loginUser } from '@/contexts/actions/authActions';
 
@@ -11,31 +7,6 @@ const initialState: AuthState = {
     session: null,
     isLoading: false,
     errors: [],
-};
-
-export const authReducer = (
-    state = initialState,
-    action: AuthAction
-): AuthState => {
-    switch (action.type) {
-        case AUTH_ACTIONS.SAVE_LOGIN_DATA:
-            return {
-                ...state,
-                session: action.payload,
-            };
-        case AUTH_ACTIONS.RESET_LOGIN_DATA:
-            return {
-                ...state,
-                session: null,
-            };
-        case AUTH_ACTIONS.SET_LOADING:
-            return {
-                ...state,
-                isLoading: action.payload,
-            };
-        default:
-            return state;
-    }
 };
 
 const authSlice = createSlice({
@@ -49,6 +20,12 @@ const authSlice = createSlice({
             state.errors = state.errors?.filter(
                 (error) => error !== action.payload
             );
+        },
+        saveLoginData: (state, action: PayloadAction<Session | null>) => {
+            state.session = action.payload;
+        },
+        resetLoginData: (state) => {
+            state.session = null;
         },
         setSession: (state, action: PayloadAction<Session | null>) => {
             state.session = action.payload;
@@ -98,6 +75,12 @@ const authSlice = createSlice({
     },
 });
 
-export const { clearErrors, removeError, setSession, logout } =
-    authSlice.actions;
+export const {
+    clearErrors,
+    removeError,
+    setSession,
+    logout,
+    saveLoginData,
+    resetLoginData,
+} = authSlice.actions;
 export default authSlice.reducer;
