@@ -1,5 +1,5 @@
 import { loginWithGoogle } from '@/contexts/actions/authActions';
-import type { AuthState, Session } from '@/contexts/actions/authActions';
+import type { AuthState, Session } from '@/interfaces/authenticationInterface';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { registerUser, loginUser } from '@/contexts/actions/authActions';
 

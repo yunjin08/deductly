@@ -16,7 +16,7 @@ import {
 } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import rootReducer from './reducers';
-import type { AuthState } from './actions/authActions';
+import type { AuthState } from '@/interfaces/authenticationInterface';
 
 interface AppState {
     auth: AuthState;

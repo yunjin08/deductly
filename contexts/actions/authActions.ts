@@ -3,35 +3,10 @@ import { register, login } from '@/services/auth';
 import { handleSignInWithGoogle } from '@/services/sso/google';
 import { isAxiosError } from 'axios';
 import { AuthSessionResult } from 'expo-auth-session';
-
-export interface Session {
-    token: string;
-    email: string;
-}
-
-export interface AuthState {
-    session: Session | null;
-    isLoading: boolean;
-    errors?: string[];
-}
-
-export interface AuthAction {
-    type: string;
-    payload?: any;
-}
-
-export interface RegisterData {
-    username: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-}
-
-export interface LoginData {
-    username: string;
-    password: string;
-}
+import type {
+    RegisterData,
+    LoginData,
+} from '@/interfaces/authenticationInterface';
 
 export const registerUser = createAsyncThunk(
     'auth/register',
