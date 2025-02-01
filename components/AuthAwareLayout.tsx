@@ -1,5 +1,5 @@
 import { useEffect, ReactNode } from 'react';
-import { useSession } from '@/contexts/AuthContext';
+import { useAppSelector } from '@/hooks/useAuthHooks';
 import axios, { InternalAxiosRequestConfig } from 'axios';
 
 interface AuthAwareLayoutProps {
@@ -7,7 +7,7 @@ interface AuthAwareLayoutProps {
 }
 
 export const AuthAwareLayout = ({ children }: AuthAwareLayoutProps) => {
-    const { session } = useSession();
+    const { session } = useAppSelector((state) => state.auth);
     useEffect(() => {
         const setAuthHeader = async (config: InternalAxiosRequestConfig) => {
             if (session) {
