@@ -2,7 +2,7 @@ import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useAppDispatch } from '@/hooks/useAuthHooks';
 import { router } from 'expo-router';
-import { resetLoginData } from '@/contexts/actions/authActions';
+import { resetLoginData } from '@/contexts/reducers/authReducers';
 
 const ProfileScreen = () => {
     const dispatch = useAppDispatch();

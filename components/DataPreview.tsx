@@ -7,6 +7,7 @@ import {
     FlatList,
 } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
+import { ScrollableLayout } from './ScrollableLayout';
 import Header from '@/components/Header';
 
 interface Item {
@@ -116,7 +117,7 @@ export const DataPreview = ({
     };
 
     return (
-        <>
+        <ScrollableLayout>
             <FlatList
                 data={data}
                 keyExtractor={(item) => item.id.toString()}
@@ -134,6 +135,6 @@ export const DataPreview = ({
                     </Text>
                 </TouchableOpacity>
             )}
-        </>
+        </ScrollableLayout>
     );
 };

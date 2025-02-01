@@ -15,13 +15,12 @@ import WelcomeBackground from '@/assets/images/welcome-background.png';
 import { Link, router, useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { useAppDispatch, useAppSelector } from '@/hooks/useAuthHooks';
+import { loginUser, loginWithGoogle } from '@/contexts/actions/authActions';
+import { removeError } from '@/contexts/reducers/authReducers';
 import {
-    loginUser,
     saveLoginData,
     resetLoginData,
-    loginWithGoogle,
-} from '@/contexts/actions/authActions';
-import { removeError } from '@/contexts/reducers/authReducers';
+} from '@/contexts/reducers/authReducers';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -47,6 +46,7 @@ const SignInScreen = () => {
             if (response) {
                 try {
                     const data = await handleSignInWithGoogle(response);
+
                     if (data && data.token && data.email) {
                         dispatch(
                             saveLoginData({
