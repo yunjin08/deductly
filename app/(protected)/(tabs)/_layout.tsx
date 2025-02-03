@@ -9,17 +9,17 @@ const TabsLayout = () => {
             <Tabs
                 screenOptions={{
                     tabBarStyle: {
-                        height: 84,
+                        height: 74,
                         paddingTop: 10,
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
                     },
                     headerShown: false,
-                    tabBarActiveTintColor: '#4CD4E2',
-                    tabBarInactiveTintColor: '#6C757D',
+                    tabBarActiveTintColor: '#FFFFFF',
+                    tabBarInactiveTintColor: '#B8E8EE',
                     tabBarBackground: () => (
-                        <View className="bg-gray-100 border-t-[1px] border-gray-200 h-full" />
+                        <View className=" bg-primary h-full shadow-md" />
                     ),
                     tabBarIconStyle: {
                         marginTop: 0,
@@ -65,7 +65,7 @@ const TabsLayout = () => {
                         headerShown: false,
                         tabBarLabel: '',
                         tabBarIcon: () => (
-                            <View className="size-24 border-2 border-gray-200 bg-primary rounded-full mb-16 items-center justify-center">
+                            <View className="size-28 border-2 border-gray-200 bg-primary rounded-full mb-16 items-center justify-center">
                                 <FontAwesome
                                     name="camera"
                                     size={28}
