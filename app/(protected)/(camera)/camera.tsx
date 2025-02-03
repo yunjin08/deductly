@@ -1,9 +1,9 @@
 import { Text, View, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { useCameraPermissions, CameraView } from 'expo-camera';
 import { CAMERA_FACE_DIRECTION } from '@/constants/Camera';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome6 } from '@expo/vector-icons';
 import { useRef } from 'react';
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
 
 const CameraScreen = () => {
     const [permission, requestPermission] = useCameraPermissions();
@@ -59,6 +59,25 @@ const CameraScreen = () => {
                 style={styles.camera}
                 facing={CAMERA_FACE_DIRECTION}
             >
+                <TouchableOpacity
+                    className="absolute top-20 left-8"
+                    onPress={() => router.back()}
+                >
+                    <View className="flex-row items-center">
+                        <FontAwesome6
+                            name="chevron-left"
+                            size={16}
+                            color="#1fddee"
+                            className="mr-2"
+                            solid
+                        />
+                        <View>
+                            <Text className="text-primary font-semibold text-base">
+                                Back
+                            </Text>
+                        </View>
+                    </View>
+                </TouchableOpacity>
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         onPress={capture}
