@@ -27,6 +27,10 @@ const ProtectedLayout = () => {
                         animation: 'fade_from_bottom',
                     }}
                 />
+                <Stack.Screen
+                    name="(camera)"
+                    options={{ headerShown: false }}
+                />
             </Stack>
         </AuthAwareLayout>
     );
