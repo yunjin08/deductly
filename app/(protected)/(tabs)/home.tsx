@@ -157,7 +157,7 @@ const HomeScreen = () => {
                 keyExtractor={(item) => item.id.toString()}
                 ListHeaderComponent={renderHeader}
                 ListFooterComponent={renderFooter}
-                scrollEnabled={true}
+                scrollEnabled={false}
                 style={{ flex: 1 }}
                 showsVerticalScrollIndicator={false}
             />
