@@ -137,11 +137,11 @@ const HomeScreen = () => {
     );
 
     const renderReceiptItem = ({ item }: { item: any }) => (
-        <TouchableOpacity className="flex-row items-center bg-gray-50 p-4 rounded-xl mb-4">
-            <View className="w-12 h-12 bg-gray-200 rounded-lg items-center justify-center">
+        <TouchableOpacity className="flex-row  h-24 items-center bg-gray-50 rounded-xl mb-4">
+            <View className="w-24 h-full bg-gray-200 rounded-lg items-center justify-center">
                 <FontAwesome6 name="image" size={24} color="#A0A0A0" />
             </View>
-            <View className="ml-4 flex-1">
+            <View className="ml-4 p-4  flex-1">
                 <Text className="font-semibold text-lg">{item.name}</Text>
                 <Text className="text-gray-500">{item.location}</Text>
             </View>
