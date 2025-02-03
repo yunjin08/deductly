@@ -2,12 +2,40 @@ import { Text, View, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { useCameraPermissions, CameraView } from 'expo-camera';
 import { CAMERA_FACE_DIRECTION } from '@/constants/Camera';
 import { FontAwesome, FontAwesome6 } from '@expo/vector-icons';
-import { useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link, router } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
+import { Image } from 'expo-image';
+import * as MediaLibrary from 'expo-media-library';
 
 const CameraScreen = () => {
     const [permission, requestPermission] = useCameraPermissions();
+    const [lastImage, setLastImage] = useState<string | null>(null);
     const cameraRef = useRef<CameraView>(null);
+
+    // Function to get the last image
+    const getLastImage = async () => {
+        try {
+            const { status } = await MediaLibrary.requestPermissionsAsync();
+            if (status === 'granted') {
+                const { assets } = await MediaLibrary.getAssetsAsync({
+                    first: 1,
+                    mediaType: 'photo',
+                    sortBy: ['creationTime'],
+                });
+
+                if (assets.length > 0) {
+                    setLastImage(assets[0].uri);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to get last image:', error);
+        }
+    };
+
+    useEffect(() => {
+        getLastImage();
+    }, []);
 
     if (!permission) {
         return <View />;
@@ -23,6 +51,24 @@ const CameraScreen = () => {
             </View>
         );
     }
+
+    // Add gallery picker function
+    const pickImage = async () => {
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: 'images',
+                quality: 0.8,
+                base64: true,
+                exif: true,
+            });
+
+            if (!result.canceled && result.assets[0]) {
+                router.push(`/camera-modal?pictureUri=${result.assets[0].uri}`);
+            }
+        } catch (error) {
+            console.error('Failed to pick image:', error);
+        }
+    };
 
     const capture = async () => {
         if (cameraRef.current) {
@@ -60,7 +106,7 @@ const CameraScreen = () => {
                 facing={CAMERA_FACE_DIRECTION}
             >
                 <TouchableOpacity
-                    className="absolute top-20 left-8"
+                    className="absolute top-16 left-8"
                     onPress={() => router.back()}
                 >
                     <View className="flex-row items-center">
@@ -78,13 +124,32 @@ const CameraScreen = () => {
                         </View>
                     </View>
                 </TouchableOpacity>
-                <View style={styles.buttonContainer}>
+
+                {/* Bottom controls container */}
+                <View style={styles.controlsContainer}>
+                    <TouchableOpacity
+                        onPress={pickImage}
+                        style={styles.galleryButton}
+                    >
+                        {lastImage ? (
+                            <Image
+                                source={{ uri: lastImage }}
+                                style={styles.lastImage}
+                            />
+                        ) : (
+                            <FontAwesome name="image" size={24} color="white" />
+                        )}
+                    </TouchableOpacity>
+
                     <TouchableOpacity
                         onPress={capture}
                         style={styles.captureButton}
                     >
                         <FontAwesome name="camera" size={30} color="white" />
                     </TouchableOpacity>
+
+                    {/* Empty View for spacing balance */}
+                    <View style={styles.spacer} />
                 </View>
             </CameraView>
         </View>
@@ -111,11 +176,45 @@ const styles = StyleSheet.create({
 
     buttonContainer: {
         position: 'absolute',
-        bottom: 40,
+        bottom: 60,
         left: 0,
         right: 0,
         flexDirection: 'row',
         justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    controlsContainer: {
+        position: 'absolute',
+        bottom: 60,
+        left: 0,
+        right: 0,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 100, // Adjust this value for desired spacing
+    },
+
+    spacer: {
+        width: 40, // Match the width of gallery button
+    },
+
+    button: {
+        padding: 24,
+        borderRadius: 50,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+
+    lastImage: {
+        width: '100%',
+        height: '100%',
     },
 
     captureButton: {
@@ -130,5 +229,17 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
+    },
+
+    galleryButton: {
+        backgroundColor: '#6C757D',
+        width: 40, // Added fixed width
+        height: 40, // Added fixed height
+        borderWidth: 2,
+        borderColor: '#1fddee',
+        borderRadius: 4, // Half of width/height
+        overflow: 'hidden', // Added to ensure image stays within bounds
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
