@@ -7,6 +7,7 @@ import {
     FlatList,
 } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
+import { ScrollableLayout } from './ScrollableLayout';
 import Header from '@/components/Header';
 
 interface Item {
@@ -83,11 +84,11 @@ export const DataPreview = ({
             <Pressable
                 onLongPress={() => handleLongPress(item.id)}
                 onPress={() => handlePress(item.id)}
-                className={`flex-row items-center p-4 rounded-xl mb-2 ${
+                className={`flex-row items-center pr-4 rounded-xl mb-2 ${
                     isSelected ? 'bg-gray-200' : 'bg-gray-50'
                 }`}
             >
-                <View className="w-12 h-12 bg-gray-100 rounded-lg items-center justify-center mr-4">
+                <View className="w-24 h-24 bg-gray-200 rounded-lg rounded-r-none items-center justify-center mr-4">
                     <FontAwesome6 name="image" size={24} color="#A0A0A0" />
                 </View>
                 <View className="flex-1">
@@ -116,12 +117,14 @@ export const DataPreview = ({
     };
 
     return (
-        <>
+        <ScrollableLayout>
             <FlatList
                 data={data}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={renderItem}
                 ListHeaderComponent={renderHeader}
+                ItemSeparatorComponent={() => <View className="h-2" />}
+                scrollEnabled={false}
                 showsVerticalScrollIndicator={false}
             />
             {isSelectionMode && (
@@ -134,6 +137,6 @@ export const DataPreview = ({
                     </Text>
                 </TouchableOpacity>
             )}
-        </>
+        </ScrollableLayout>
     );
 };

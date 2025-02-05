@@ -5,6 +5,7 @@ import {
     Text,
     TouchableOpacity,
     TextInput,
+    ActivityIndicator,
 } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
@@ -13,22 +14,26 @@ import { Image } from 'expo-image';
 import WelcomeBackground from '@/assets/images/welcome-background.png';
 import { Link, router, useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
-import { login } from '@/services/auth';
-import { isAxiosError } from 'axios';
-import { useSession } from '@/contexts/AuthContext';
+import { useAppDispatch, useAppSelector } from '@/hooks/useAuthHooks';
+import { loginUser, loginWithGoogle } from '@/contexts/actions/authActions';
+import { removeError } from '@/contexts/reducers/authReducers';
+import {
+    saveLoginData,
+    resetLoginData,
+} from '@/contexts/reducers/authReducers';
 
 WebBrowser.maybeCompleteAuthSession();
 
 const SignInScreen = () => {
-    const { saveLoginData, resetLoginData } = useSession();
-    const { registeredUsername } = useLocalSearchParams();
-    const [username, setUsername] = useState(
-        (registeredUsername as string) || ''
-    );
+    const dispatch = useAppDispatch();
+    const { errors, isLoading } = useAppSelector((state) => state.auth);
+    const { registeredUsername } = useLocalSearchParams<{
+        registeredUsername: string;
+    }>();
+
+    const [username, setUsername] = useState(registeredUsername || '');
     const [password, setPassword] = useState('');
     const [isSecure, setIsSecure] = useState(true);
-
-    const [errors, setErrors] = useState([] as string[]);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [request, response, promptAsync] = Google.useAuthRequest({
@@ -41,10 +46,14 @@ const SignInScreen = () => {
             if (response) {
                 try {
                     const data = await handleSignInWithGoogle(response);
+
                     if (data && data.token && data.email) {
-                        const token = data.token;
-                        const email = data.email;
-                        saveLoginData({ token, email });
+                        dispatch(
+                            saveLoginData({
+                                token: data.token,
+                                email: data.email,
+                            })
+                        );
                         router.push('/(protected)/(tabs)/home');
                     }
                 } catch (error) {
@@ -54,66 +63,51 @@ const SignInScreen = () => {
         };
 
         fetchData();
-    }, [response, saveLoginData]);
+    }, [response, dispatch]);
 
-    const handleLoginWithGoogleButton = () => {
-        resetLoginData();
-        promptAsync();
+    const handleLoginWithGoogleButton = async () => {
+        dispatch(resetLoginData());
+        const response = await promptAsync();
+        if (response?.type === 'success') {
+            const result = await dispatch(loginWithGoogle(response));
+            if (loginWithGoogle.fulfilled.match(result)) {
+                router.push('/(protected)/(tabs)/home');
+            }
+        }
     };
 
     const handleLoginButtonPress = async () => {
         if (!areValidInputs()) return;
-        try {
-            const data = await login(username, password);
-            if (data) {
-                const token = data.token;
-                const email = data.email;
-                saveLoginData({ token, email });
-                router.push('/(protected)/(tabs)/home');
-            }
-        } catch (error) {
-            if (isAxiosError(error)) {
-                const errorResponse = error.response;
-                if (errorResponse) {
-                    setErrors([errorResponse.data['error']]);
-                } else {
-                    setErrors([[error.name, error.message].join(': ')]);
-                }
-            } else if (error instanceof Error) {
-                setErrors([[error.name, error.message].join(': ')]);
-            } else {
-                setErrors(['Caught something that is not an error']);
-            }
+
+        const result = await dispatch(loginUser({ username, password }));
+
+        if (loginUser.fulfilled.match(result)) {
+            router.push('/(protected)/(tabs)/home');
         }
     };
 
     const areValidInputs = () => {
-        let areErrorsPresent = false;
+        const validationErrors: string[] = [];
+
         if (!username) {
-            appendError('Username must not be empty');
-            areErrorsPresent = true;
+            validationErrors.push('Username must not be empty');
         }
 
         if (!password) {
-            appendError('Password must not be empty');
-            areErrorsPresent = true;
+            validationErrors.push('Password must not be empty');
         }
 
-        if (areErrorsPresent) {
+        if (validationErrors.length > 0) {
+            validationErrors.forEach((error) => {
+                dispatch(removeError(error));
+            });
             return false;
-        } else {
-            return true;
         }
-    };
-
-    const appendError = (error: string) => {
-        setErrors((prevError) => [...prevError, error]);
+        return true;
     };
 
     const handleRemoveError = (errorToRemove: string) => {
-        setErrors((prevErrors) =>
-            prevErrors.filter((error) => error !== errorToRemove)
-        );
+        dispatch(removeError(errorToRemove));
     };
 
     return (
@@ -186,25 +180,27 @@ const SignInScreen = () => {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.errorGroupContainer}>
-                    {errors.length > 0 &&
-                        errors.map((error) => {
-                            return (
-                                <View key={error} style={styles.errorContainer}>
-                                    <Text style={styles.errorText}>
-                                        {error}
+                    {errors &&
+                        errors.length > 0 &&
+                        errors.map((error) => (
+                            <View key={error} style={styles.errorContainer}>
+                                <Text style={styles.errorText}>{error}</Text>
+                                <TouchableOpacity
+                                    style={styles.closeButton}
+                                    onPress={() => handleRemoveError(error)}
+                                >
+                                    <Text style={styles.closeButtonText}>
+                                        X
                                     </Text>
-                                    <TouchableOpacity
-                                        style={styles.closeButton}
-                                        onPress={() => handleRemoveError(error)} // Pass the index to identify which error to remove
-                                    >
-                                        <Text style={styles.closeButtonText}>
-                                            X
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-                            );
-                        })}
+                                </TouchableOpacity>
+                            </View>
+                        ))}
                 </View>
+                {isLoading && (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color="#1fddee" />
+                    </View>
+                )}
             </View>
         </View>
     );
@@ -365,5 +361,16 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
         fontSize: 12,
+    },
+
+    loadingContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
     },
 });
