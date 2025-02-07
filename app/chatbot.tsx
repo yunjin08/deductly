@@ -8,17 +8,16 @@ import {
     Platform,
 } from 'react-native';
 // import GoBackRoute from '@/components/GoBackRoute';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { sendMessage } from '@/contexts/actions/userActions';
-import { chatService } from '@/services/api/users';
-import { useAppSelector } from '@/hooks/useAuthHooks';
+import { useAppSelector, useAppDispatch } from '@/hooks/useAuthHooks';
 
 // Dummy chat data type
 type ChatMessage = {
     id: string;
-    text: string;
+    text?: string;
     sender: 'user' | 'bot';
     options?: string[];
 };
@@ -49,31 +48,18 @@ const initialChats: ChatMessage[] = [
 ];
 
 const ChatbotScreen = () => {
+    const dispatch = useAppDispatch();
+    const userId = useAppSelector((state) => state.auth.session?.user?.id);
     const [messages, setMessages] = useState<ChatMessage[]>(initialChats);
     const [inputText, setInputText] = useState('');
 
-    const userId = useAppSelector((state) => state.auth.session?.user_id);
-
-    // Load chat history
-    // const loadChatHistory = useCallback(async () => {
-    //     if (!userId) {
-    //         setError('User not authenticated');
-    //         return;
+    // useEffect(() => {
+    //     if (userId) {
+    //         dispatch(fetchChatHistory(userId));
     //     }
+    // }, [dispatch, userId]);
 
-    //     try {
-    //         setIsLoading(true);
-    //         const history = await chatService.getChatHistory(userId);
-    //         setMessages(history);
-    //     } catch (err) {
-    //         setError('Failed to load chat history');
-    //         console.error(err);
-    //     } finally {
-    //         setIsLoading(false);
-    //     }
-    // }, [userId]);
-
-    const handleSend = () => {
+    const handleSend = async () => {
         if (inputText.trim()) {
             setMessages([
                 ...messages,
@@ -83,6 +69,27 @@ const ChatbotScreen = () => {
                     sender: 'user',
                 },
             ]);
+            const resultAction = await dispatch(
+                sendMessage({
+                    question: inputText,
+                })
+            );
+            // Type guard to check if the action was fulfilled
+            if (sendMessage.fulfilled.match(resultAction)) {
+                console.log('Bot response:', resultAction.payload.answer);
+
+                // Add bot response to messages
+                const botMessage: ChatMessage = {
+                    id: Date.now().toString(),
+                    text: resultAction.payload.answer,
+                    sender: 'bot',
+                };
+
+                setMessages((prev) => [...prev, botMessage]);
+            }
+
+            // setMessages([...messages, result.answer]);
+
             setInputText('');
         }
     };
