@@ -8,7 +8,8 @@ export const fetchChatHistory = createAsyncThunk(
         try {
             return await chatService.getChatHistory(userId);
         } catch (e) {
-            return rejectWithValue('Failed to fetch chat history', e);
+            console.error('Failed to fetch chat history', e);
+            return rejectWithValue('Failed to fetch chat history');
         }
     }
 );
@@ -19,7 +20,8 @@ export const sendMessage = createAsyncThunk(
         try {
             return await chatService.sendMessage({ data: message });
         } catch (e) {
-            return rejectWithValue('Failed to send message', e);
+            console.error('Failed to send message', e);
+            return rejectWithValue('Failed to send message');
         }
     }
 );
