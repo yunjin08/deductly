@@ -10,11 +10,12 @@ export interface Report {
 }
 
 export interface ChatMessage {
-    id: string;
-    text: string;
-    sender: 'user' | 'bot';
-    createdAt: string;
+    id?: string;
+    question?: string;
+    sender?: 'user' | 'bot';
+    createdAt?: string;
     options?: string[];
+    answer?: string;
 }
 
 export interface ReportsState {
@@ -52,7 +53,7 @@ export interface ExportParams {
 
 // Account Types
 export interface User {
-    user_id: string;
+    id: string;
     first_name: string;
     last_name: string;
     email: string;
