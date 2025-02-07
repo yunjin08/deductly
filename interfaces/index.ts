@@ -9,6 +9,39 @@ export interface Report {
     total_tax_deductions: number;
 }
 
+export interface ReportsState {
+    reports: Report[];
+    selectedReport: Report | null;
+    isLoading: boolean;
+    error: string | null;
+    filters: {
+        category?: string;
+        startDate?: Date;
+        endDate?: Date;
+    };
+    analytics: {
+        totalExpenditure: number;
+        totalDeductions: number;
+        categorizedExpenses: Record<string, number>;
+        monthlyTrends: Array<{
+            month: string;
+            expenditure: number;
+            deductions: number;
+        }>;
+    };
+    exportProgress: number;
+}
+
+export interface DateRangeParams {
+    startDate: Date;
+    endDate: Date;
+}
+
+export interface ExportParams {
+    reportId: string;
+    format: 'pdf' | 'csv' | 'excel';
+}
+
 // Account Types
 export interface User {
     user_id: string;
@@ -48,12 +81,54 @@ export interface Document {
     date_created: Date;
 }
 
+export interface DocumentsState {
+    documents: Document[];
+    selectedDocument: Document | null;
+    isLoading: boolean;
+    error: string | null;
+    uploadProgress?: number;
+    downloadProgress?: number;
+}
+
+export interface UploadDocumentPayload {
+    file: FormData;
+    title: string;
+    type: string;
+}
+
+export interface ShareDocumentPayload {
+    documentId: string;
+    userIds: string[];
+}
+
 export interface Image {
     image_id: string;
     title: string;
     image_url: string;
     user_id: string;
     date_created: Date;
+}
+
+export interface GalleryState {
+    images: Image[];
+    selectedImage: Image | null;
+    isLoading: boolean;
+    error: string | null;
+    uploadProgress: number;
+    view: 'grid' | 'list';
+    sortBy: 'date' | 'name';
+    filterByUser?: string;
+}
+
+export interface ImageUploadOptions {
+    file: FormData;
+    title: string;
+}
+
+export interface ImageOptimizeOptions {
+    width?: number;
+    height?: number;
+    quality?: number;
 }
 
 // Receipt Types
@@ -72,6 +147,35 @@ export interface Receipt {
     value_added_tax: number;
     document_id: string;
     date_created: Date;
+}
+
+export interface ReceiptsState {
+    receipts: Receipt[];
+    selectedReceipt: Receipt | null;
+    receiptItems: Record<string, ReceiptItem[]>; // Keyed by receipt_id
+    isLoading: boolean;
+    error: string | null;
+    scanProgress: number;
+    filters: {
+        category?: string;
+        startDate?: Date;
+        endDate?: Date;
+        vendor?: string;
+    };
+    stats: {
+        totalExpenditure: number;
+        totalDeductions: number;
+    };
+}
+
+export interface ScanReceiptPayload {
+    imageData: FormData;
+    onProgress?: (progress: number) => void;
+}
+
+export interface DateRangeFilter {
+    startDate: Date;
+    endDate: Date;
 }
 
 export interface ReceiptItem {

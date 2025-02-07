@@ -1,13 +1,14 @@
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { useSession } from '@/contexts/AuthContext';
+import { useAppDispatch } from '@/hooks/useAuthHooks';
 import { router } from 'expo-router';
+import { resetLoginData } from '@/contexts/reducers/authReducers';
 
 const ProfileScreen = () => {
-    const { resetLoginData } = useSession();
+    const dispatch = useAppDispatch();
 
     const handleLogout = () => {
-        resetLoginData();
+        dispatch(resetLoginData());
         router.push('/sign-in');
     };
 

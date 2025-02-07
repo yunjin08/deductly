@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { ScrollableLayout } from '@/components/ScrollableLayout';
 import { FontAwesome6 } from '@expo/vector-icons';
 import Header from '@/components/Header';
@@ -86,8 +86,8 @@ const GalleryScreen = () => {
     );
 
     const renderListItem = ({ item }) => (
-        <View className="flex-row bg-gray-50 rounded-xl overflow-hidden mb-4">
-            <View className="w-24 h-24 bg-gray-200 items-center justify-center">
+        <View className="flex-row h-24 bg-gray-50 rounded-xl overflow-hidden mb-4">
+            <View className="w-24 h-full bg-gray-200 items-center justify-center">
                 <FontAwesome6 name="image" size={24} color="#A0A0A0" />
             </View>
             <View className="flex-1 p-4 justify-center">
@@ -103,18 +103,26 @@ const GalleryScreen = () => {
 
     return (
         <ScrollableLayout>
-            <FlatList
-                data={scannedImages}
-                keyExtractor={(item) => item.id.toString()}
-                showsVerticalScrollIndicator={false}
-                ListHeaderComponent={
-                    <>
-                        <Header />
-                        <ViewToggle />
-                    </>
-                }
-                renderItem={isGridView ? renderGridItem : renderListItem}
-            />
+            <Header />
+            <ViewToggle />
+            <View className="flex-row flex-wrap gap-4">
+                <FlatList
+                    key={isGridView ? 'grid' : 'list'}
+                    data={scannedImages}
+                    keyExtractor={(item) => item.id.toString()}
+                    numColumns={isGridView ? 2 : 1}
+                    scrollEnabled={false}
+                    showsVerticalScrollIndicator={false}
+                    columnWrapperStyle={
+                        isGridView
+                            ? {
+                                  gap: 16,
+                              }
+                            : undefined
+                    }
+                    renderItem={isGridView ? renderGridItem : renderListItem}
+                />
+            </View>
         </ScrollableLayout>
     );
 };

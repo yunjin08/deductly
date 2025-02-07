@@ -1,13 +1,22 @@
-import { Stack, Redirect } from 'expo-router';
+import { Stack } from 'expo-router';
 import { AuthAwareLayout } from '@/components/AuthAwareLayout';
-import { useSession } from '@/contexts/AuthContext';
+import { useAppSelector } from '@/hooks/useAuthHooks';
+import { useEffect } from 'react';
+import { router } from 'expo-router';
 
 const ProtectedLayout = () => {
-    const { session } = useSession();
+    const { session } = useAppSelector((state) => state.auth);
 
-    if (!session || !session.token || !session.email) {
-        return <Redirect href="/sign-in" />;
+    useEffect(() => {
+        if (!session) {
+            router.replace('/sign-in');
+        }
+    }, [session]);
+
+    if (!session) {
+        return null;
     }
+
     return (
         <AuthAwareLayout>
             <Stack>
