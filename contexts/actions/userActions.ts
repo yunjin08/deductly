@@ -18,7 +18,8 @@ export const sendMessage = createAsyncThunk(
     'chat/sendMessage',
     async (message: ChatMessage, { rejectWithValue }) => {
         try {
-            return await chatService.sendMessage({ data: message });
+            const result = await chatService.sendMessage({ data: message });
+            return result;
         } catch (e) {
             console.error('Failed to send message', e);
             return rejectWithValue('Failed to send message');
