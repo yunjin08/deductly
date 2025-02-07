@@ -5,11 +5,17 @@ import { Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 
 // Parent Container should be relative
+interface GoBackRouteProps {
+    withScrollableLayout?: boolean;
+}
 
-export default function GoBackRoute() {
+export default function GoBackRoute(props: GoBackRouteProps) {
+    const { withScrollableLayout } = props;
     return (
         <TouchableOpacity
-            className="absolute top-16 left-8 z-50"
+            className={`absolute  ${
+                withScrollableLayout ? 'top-2' : 'top-16'
+            } left-8 z-50`}
             onPress={() => router.back()}
         >
             <View className="flex-row items-center">
