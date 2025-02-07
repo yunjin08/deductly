@@ -10,10 +10,10 @@ export const login = async (username: string, password: string) => {
         const data = response.data;
         const jwtToken = data['token'];
         const email = data['email'];
-
+        const user = data['user'];
         return {
             token: jwtToken,
-            email,
+            user: user,
         };
     } catch (error) {
         throw error;

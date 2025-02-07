@@ -58,7 +58,7 @@ const authSlice = createSlice({
                     state.isLoading = false;
                     state.session = {
                         token: action.payload.token,
-                        email: action.payload.email,
+                        email: action.payload?.user?.email,
                         user: action.payload.user,
                     };
                 }
@@ -77,7 +77,7 @@ const authSlice = createSlice({
                     state.isLoading = false;
                     state.session = {
                         token: action.payload.token,
-                        email: action.payload.email,
+                        email: action.payload?.user?.email,
                         user: action.payload.user,
                     };
                 }

@@ -2,7 +2,7 @@ import { User } from '@/interfaces';
 
 export interface Session {
     token: string;
-    email: string;
+    email?: string;
     user?: User;
 }
 
