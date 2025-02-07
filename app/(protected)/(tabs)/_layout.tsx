@@ -17,8 +17,8 @@ const TabsLayout = () => {
                         alignItems: 'center',
                     },
                     headerShown: false,
-                    tabBarActiveTintColor: '#FFFFFF',
-                    tabBarInactiveTintColor: '#B8E8EE',
+                    tabBarActiveTintColor: '#B8E8EE',
+                    tabBarInactiveTintColor: '#FFFFFF',
                     tabBarBackground: () => (
                         <View className=" bg-primary h-full shadow-md" />
                     ),
@@ -75,7 +75,7 @@ const TabsLayout = () => {
                                 <FontAwesome
                                     name="camera"
                                     size={24}
-                                    color="#B8E8EE"
+                                    color="#FFFFFF"
                                 />
                             </TouchableOpacity>
                         ),
