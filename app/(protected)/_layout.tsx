@@ -31,9 +31,8 @@ const ProtectedLayout = () => {
                 <Stack.Screen
                     name="camera-modal"
                     options={{
-                        headerTitle: 'Camera',
-                        presentation: 'modal',
                         animation: 'fade_from_bottom',
+                        headerShown: false,
                     }}
                 />
                 <Stack.Screen
