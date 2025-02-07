@@ -7,6 +7,7 @@ import { Link, router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
 import * as MediaLibrary from 'expo-media-library';
+import GoBackRoute from '@/components/GoBackRoute';
 
 const CameraScreen = () => {
     const [permission, requestPermission] = useCameraPermissions();
@@ -81,6 +82,7 @@ const CameraScreen = () => {
 
                 // You can handle the captured photo here
                 if (photo && photo.uri) {
+                    router.back();
                     router.push(`/camera-modal?pictureUri=${photo.uri}`);
                 }
 
@@ -105,25 +107,7 @@ const CameraScreen = () => {
                 style={styles.camera}
                 facing={CAMERA_FACE_DIRECTION}
             >
-                <TouchableOpacity
-                    className="absolute top-16 left-8"
-                    onPress={() => router.back()}
-                >
-                    <View className="flex-row items-center">
-                        <FontAwesome6
-                            name="chevron-left"
-                            size={16}
-                            color="#1fddee"
-                            className="mr-2"
-                            solid
-                        />
-                        <View>
-                            <Text className="text-primary font-semibold text-base">
-                                Back
-                            </Text>
-                        </View>
-                    </View>
-                </TouchableOpacity>
+                <GoBackRoute />
 
                 {/* Bottom controls container */}
                 <View style={styles.controlsContainer}>
