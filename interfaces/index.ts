@@ -9,6 +9,14 @@ export interface Report {
     total_tax_deductions: number;
 }
 
+export interface ChatMessage {
+    id: string;
+    text: string;
+    sender: 'user' | 'bot';
+    createdAt: string;
+    options?: string[];
+}
+
 export interface ReportsState {
     reports: Report[];
     selectedReport: Report | null;

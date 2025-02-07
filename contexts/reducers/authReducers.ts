@@ -52,10 +52,17 @@ const authSlice = createSlice({
                 state.isLoading = true;
                 state.errors = [];
             })
-            .addCase(loginUser.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.session = action.payload;
-            })
+            .addCase(
+                loginUser.fulfilled,
+                (state, action: PayloadAction<Session>) => {
+                    state.isLoading = false;
+                    state.session = {
+                        token: action.payload.token,
+                        email: action.payload.email,
+                        user: action.payload.user,
+                    };
+                }
+            )
             .addCase(loginUser.rejected, (state, action) => {
                 state.isLoading = false;
                 state.errors = action.payload as string[];
@@ -64,10 +71,17 @@ const authSlice = createSlice({
                 state.isLoading = true;
                 state.errors = [];
             })
-            .addCase(loginWithGoogle.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.session = action.payload;
-            })
+            .addCase(
+                loginWithGoogle.fulfilled,
+                (state, action: PayloadAction<Session>) => {
+                    state.isLoading = false;
+                    state.session = {
+                        token: action.payload.token,
+                        email: action.payload.email,
+                        user: action.payload.user,
+                    };
+                }
+            )
             .addCase(loginWithGoogle.rejected, (state, action) => {
                 state.isLoading = false;
                 state.errors = action.payload as string[];
