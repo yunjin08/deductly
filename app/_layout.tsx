@@ -52,6 +52,14 @@ const RootLayout = () => {
                                 options={{ headerTitle: 'Reset Password' }}
                             />
 
+                            <Stack.Screen
+                                name="chatbot"
+                                options={{
+                                    headerTitle: 'Chatbot',
+                                    headerShown: false,
+                                }}
+                            />
+
                             {/* Protected Routes */}
 
                             <Stack.Screen
