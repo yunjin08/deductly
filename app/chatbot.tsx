@@ -8,17 +8,17 @@ import {
     Platform,
 } from 'react-native';
 // import GoBackRoute from '@/components/GoBackRoute';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { sendMessage } from '@/contexts/actions/userActions';
+import { fetchChatHistory, sendMessage } from '@/contexts/actions/userActions';
 import { useAppSelector, useAppDispatch } from '@/hooks/useAuthHooks';
 
 // Dummy chat data type
 type ChatMessage = {
     id: string;
     text?: string;
-    sender: 'user' | 'bot';
+    sender: 'user' | 'bot' | string | undefined;
     options?: string[];
 };
 
@@ -49,24 +49,25 @@ const initialChats: ChatMessage[] = [
 
 const ChatbotScreen = () => {
     const dispatch = useAppDispatch();
-    const userId = useAppSelector((state) => state.auth.session?.user?.id);
+    const session = useAppSelector((state) => state.auth.session);
+    const userId = session?.user?.id;
     const [messages, setMessages] = useState<ChatMessage[]>(initialChats);
     const [inputText, setInputText] = useState('');
 
-    // useEffect(() => {
-    //     if (userId) {
-    //         dispatch(fetchChatHistory(userId));
-    //     }
-    // }, [dispatch, userId]);
+    useEffect(() => {
+        if (userId) {
+            dispatch(fetchChatHistory(userId));
+        }
+    }, [dispatch, userId]);
 
-    const handleSend = async () => {
+    const handleGuestSend = async () => {
         if (inputText.trim()) {
             setMessages([
                 ...messages,
                 {
                     id: Date.now().toString(),
                     text: inputText,
-                    sender: 'user',
+                    sender: session?.user?.first_name || 'user',
                 },
             ]);
             const resultAction = await dispatch(
@@ -163,7 +164,7 @@ const ChatbotScreen = () => {
                                 multiline={false}
                             />
                             <TouchableOpacity
-                                onPress={handleSend}
+                                onPress={handleGuestSend}
                                 className="bg-primary p-2 rounded-full"
                             >
                                 <FontAwesome6

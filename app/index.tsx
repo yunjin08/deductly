@@ -25,6 +25,21 @@ const WelcomeScreen = () => {
                         <Text style={styles.buttonText}>Get Started</Text>
                     </TouchableOpacity>
                 </Link>
+                <Link href="/chatbot" asChild>
+                    <TouchableOpacity className="text-primary mt-[-1rem] ml-[-2.8rem] flex flex-row items-center gap-2 self-center">
+                        <Image
+                            source={require('@/assets/images/chatbot.gif')}
+                            style={{
+                                width: 40,
+                                height: 40,
+                            }}
+                            contentFit="contain"
+                        />
+                        <Text className="text-primary font-bold">
+                            Ask Chatbot
+                        </Text>
+                    </TouchableOpacity>
+                </Link>
             </View>
         </View>
     );
