@@ -10,17 +10,18 @@ const TabsLayout = () => {
             <Tabs
                 screenOptions={{
                     tabBarStyle: {
-                        height: 84,
-                        paddingTop: 10,
+                        height: 64,
+                        paddingTop: 4,
                         display: 'flex',
+                        paddingHorizontal: 12,
                         justifyContent: 'center',
                         alignItems: 'center',
                     },
                     headerShown: false,
-                    tabBarActiveTintColor: '#4CD4E2',
-                    tabBarInactiveTintColor: '#6C757D',
+                    tabBarActiveTintColor: '#B8E8EE',
+                    tabBarInactiveTintColor: '#FFFFFF',
                     tabBarBackground: () => (
-                        <View className="bg-gray-100 border-t-[1px] border-gray-200 h-full" />
+                        <View className=" bg-primary h-full shadow-md" />
                     ),
                     tabBarIconStyle: {
                         marginTop: 0,
@@ -36,7 +37,7 @@ const TabsLayout = () => {
                         tabBarIcon: ({ color, focused }) => (
                             <FontAwesome
                                 name={focused ? 'image' : 'image'}
-                                size={24}
+                                size={16}
                                 color={color}
                             />
                         ),
@@ -52,7 +53,7 @@ const TabsLayout = () => {
                         tabBarIcon: ({ color, focused }) => (
                             <FontAwesome6
                                 name={focused ? 'envelope' : 'envelope'}
-                                size={24}
+                                size={16}
                                 color={color}
                             />
                         ),
@@ -66,14 +67,25 @@ const TabsLayout = () => {
                         headerShown: false,
                         tabBarLabel: '',
                         tabBarIcon: () => (
-                            <View className="size-24 border-2 border-gray-200 bg-primary rounded-full mb-16 items-center justify-center">
+                            <TouchableOpacity
+                                onPress={() =>
+                                    router.push('/(protected)/(camera)/camera')
+                                }
+                                className="size-24 border-2 border-[#B8E8EE] bg-primary rounded-full mb-16 items-center justify-center"
+                            >
                                 <FontAwesome
                                     name="camera"
-                                    size={28}
-                                    color="white"
+                                    size={24}
+                                    color="#FFFFFF"
                                 />
-                            </View>
+                            </TouchableOpacity>
                         ),
+                    }}
+                    listeners={{
+                        tabPress: (e) => {
+                            e.preventDefault();
+                            router.push('/(protected)/(camera)/camera');
+                        },
                     }}
                 />
                 <Tabs.Screen
@@ -85,7 +97,7 @@ const TabsLayout = () => {
                         tabBarIcon: ({ color, focused }) => (
                             <FontAwesome6
                                 name={focused ? 'folder' : 'folder'}
-                                size={24}
+                                size={16}
                                 color={color}
                             />
                         ),
@@ -101,7 +113,7 @@ const TabsLayout = () => {
                         tabBarIcon: ({ color, focused }) => (
                             <FontAwesome6
                                 name={focused ? 'chart-line' : 'chart-line'}
-                                size={24}
+                                size={16}
                                 color={color}
                             />
                         ),

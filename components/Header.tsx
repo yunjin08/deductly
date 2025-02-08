@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome6 } from '@expo/vector-icons';
@@ -7,18 +7,21 @@ import { usePathname } from 'expo-router';
 
 const Header = () => {
     const pathname = usePathname();
-    const showHomeButton = pathname !== '/home';
+    const [isHome, setIsHome] = useState(true);
+    useEffect(() => {
+        const isHome =
+            pathname === '/home' || pathname === '/(protected)/(tabs)/home';
+        setIsHome(isHome);
+    }, [pathname]);
 
     return (
         <View
-            className={`flex-row py-4 px-6 items-center justify-end relative`}
+            className={`flex-row py-4 px-2 items-center ${
+                isHome ? 'justify-end' : 'justify-between'
+            } relative`}
         >
-            {showHomeButton && (
-                <Link
-                    href="/(protected)/(tabs)/home"
-                    className="absolute top-0 left-0"
-                    asChild
-                >
+            {!isHome && (
+                <Link href="/(protected)/(tabs)/home" asChild>
                     <TouchableOpacity>
                         <View className="flex-row items-center">
                             <FontAwesome6

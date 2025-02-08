@@ -7,7 +7,7 @@ import {
     KeyboardAvoidingView,
     Platform,
 } from 'react-native';
-// import GoBackRoute from '@/components/GoBackRoute';
+import GoBackRoute from '@/components/GoBackRoute';
 import { useEffect, useState } from 'react';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -60,7 +60,7 @@ const ChatbotScreen = () => {
         }
     }, [dispatch, userId]);
 
-    const handleGuestSend = async () => {
+    const handleSend = async () => {
         if (inputText.trim()) {
             setMessages([
                 ...messages,
@@ -98,7 +98,7 @@ const ChatbotScreen = () => {
     return (
         <SafeAreaView edges={['top']} className="flex-1 relative">
             <View className="flex-1 relative">
-                {/* <GoBackRoute withScrollableLayout /> */}
+                <GoBackRoute withScrollableLayout />
 
                 {/* Chat Messages */}
                 <ScrollView className="flex-1 mt-10 px-4">
@@ -164,7 +164,7 @@ const ChatbotScreen = () => {
                                 multiline={false}
                             />
                             <TouchableOpacity
-                                onPress={handleGuestSend}
+                                onPress={handleSend}
                                 className="bg-primary p-2 rounded-full"
                             >
                                 <FontAwesome6
