@@ -9,7 +9,7 @@ export const ScrollableLayout = ({
     children: React.ReactNode;
 }) => {
     return (
-        <SafeAreaView className="flex-1 px-6">
+        <SafeAreaView edges={['top']} className="flex-1 px-6">
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{
