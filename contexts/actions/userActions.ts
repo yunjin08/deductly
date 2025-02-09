@@ -4,9 +4,9 @@ import { chatService } from '@/services/api/users';
 
 export const fetchChatHistory = createAsyncThunk(
     'chat/fetchHistory',
-    async (userId: string, { rejectWithValue }) => {
+    async (filters: any, { rejectWithValue }) => {
         try {
-            return await chatService.getChatHistory(userId);
+            return await chatService.getChatHistory(filters);
         } catch (e) {
             console.error('Failed to fetch chat history', e);
             return rejectWithValue('Failed to fetch chat history');
@@ -16,9 +16,9 @@ export const fetchChatHistory = createAsyncThunk(
 
 export const sendMessage = createAsyncThunk(
     'chat/sendMessage',
-    async (message: ChatMessage, { rejectWithValue }) => {
+    async (data: any, { rejectWithValue }) => {
         try {
-            const result = await chatService.sendMessage({ data: message });
+            const result = await chatService.sendMessage(data.pk, data.filters);
             return result;
         } catch (e) {
             console.error('Failed to send message', e);
