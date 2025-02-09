@@ -10,12 +10,13 @@ export interface Report {
 }
 
 export interface ChatMessage {
-    id?: string;
+    id?: string | number;
     question?: string;
     sender?: 'user' | 'bot';
     createdAt?: string;
     options?: string[];
     answer?: string;
+    user_id?: string;
 }
 
 export interface ReportsState {
@@ -206,4 +207,11 @@ export interface Vendor {
     contact_number: string;
     establishment: string;
     date_created: Date;
+}
+
+export interface PaginationResponse<T> {
+    objects: T[];
+    total_pages: number;
+    current_page: number;
+    num_pages: number;
 }
