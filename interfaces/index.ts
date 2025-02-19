@@ -10,7 +10,7 @@ export interface Report {
 }
 
 export interface ChatMessage {
-    id?: string | number;
+    id?: string;
     question?: string;
     sender?: 'user' | 'bot';
     createdAt?: string;
