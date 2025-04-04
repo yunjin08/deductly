@@ -2,6 +2,7 @@ import Header from '@/components/Header';
 import { FontAwesome6, FontAwesome } from '@expo/vector-icons';
 import { router, Tabs } from 'expo-router';
 import { TouchableOpacity, View } from 'react-native';
+import { Image } from 'expo-image';
 
 const TabsLayout = () => {
     return (
@@ -121,6 +122,21 @@ const TabsLayout = () => {
                 />
                 <Tabs.Screen name="home" options={{ href: null }} />
             </Tabs>
+            <TouchableOpacity
+                onPress={() => router.push('/chatbot')}
+                className="z-50"
+            >
+                <View className="absolute bottom-32 right-4">
+                    <Image
+                        source={require('@/assets/images/chatbot.gif')}
+                        style={{
+                            width: 60,
+                            height: 60,
+                        }}
+                        contentFit="contain"
+                    />
+                </View>
+            </TouchableOpacity>
         </>
     );
 };

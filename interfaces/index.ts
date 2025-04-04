@@ -9,6 +9,16 @@ export interface Report {
     total_tax_deductions: number;
 }
 
+export interface ChatMessage {
+    id?: string;
+    question?: string;
+    sender?: 'user' | 'bot';
+    createdAt?: string;
+    options?: string[];
+    answer?: string;
+    user_id?: string;
+}
+
 export interface ReportsState {
     reports: Report[];
     selectedReport: Report | null;
@@ -44,7 +54,7 @@ export interface ExportParams {
 
 // Account Types
 export interface User {
-    user_id: string;
+    id: string;
     first_name: string;
     last_name: string;
     email: string;
@@ -197,4 +207,11 @@ export interface Vendor {
     contact_number: string;
     establishment: string;
     date_created: Date;
+}
+
+export interface PaginationResponse<T> {
+    objects: T[];
+    total_pages: number;
+    current_page: number;
+    num_pages: number;
 }

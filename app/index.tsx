@@ -26,7 +26,7 @@ const WelcomeScreen = () => {
                     </TouchableOpacity>
                 </Link>
                 <Link href="/chatbot" asChild>
-                    <TouchableOpacity className="text-primary mt-[-1rem] ml-[-2rem] flex flex-row items-center gap-2 self-center">
+                    <TouchableOpacity className="text-primary mt-[-1rem] ml-[-2.8rem] flex flex-row items-center gap-2 self-center">
                         <Image
                             source={require('@/assets/images/chatbot.gif')}
                             style={{
