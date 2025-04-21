@@ -4,7 +4,7 @@ import { ChatMessage, PaginationResponse } from '@/interfaces';
 // Define the chat message type
 
 // Create the chat service with custom methods
-const chatEndpoint = '/chat';
+const chatEndpoint = '/chatbot';
 
 export const chatService = {
     ...createApiService<ChatMessage>(chatEndpoint),
@@ -12,7 +12,7 @@ export const chatService = {
     // Send a message and get bot response
     sendMessage: async (pk: string, filters: any) => {
         const response = await api.put<ChatMessage>(
-            `${chatEndpoint}/${pk}/`,
+            `${chatEndpoint}/chat/${pk}/`,
             filters
         );
         return response.data;
@@ -27,7 +27,7 @@ export const chatService = {
             }
         });
         const response = await api.get<PaginationResponse<ChatMessage>>(
-            `${chatEndpoint}/history/`,
+            `${chatEndpoint}/chat/history/`,
             { params: filters }
         );
         return response.data;
