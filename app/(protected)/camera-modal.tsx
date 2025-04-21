@@ -1,13 +1,12 @@
 import React from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
-import { StyleSheet, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, ActivityIndicator, Alert } from 'react-native';
 import { Image } from 'expo-image';
 import GoBackRoute from '@/components/GoBackRoute';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useState } from 'react';
-import axios from 'axios';
-import { BACKEND_URL } from '@/constants/Config';
 import * as FileSystem from 'expo-file-system';
+import { cameraService } from '@/services/api/camera';
 
 const CameraModalScreen = () => {
     const { pictureUri } = useLocalSearchParams();
@@ -31,23 +30,24 @@ const CameraModalScreen = () => {
             setIsAnalyzing(true);
             const base64Image = await getBase64FromUri(pictureUri as string);
             
-            const response = await axios.post(`${BACKEND_URL}/api/camera/process_receipt/`, {
-                image: base64Image
-            });
+            console.log('Processing receipt...');
+            const response = await cameraService.processReceipt(base64Image);
 
-            console.log('Receipt analysis:', response.data);
+            console.log('Receipt analysis:', response);
             
-            // TODO: Handle the analyzed data (e.g., navigate to a results screen)
-            if (response.data.success) {
-                // Navigate to results or update state with the analyzed data
+            if (response.success) {
                 router.push({
                     pathname: '/(protected)/(tabs)/home',
-                    params: { receipt_data: JSON.stringify(response.data.data) }
+                    params: { receipt_data: JSON.stringify(response.data) }
                 });
             }
-        } catch (error) {
-            console.error('Error analyzing receipt:', error);
-            // TODO: Show error message to user
+        } catch (error: any) {
+            console.error('Error analyzing receipt:', error.response?.data || error.message);
+            Alert.alert(
+                'Error',
+                'Failed to analyze receipt. Please try again.',
+                [{ text: 'OK' }]
+            );
         } finally {
             setIsAnalyzing(false);
         }
