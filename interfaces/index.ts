@@ -143,20 +143,19 @@ export interface ImageOptimizeOptions {
 
 // Receipt Types
 export interface Receipt {
-    receipt_id: string;
+    id: string;
     title: string;
     user_id: string;
     category: string;
     image_id: string;
     total_expenditure: number;
-    date_scanned: Date;
-    date_generated: Date;
+    created_at: string;
+    updated_at: string;
     payment_method: string;
     vendor_id: string;
     discount: number;
     value_added_tax: number;
     document_id: string;
-    date_created: Date;
 }
 
 export interface ReceiptsState {

@@ -9,7 +9,7 @@ import {
 import { FontAwesome6 } from '@expo/vector-icons';
 import { ScrollableLayout } from './ScrollableLayout';
 import Header from '@/components/Header';
-
+import { Receipt } from '@/interfaces';
 interface Item {
     id: number;
     title: string;
@@ -17,7 +17,7 @@ interface Item {
 }
 
 interface DataPreviewProps {
-    data: Item[];
+    data: Receipt[];
     title: string;
     selectionTitle: string;
     onGenerateDocument?: () => void;
@@ -78,12 +78,12 @@ export const DataPreview = ({
         </>
     );
 
-    const renderItem = ({ item }: { item: Item }) => {
-        const isSelected = selectedItems.includes(item.id);
+    const renderItem = ({ item }: { item: Receipt }) => {
+        const isSelected = selectedItems.includes(Number(item.id));
         return (
             <Pressable
-                onLongPress={() => handleLongPress(item.id)}
-                onPress={() => handlePress(item.id)}
+                onLongPress={() => handleLongPress(Number(item.id))}
+                onPress={() => handlePress(Number(item.id))}
                 className={`flex-row items-center pr-4 rounded-xl mb-2 ${
                     isSelected ? 'bg-gray-200' : 'bg-gray-50'
                 }`}
@@ -93,7 +93,7 @@ export const DataPreview = ({
                 </View>
                 <View className="flex-1">
                     <Text className="text-base font-medium">{item.title}</Text>
-                    <Text className="text-gray-500">{item.date}</Text>
+                    <Text className="text-gray-500">{item.created_at}</Text>
                 </View>
                 {isSelectionMode && (
                     <View

@@ -1,6 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import type { ChatMessage } from '@/interfaces';
-import { chatService } from '@/services/api/users';
+import { chatService } from '@/services/api/chatbot';
 
 export const fetchChatHistory = createAsyncThunk(
     'chat/fetchHistory',

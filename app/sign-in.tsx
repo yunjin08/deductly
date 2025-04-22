@@ -196,11 +196,11 @@ const SignInScreen = () => {
                             </View>
                         ))}
                 </View>
-                {isLoading && (
+                {/* {isLoading && (
                     <View style={styles.loadingContainer}>
                         <ActivityIndicator size="large" color="#1fddee" />
                     </View>
-                )}
+                )} */}
             </View>
         </View>
     );

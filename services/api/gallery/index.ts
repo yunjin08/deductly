@@ -1,7 +1,7 @@
 import { createApiService, api } from '@/services/api/baseApi';
 import type { Image } from '@/interfaces';
 
-const endpoint = '/images';
+const endpoint = '/camera';
 
 export const imagesApi = {
     ...createApiService<Image>(endpoint),

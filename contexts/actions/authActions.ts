@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { register, login } from '@/services/auth';
+import { register, login } from '@/services/api/auth';
 import { handleSignInWithGoogle } from '@/services/sso/google';
 import { isAxiosError } from 'axios';
 import { AuthSessionResult } from 'expo-auth-session';

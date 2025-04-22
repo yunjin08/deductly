@@ -1,7 +1,7 @@
 import { createApiService, api } from '@/services/api/baseApi';
 import type { Document } from '@/interfaces';
 
-const endpoint = '/documents';
+const endpoint = '/document';
 
 // Extend the base API service with document-specific methods
 export const documentsApi = {

@@ -1,6 +1,10 @@
 import { DataPreview } from '@/components/DataPreview';
+import { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '@/hooks/useAuthHooks';
+import { useSelector } from 'react-redux';
+import { fetchReceipts } from '@/contexts/actions/receiptsActions';
 
-// Mock data for receipts
+// Fallback mock data in case Redux data is not available
 const mockReceipts = [
     {
         id: 1,
@@ -30,13 +34,21 @@ const mockReceipts = [
 ];
 
 const ReceiptsScreen = () => {
+    const dispatch = useAppDispatch();
+    const reduxState = useAppSelector((state) => state);
+    const receipts = useSelector((state: any) => state.receipts.receipts);
+
+    useEffect(() => {
+        dispatch(fetchReceipts());
+    }, []);
+
     const handleGenerateDocument = () => {
         // Implement generate document functionality
     };
 
     return (
         <DataPreview
-            data={mockReceipts}
+            data={receipts.objects}
             title="Receipt List"
             selectionTitle="Select Receipts"
             onGenerateDocument={handleGenerateDocument}
