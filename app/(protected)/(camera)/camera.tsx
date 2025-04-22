@@ -7,6 +7,7 @@ import { Link, router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
 import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system';
 import GoBackRoute from '@/components/GoBackRoute';
 
 const CameraScreen = () => {
@@ -64,7 +65,22 @@ const CameraScreen = () => {
             });
 
             if (!result.canceled && result.assets[0]) {
-                router.push(`/camera-modal?pictureUri=${result.assets[0].uri}`);
+                // Save the picked image to app's permanent storage
+                const receiptsDir = `${FileSystem.documentDirectory}receipts/`;
+                const dirInfo = await FileSystem.getInfoAsync(receiptsDir);
+                if (!dirInfo.exists) {
+                    await FileSystem.makeDirectoryAsync(receiptsDir, { intermediates: true });
+                }
+
+                const filename = `receipt_${Date.now()}.jpg`;
+                const newUri = `${receiptsDir}${filename}`;
+
+                await FileSystem.copyAsync({
+                    from: result.assets[0].uri,
+                    to: newUri
+                });
+
+                router.push(`/camera-modal?pictureUri=${newUri}`);
             }
         } catch (error) {
             console.error('Failed to pick image:', error);
@@ -80,18 +96,25 @@ const CameraScreen = () => {
                     exif: true,
                 });
 
-                // You can handle the captured photo here
                 if (photo && photo.uri) {
-                    router.back();
-                    router.push(`/camera-modal?pictureUri=${photo.uri}`);
-                }
+                    // Save the captured image to app's permanent storage
+                    const receiptsDir = `${FileSystem.documentDirectory}receipts/`;
+                    const dirInfo = await FileSystem.getInfoAsync(receiptsDir);
+                    if (!dirInfo.exists) {
+                        await FileSystem.makeDirectoryAsync(receiptsDir, { intermediates: true });
+                    }
 
-                // The photo object contains:
-                // - uri: The local URI of the photo
-                // - width: The width of the photo
-                // - height: The height of the photo
-                // - base64: Base64 encoded string (if base64: true)
-                // - exif: EXIF data (if exif: true)
+                    const filename = `receipt_${Date.now()}.jpg`;
+                    const newUri = `${receiptsDir}${filename}`;
+
+                    await FileSystem.copyAsync({
+                        from: photo.uri,
+                        to: newUri
+                    });
+
+                    router.back();
+                    router.push(`/camera-modal?pictureUri=${newUri}`);
+                }
 
                 return photo;
             } catch (error) {
@@ -176,11 +199,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 100, // Adjust this value for desired spacing
+        paddingHorizontal: 100,
     },
 
     spacer: {
-        width: 40, // Match the width of gallery button
+        width: 40,
     },
 
     button: {
@@ -217,12 +240,12 @@ const styles = StyleSheet.create({
 
     galleryButton: {
         backgroundColor: '#6C757D',
-        width: 40, // Added fixed width
-        height: 40, // Added fixed height
+        width: 40,
+        height: 40,
         borderWidth: 2,
         borderColor: '#1fddee',
-        borderRadius: 4, // Half of width/height
-        overflow: 'hidden', // Added to ensure image stays within bounds
+        borderRadius: 4,
+        overflow: 'hidden',
         justifyContent: 'center',
         alignItems: 'center',
     },

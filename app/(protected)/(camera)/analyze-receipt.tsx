@@ -10,7 +10,7 @@ interface ExtractedData {
     store_name?: string;
     date?: string;
     total_amount?: string;
-    items?: Array<{
+    items: Array<{
         name: string;
         price: string;
         quantity?: string;
@@ -26,12 +26,19 @@ const AnalyzeReceiptScreen = () => {
     const handleAnalyze = async () => {
         try {
             setIsAnalyzing(true);
+            console.log('Starting receipt analysis...');
             const response = await cameraService.processReceipt(pictureUri as string);
+            console.log('Received response:', JSON.stringify(response, null, 2));
             
             if (response.success && response.data) {
-                setExtractedData(response.data);
+                console.log('Setting extracted data:', response.data);
+                setExtractedData({
+                    ...response.data,
+                    items: response.data.items || []
+                });
             } else {
-                Alert.alert('Error', 'Failed to analyze receipt');
+                console.error('Analysis failed:', response.error);
+                Alert.alert('Error', response.error || 'Failed to analyze receipt');
             }
         } catch (error) {
             console.error('Error analyzing receipt:', error);
@@ -53,7 +60,7 @@ const AnalyzeReceiptScreen = () => {
         setExtractedData(prev => prev ? { ...prev, [field]: value } : null);
     };
 
-    const updateItem = (index: number, field: keyof ExtractedData['items'][0], value: string) => {
+    const updateItem = (index: number, field: keyof ExtractedData['items'][number], value: string) => {
         setExtractedData(prev => {
             if (!prev || !prev.items) return prev;
             const newItems = [...prev.items];
