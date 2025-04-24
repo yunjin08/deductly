@@ -36,6 +36,8 @@ const ChatbotScreen = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [totalPages, setTotalPages] = useState(1);
+    const [contentHeight, setContentHeight] = useState(0);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [selectedMessage, setSelectedMessage] = useState<
         string | null | undefined
     >(null);
@@ -43,6 +45,23 @@ const ChatbotScreen = () => {
     const handleMessagePress = (messageId: string | undefined) => {
         setSelectedMessage(selectedMessage === messageId ? null : messageId);
     };
+
+    useEffect(() => {
+        // This function will run when the component unmounts
+        return () => {
+          // Reset all state variables to their initial values
+          setMessages([]);
+          setInputText('');
+          setKeyboardVisible(false);
+          setCurrentPage(1);
+          setIsLoading(false);
+          setHasMore(true);
+          setTotalPages(1);
+          setContentHeight(0);
+          setIsLoadingMore(false);
+          setSelectedMessage(null);
+        };
+      }, []); 
 
     // Handle keyboard events
     useEffect(() => {
@@ -77,8 +96,9 @@ const ChatbotScreen = () => {
     // Fetch chat history
     const fetchChats = useCallback(async () => {
         if (!userId || !hasMore || isLoading) return;
+        setIsLoadingMore(true)
 
-        setIsLoading(true);
+
         let filters: any = {
             user_id: userId,
         };
@@ -109,6 +129,22 @@ const ChatbotScreen = () => {
             setHasMore(currentPage < result.payload.num_pages);
             setTotalPages(result.payload.num_pages);
             setCurrentPage((prev) => prev + 1);
+
+            // Allow the component to render once with the new messages
+            setTimeout(() => {
+                const contentSizeChange = formattedMessages.length * 80;
+                // If we have a reference to the scroll view, adjust the scroll position
+                // Adjust scroll position to keep user at the same relative point
+                if (scrollViewRef.current) {
+                    scrollViewRef.current.scrollTo({ 
+                        y: contentSizeChange, 
+                        animated: false 
+                    });
+                }
+                setIsLoadingMore(false);
+            }, 100);
+        } else {
+            setIsLoadingMore(false);
         }
         setIsLoading(false);
     }, [
@@ -194,14 +230,24 @@ const ChatbotScreen = () => {
         },
     });
 
+    // Add an onContentSizeChange handler to track content height
+    const handleContentSizeChange = (width: number, height: number) => {
+        setContentHeight(height);
+    };
+
+
+
     // Handle scroll to top
     const handleScroll = (event: any) => {
-        const { contentOffset, contentSize, layoutMeasurement } =
-            event.nativeEvent;
+        if (isLoadingMore) return;
+        
+        const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
 
-        // Check if we're at the top
-        if (contentOffset.y < 0 && !isLoading && hasMore) {
-            console.log('Fetching more messages');
+        // Only load more if:
+        // 1. We're near the top (within 20 pixels)
+        // 2. Not already loading
+        // 3. There are more messages to load
+        if (contentOffset.y < 20 && !isLoading && !isLoadingMore && hasMore) {
             fetchChats();
         }
     };
@@ -222,12 +268,13 @@ const ChatbotScreen = () => {
                             ref={scrollViewRef}
                             className="flex-1"
                             onScroll={handleScroll}
-                            scrollEventThrottle={1000}
+                            scrollEventThrottle={300}
                             showsVerticalScrollIndicator={false}
+                            onContentSizeChange={handleContentSizeChange}
                             bounces={true}
                             alwaysBounceVertical={true}
                         >
-                            {isLoading && (
+                            {isLoadingMore && (
                                 <View className="py-2 items-center">
                                     <Text className="text-gray-500">
                                         Loading more messages...
