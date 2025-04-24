@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { fetchChatHistory, sendMessage } from '@/contexts/actions/userActions';
 import { useAppSelector, useAppDispatch } from '@/hooks/useAuthHooks';
 import Markdown from 'react-native-markdown-display';
+import { useRouter } from 'expo-router'
 
 // Dummy chat data type
 type ChatMessage = {
@@ -25,6 +26,7 @@ type ChatMessage = {
 };
 
 const ChatbotScreen = () => {
+    const router = useRouter();
     const dispatch = useAppDispatch();
     const session = useAppSelector((state) => state.auth.session);
     const userId = session?.user?.id;
@@ -93,6 +95,14 @@ const ChatbotScreen = () => {
         };
     }, []);
 
+    useEffect(() => {
+        if (messages.length > 0) {
+          setTimeout(() => {
+            scrollViewRef.current?.scrollToEnd({ animated: false });
+          }, 300); // Slightly longer timeout to ensure content is rendered
+        }
+      }, [messages.length === 0]);
+
     // Fetch chat history
     const fetchChats = useCallback(async () => {
         if (!userId || !hasMore || isLoading) return;
@@ -103,6 +113,9 @@ const ChatbotScreen = () => {
             user_id: userId,
         };
         filters['page'] = currentPage;
+
+        // Store the current content height before loading new messages
+        const previousContentHeight = contentHeight;
 
         const result = await dispatch(fetchChatHistory(filters));
 
@@ -130,19 +143,23 @@ const ChatbotScreen = () => {
             setTotalPages(result.payload.num_pages);
             setCurrentPage((prev) => prev + 1);
 
-            // Allow the component to render once with the new messages
+            // After rendering, maintain scroll position based on average message height
             setTimeout(() => {
-                const contentSizeChange = formattedMessages.length * 80;
-                // If we have a reference to the scroll view, adjust the scroll position
-                // Adjust scroll position to keep user at the same relative point
-                if (scrollViewRef.current) {
+                // Estimate the height of new content based on number of new messages
+                // We use an average height per message as an approximation
+                const avgMessageHeight = 100; // Approximate height per message in pixels
+                const newMessagesCount = formattedMessages.length;
+                const scrollOffset = newMessagesCount * avgMessageHeight;
+                
+                // Scroll to maintain position
+                if (scrollViewRef.current && newMessagesCount > 0) {
                     scrollViewRef.current.scrollTo({ 
-                        y: contentSizeChange, 
+                        y: scrollOffset, 
                         animated: false 
                     });
                 }
                 setIsLoadingMore(false);
-            }, 100);
+            }, 200);
         } else {
             setIsLoadingMore(false);
         }
@@ -155,6 +172,10 @@ const ChatbotScreen = () => {
         hasMore,
         isLoading,
     ]);
+
+    const navigateToScan = () => {
+        router.push('/(protected)/(camera)/camera')
+    };
 
     useEffect(() => {
         if (userId) {
@@ -184,7 +205,6 @@ const ChatbotScreen = () => {
             );
             // Type guard to check if the action was fulfilled
             if (sendMessage.fulfilled.match(resultAction)) {
-                console.log('Bot response:', resultAction.payload.answer);
 
                 // Add bot response to messages
                 const botMessage: ChatMessage = {
@@ -232,9 +252,26 @@ const ChatbotScreen = () => {
 
     // Add an onContentSizeChange handler to track content height
     const handleContentSizeChange = (width: number, height: number) => {
+        // Store current scroll position before updating content height
+        const prevHeight = contentHeight;
         setContentHeight(height);
+        
+        // If we're adding new content at the bottom (like sending a message)
+        // we should scroll to the bottom
+        if (height > prevHeight && !isLoadingMore) {
+            setTimeout(() => {
+                scrollViewRef.current?.scrollToEnd({ animated: true });
+            }, 100);
+        }
     };
 
+    useEffect(() => {
+        if (messages.length > 0 && !isLoadingMore) {
+            setTimeout(() => {
+                scrollViewRef.current?.scrollToEnd({ animated: false });
+            }, 300);
+        }
+    }, [messages.length]);
 
 
     // Handle scroll to top
@@ -313,6 +350,19 @@ const ChatbotScreen = () => {
                                         >
                                             {message.text}
                                         </Markdown>
+                                        {message.sender === 'Cynerate' && (
+                                            <View className="mt-3 border-t border-gray-300 pt-2">
+                                                <Text className="text-gray-600 text-xs mb-1">
+                                                    You can try scanning your tax documents here:
+                                                </Text>
+                                                <TouchableOpacity
+                                                    onPress={navigateToScan}
+                                                    className="bg-primary py-1 px-3 rounded-full mt-1 self-start"
+                                                >
+                                                    <Text className="text-white text-xs font-medium">Scan</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        )}
                                     </View>
 
                                     {/* Show date when message is selected */}
