@@ -23,7 +23,7 @@ const GalleryScreen = () => {
     useEffect(() => {
         // Dispatch action to fetch images when component mounts
         // Note: This will work once gallery reducer is added to rootReducer
-        dispatch(fetchImages());
+        // dispatch(fetchImages());
         console.log('images', images);
     }, []);
 
