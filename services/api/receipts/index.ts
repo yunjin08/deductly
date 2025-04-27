@@ -1,7 +1,7 @@
 import { createApiService, api } from '@/services/api/baseApi';
 import type { Receipt, ReceiptItem } from '@/interfaces';
 
-const endpoint = '/receipts';
+const endpoint = '/receipt';
 
 export const receiptsApi = {
     ...createApiService<Receipt>(endpoint),

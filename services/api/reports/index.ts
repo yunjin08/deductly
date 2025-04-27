@@ -1,7 +1,7 @@
 import { createApiService, api } from '@/services/api/baseApi';
 import type { Report } from '@/interfaces';
 
-const endpoint = '/reports';
+const endpoint = '/report';
 
 export const reportsApi = {
     ...createApiService<Report>(endpoint),

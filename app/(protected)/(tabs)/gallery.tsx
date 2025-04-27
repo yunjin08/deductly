@@ -3,33 +3,29 @@ import { ScrollableLayout } from '@/components/ScrollableLayout';
 import { FontAwesome6 } from '@expo/vector-icons';
 import Header from '@/components/Header';
 import { FlatList } from 'react-native';
-import { useState } from 'react';
-// Mock data for scanned images
-const scannedImages = [
-    {
-        id: 1,
-        date: 'MAR 05',
-        location: 'Recife, Brazil',
-    },
-    {
-        id: 2,
-        date: 'MAR 05',
-        location: 'Recife, Brazil',
-    },
-    {
-        id: 3,
-        date: 'MAR 05',
-        location: 'Recife, Brazil',
-    },
-    {
-        id: 4,
-        date: 'MAR 05',
-        location: 'Recife, Brazil',
-    },
-];
+import { useState, useEffect } from 'react';
+import { useAppDispatch } from '@/hooks/useAuthHooks';
+import { fetchImages } from '@/contexts/actions/galleryActions';
+import { useSelector } from 'react-redux';
+
+// Define the type for gallery image items
+interface GalleryImage {
+    id: string | number;
+    date?: string;
+    location?: string;
+}
 
 const GalleryScreen = () => {
     const [isGridView, setIsGridView] = useState(true);
+    const dispatch = useAppDispatch();
+    const images = useSelector((state: any) => state.gallery.images);
+
+    useEffect(() => {
+        // Dispatch action to fetch images when component mounts
+        // Note: This will work once gallery reducer is added to rootReducer
+        // dispatch(fetchImages());
+        console.log('images', images);
+    }, []);
 
     const ViewToggle = () => (
         <View className="flex-row gap-2 mb-4">
@@ -58,7 +54,7 @@ const GalleryScreen = () => {
         </View>
     );
 
-    const renderGridItem = ({ item }) => (
+    const renderGridItem = ({ item }: { item: GalleryImage }) => (
         <View className="flex-1 mb-4">
             <View
                 key={item.id}
@@ -85,7 +81,7 @@ const GalleryScreen = () => {
         </View>
     );
 
-    const renderListItem = ({ item }) => (
+    const renderListItem = ({ item }: { item: GalleryImage }) => (
         <View className="flex-row h-24 bg-gray-50 rounded-xl overflow-hidden mb-4">
             <View className="w-24 h-full bg-gray-200 items-center justify-center">
                 <FontAwesome6 name="image" size={24} color="#A0A0A0" />
@@ -108,7 +104,7 @@ const GalleryScreen = () => {
             <View className="flex-row flex-wrap gap-4">
                 <FlatList
                     key={isGridView ? 'grid' : 'list'}
-                    data={scannedImages}
+                    data={images.objects}
                     keyExtractor={(item) => item.id.toString()}
                     numColumns={isGridView ? 2 : 1}
                     scrollEnabled={false}

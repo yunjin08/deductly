@@ -1,42 +1,24 @@
 import { DataPreview } from '@/components/DataPreview';
-
-// Mock data for reports
-const mockReports = [
-    {
-        id: 1,
-        title: 'Report Item',
-        date: '12/18/2024',
-    },
-    {
-        id: 2,
-        title: 'Report Item',
-        date: '12/18/2024',
-    },
-    {
-        id: 3,
-        title: 'Report Item',
-        date: '12/18/2024',
-    },
-    {
-        id: 4,
-        title: 'Report Item',
-        date: '12/18/2024',
-    },
-    {
-        id: 5,
-        title: 'Report Item',
-        date: '12/18/2024',
-    },
-];
+import { useEffect } from 'react';
+import { useAppDispatch } from '@/hooks/useAuthHooks';
+import { fetchReports } from '@/contexts/actions/reportActions';
+import { useSelector } from 'react-redux';
 
 const ReportsScreen = () => {
+    const dispatch = useAppDispatch();
+    const reports = useSelector((state: any) => state.reports.reports);
+
+    useEffect(() => {
+        dispatch(fetchReports());
+    }, []);
+
     const handleGenerateDocument = () => {
         // Implement generate document functionality
     };
 
     return (
         <DataPreview
-            data={mockReports}
+            data={reports.objects}
             title="Tax Reports"
             selectionTitle="Select Tax Reports"
             onGenerateDocument={handleGenerateDocument}
