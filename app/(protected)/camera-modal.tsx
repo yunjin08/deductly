@@ -1,3 +1,4 @@
+import React from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Image } from 'expo-image';
@@ -7,12 +8,11 @@ import { FontAwesome6 } from '@expo/vector-icons';
 const CameraModalScreen = () => {
     const { pictureUri } = useLocalSearchParams();
 
-    console.log('inside modal', pictureUri);
-
-    // TODO: Add logic to upload image to database S3
-    const handleConfirm = () => {
-        console.log('confirm');
-        router.push('/(protected)/(tabs)/home');
+    const handleAnalyze = () => {
+        router.push({
+            pathname: '/(protected)/(camera)/analyze-receipt',
+            params: { pictureUri }
+        });
     };
 
     return (
@@ -23,14 +23,20 @@ const CameraModalScreen = () => {
                 style={styles.image}
                 contentFit="cover"
             />
-            <TouchableOpacity
-                className="absolute bottom-20 self-center z-10"
-                onPress={handleConfirm}
-            >
-                <View className="bg-primary rounded-full size-20 flex items-center justify-center">
+            <View className="absolute bottom-20 flex-row justify-center space-x-4 w-full">
+                <TouchableOpacity
+                    className="bg-primary rounded-full size-20 flex items-center justify-center"
+                    onPress={handleAnalyze}
+                >
+                    <FontAwesome6 name="receipt" size={30} color="white" solid />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    className="bg-primary rounded-full size-20 flex items-center justify-center"
+                    onPress={() => router.push('/(protected)/(tabs)/home')}
+                >
                     <FontAwesome6 name="check" size={30} color="white" solid />
-                </View>
-            </TouchableOpacity>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };
@@ -43,7 +49,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
         position: 'relative',
     },
-
     image: {
         width: '100%',
         height: '100%',
