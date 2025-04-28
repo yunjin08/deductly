@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, ActivityIndicator, Alert, SafeAreaView } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Image } from 'expo-image';
 import { FontAwesome6 } from '@expo/vector-icons';
@@ -15,6 +15,11 @@ interface ExtractedData {
         price: string;
         quantity?: string;
     }>;
+    vat?: string;
+    discount?: string;
+    service_charge?: string;
+    payment_method?: string;
+    tin?: string;
 }
 
 const AnalyzeReceiptScreen = () => {
@@ -49,7 +54,6 @@ const AnalyzeReceiptScreen = () => {
     };
 
     const handleSave = () => {
-        // TODO: Save the edited data
         router.push({
             pathname: '/(protected)/(tabs)/home',
             params: { receipt_data: JSON.stringify(extractedData) }
@@ -70,16 +74,18 @@ const AnalyzeReceiptScreen = () => {
     };
 
     return (
-        <View className="flex-1 bg-white">
+        <SafeAreaView className="flex-1 bg-white">
             <GoBackRoute />
             
-            <ScrollView className="flex-1">
+            <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 20 }}>
                 {/* Receipt Image */}
-                <Image
-                    source={{ uri: pictureUri as string }}
-                    className="w-full h-64"
-                    contentFit="cover"
-                />
+                <View className="h-48 w-full">
+                    <Image
+                        source={{ uri: pictureUri as string }}
+                        className="w-full h-full"
+                        contentFit="cover"
+                    />
+                </View>
 
                 {/* Analysis Button or Loading */}
                 {!extractedData && (
@@ -129,6 +135,21 @@ const AnalyzeReceiptScreen = () => {
                             )}
                         </View>
 
+                        {/* TIN Number */}
+                        <View className="mb-4">
+                            <Text className="text-gray-600 mb-1">TIN Number</Text>
+                            {isEditing ? (
+                                <TextInput
+                                    value={extractedData.tin}
+                                    onChangeText={(value) => updateField('tin', value)}
+                                    className="border border-gray-300 rounded-lg p-2"
+                                    placeholder="Enter TIN number"
+                                />
+                            ) : (
+                                <Text className="text-lg">{extractedData.tin || 'Not available'}</Text>
+                            )}
+                        </View>
+
                         {/* Date */}
                         <View className="mb-4">
                             <Text className="text-gray-600 mb-1">Date</Text>
@@ -140,6 +161,21 @@ const AnalyzeReceiptScreen = () => {
                                 />
                             ) : (
                                 <Text className="text-lg">{extractedData.date}</Text>
+                            )}
+                        </View>
+
+                        {/* Payment Method */}
+                        <View className="mb-4">
+                            <Text className="text-gray-600 mb-1">Payment Method</Text>
+                            {isEditing ? (
+                                <TextInput
+                                    value={extractedData.payment_method}
+                                    onChangeText={(value) => updateField('payment_method', value)}
+                                    className="border border-gray-300 rounded-lg p-2"
+                                    placeholder="Cash/Card/GCash/etc."
+                                />
+                            ) : (
+                                <Text className="text-lg">{extractedData.payment_method || 'Not specified'}</Text>
                             )}
                         </View>
 
@@ -186,6 +222,51 @@ const AnalyzeReceiptScreen = () => {
                             ))}
                         </View>
 
+                        {/* VAT */}
+                        <View className="mb-4">
+                            <Text className="text-gray-600 mb-1">VAT (12%)</Text>
+                            {isEditing ? (
+                                <TextInput
+                                    value={extractedData.vat}
+                                    onChangeText={(value) => updateField('vat', value)}
+                                    className="border border-gray-300 rounded-lg p-2"
+                                    keyboardType="numeric"
+                                />
+                            ) : (
+                                <Text className="text-lg">₱{extractedData.vat || '0.00'}</Text>
+                            )}
+                        </View>
+
+                        {/* Service Charge */}
+                        <View className="mb-4">
+                            <Text className="text-gray-600 mb-1">Service Charge</Text>
+                            {isEditing ? (
+                                <TextInput
+                                    value={extractedData.service_charge}
+                                    onChangeText={(value) => updateField('service_charge', value)}
+                                    className="border border-gray-300 rounded-lg p-2"
+                                    keyboardType="numeric"
+                                />
+                            ) : (
+                                <Text className="text-lg">₱{extractedData.service_charge || '0.00'}</Text>
+                            )}
+                        </View>
+
+                        {/* Discount */}
+                        <View className="mb-4">
+                            <Text className="text-gray-600 mb-1">Discount</Text>
+                            {isEditing ? (
+                                <TextInput
+                                    value={extractedData.discount}
+                                    onChangeText={(value) => updateField('discount', value)}
+                                    className="border border-gray-300 rounded-lg p-2"
+                                    keyboardType="numeric"
+                                />
+                            ) : (
+                                <Text className="text-lg">₱{extractedData.discount || '0.00'}</Text>
+                            )}
+                        </View>
+
                         {/* Total Amount */}
                         <View className="mb-4">
                             <Text className="text-gray-600 mb-1">Total Amount</Text>
@@ -212,7 +293,7 @@ const AnalyzeReceiptScreen = () => {
                     </View>
                 )}
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 };
 
