@@ -8,6 +8,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
 import * as MediaLibrary from 'expo-media-library';
 import * as ImageManipulator from 'expo-image-manipulator';
+import * as FileSystem from 'expo-file-system';
 import GoBackRoute from '@/components/GoBackRoute';
 
 
@@ -126,6 +127,22 @@ const CameraScreen = () => {
             if (!result.canceled && result.assets[0]) {
                 // Crop the selected image to the receipt area
                 cropAndNavigate(result.assets[0]);
+                // Save the picked image to app's permanent storage
+                const receiptsDir = `${FileSystem.documentDirectory}receipts/`;
+                const dirInfo = await FileSystem.getInfoAsync(receiptsDir);
+                if (!dirInfo.exists) {
+                    await FileSystem.makeDirectoryAsync(receiptsDir, { intermediates: true });
+                }
+
+                const filename = `receipt_${Date.now()}.jpg`;
+                const newUri = `${receiptsDir}${filename}`;
+
+                await FileSystem.copyAsync({
+                    from: result.assets[0].uri,
+                    to: newUri
+                });
+
+                router.push(`/camera-modal?pictureUri=${newUri}`);
             }
         } catch (error) {
             console.error('Failed to pick image:', error);
@@ -181,8 +198,24 @@ const CameraScreen = () => {
                 });
 
                 if (photo && photo.uri) {
-                    // Crop the captured photo to the receipt area
                     cropAndNavigate(photo);
+                    // Save the captured image to app's permanent storage
+                    const receiptsDir = `${FileSystem.documentDirectory}receipts/`;
+                    const dirInfo = await FileSystem.getInfoAsync(receiptsDir);
+                    if (!dirInfo.exists) {
+                        await FileSystem.makeDirectoryAsync(receiptsDir, { intermediates: true });
+                    }
+
+                    const filename = `receipt_${Date.now()}.jpg`;
+                    const newUri = `${receiptsDir}${filename}`;
+
+                    await FileSystem.copyAsync({
+                        from: photo.uri,
+                        to: newUri
+                    });
+
+                    router.back();
+                    router.push(`/camera-modal?pictureUri=${newUri}`);
                 }
 
                 return photo;
