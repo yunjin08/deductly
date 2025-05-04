@@ -1,8 +1,47 @@
 import axios from 'axios';
+import Constants from 'expo-constants';
+import { Platform } from 'react-native';
+
+// Determine if running in an Android emulator
+const isAndroidEmulator = Platform.OS === 'android' && Constants.isDevice === false;
+
+// Choose the appropriate base URL
+const baseURL = isAndroidEmulator
+    ? process.env.EXPO_PUBLIC_EMULATOR_BASE_URL
+    : process.env.EXPO_PUBLIC_LOCAL_AREA_BASE_URL;
 
 export const api = axios.create({
-    baseURL: process.env.EXPO_PUBLIC_LOCAL_AREA_BASE_URL,
+    baseURL,
+    timeout: 30000, // 30 seconds timeout
 });
+
+// Add request interceptor for debugging
+api.interceptors.request.use(
+    (config) => {
+        console.log(`Making ${config.method?.toUpperCase()} request to: ${config.baseURL}${config.url}`);
+        return config;
+    },
+    (error) => {
+        console.error('Request error:', error);
+        return Promise.reject(error);
+    }
+);
+
+// Add response interceptor for debugging
+api.interceptors.response.use(
+    (response) => {
+        console.log('Response received:', response.status);
+        return response;
+    },
+    (error) => {
+        console.error('Response error:', error);
+        if (error.response) {
+            console.error('Error response data:', error.response.data);
+            console.error('Error response status:', error.response.status);
+        }
+        return Promise.reject(error);
+    }
+);
 
 export const createApiService = <T>(endpoint: string) => ({
     getAll: async () => {
