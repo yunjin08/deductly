@@ -103,7 +103,7 @@ const CameraScreen = () => {
         const originX = frameX * scaleX;
         const originY = frameY * scaleY;
         const width = RECEIPT_WIDTH * scaleX * 1.3;
-        const height = RECEIPT_HEIGHT * scaleY * 1.55;
+        const height = RECEIPT_HEIGHT * scaleY * 1.5;
         
         console.log('Photo dimensions:', photoWidth, photoHeight);
         console.log('View dimensions:', viewWidth, viewHeight);
@@ -113,6 +113,26 @@ const CameraScreen = () => {
         
         return { originX, originY, width, height };
     };
+    
+    // Function to save image to app storage
+    const saveImageToStorage = async (uri: string) => {
+        const receiptsDir = `${FileSystem.documentDirectory}receipts/`;
+        const dirInfo = await FileSystem.getInfoAsync(receiptsDir);
+        if (!dirInfo.exists) {
+            await FileSystem.makeDirectoryAsync(receiptsDir, { intermediates: true });
+        }
+
+        const filename = `receipt_${Date.now()}.jpg`;
+        const newUri = `${receiptsDir}${filename}`;
+
+        await FileSystem.copyAsync({
+            from: uri,
+            to: newUri
+        });
+
+        return newUri;
+    };
+
     // Add gallery picker function
     const pickImage = async () => {
         try {
@@ -126,31 +146,18 @@ const CameraScreen = () => {
 
             if (!result.canceled && result.assets[0]) {
                 // Crop the selected image to the receipt area
-                cropAndNavigate(result.assets[0]);
-                // Save the picked image to app's permanent storage
-                const receiptsDir = `${FileSystem.documentDirectory}receipts/`;
-                const dirInfo = await FileSystem.getInfoAsync(receiptsDir);
-                if (!dirInfo.exists) {
-                    await FileSystem.makeDirectoryAsync(receiptsDir, { intermediates: true });
-                }
-
-                const filename = `receipt_${Date.now()}.jpg`;
-                const newUri = `${receiptsDir}${filename}`;
-
-                await FileSystem.copyAsync({
-                    from: result.assets[0].uri,
-                    to: newUri
-                });
-
-                router.push(`/camera-modal?pictureUri=${newUri}`);
+                const croppedUri = await cropAndProcess(result.assets[0]);
+                
+                // Navigate to the next screen with the cropped image
+                router.push(`/camera-modal?pictureUri=${croppedUri}`);
             }
         } catch (error) {
             console.error('Failed to pick image:', error);
         }
     };
 
-    // Function to crop the image and navigate to the next screen
-    const cropAndNavigate = async (photo) => {
+    // Function to crop the image and save it
+    const cropAndProcess = async (photo) => {
         setIsCropping(true);
         try {
             const { width, height, uri } = photo;
@@ -174,14 +181,14 @@ const CameraScreen = () => {
                 { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
             );
             
-            // Navigate to the next screen with the cropped image
-            router.back();
-            router.push(`/camera-modal?pictureUri=${croppedImage.uri}`);
+            // Save the cropped image to app's permanent storage
+            const savedUri = await saveImageToStorage(croppedImage.uri);
+            return savedUri;
         } catch (error) {
             console.error('Failed to crop image:', error);
             // Fallback to use the original photo
-            router.back();
-            router.push(`/camera-modal?pictureUri=${photo.uri}`);
+            const savedUri = await saveImageToStorage(photo.uri);
+            return savedUri;
         } finally {
             setIsCropping(false);
         }
@@ -198,24 +205,11 @@ const CameraScreen = () => {
                 });
 
                 if (photo && photo.uri) {
-                    cropAndNavigate(photo);
-                    // Save the captured image to app's permanent storage
-                    const receiptsDir = `${FileSystem.documentDirectory}receipts/`;
-                    const dirInfo = await FileSystem.getInfoAsync(receiptsDir);
-                    if (!dirInfo.exists) {
-                        await FileSystem.makeDirectoryAsync(receiptsDir, { intermediates: true });
-                    }
-
-                    const filename = `receipt_${Date.now()}.jpg`;
-                    const newUri = `${receiptsDir}${filename}`;
-
-                    await FileSystem.copyAsync({
-                        from: photo.uri,
-                        to: newUri
-                    });
-
+                    const processedUri = await cropAndProcess(photo);
+                    
+                    // Navigate using the cropped image
                     router.back();
-                    router.push(`/camera-modal?pictureUri=${newUri}`);
+                    router.push(`/camera-modal?pictureUri=${processedUri}`);
                 }
 
                 return photo;
