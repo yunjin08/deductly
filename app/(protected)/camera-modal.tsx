@@ -5,6 +5,7 @@ import { Image } from 'expo-image';
 import GoBackRoute from '@/components/GoBackRoute';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { cameraService } from '@/services/api/camera';
+import { ScrollableLayout } from '@/components/ScrollableLayout';
 
 interface ExtractedData {
     store_name?: string;
@@ -65,6 +66,7 @@ const CameraModalScreen = () => {
 
     if (extractedData) {
         return (
+            <ScrollableLayout>
             <View className="p-4">
                 <View className="flex-row justify-between items-center mb-4">
                     <Text className="text-xl font-bold">Receipt Details</Text>
@@ -175,6 +177,7 @@ const CameraModalScreen = () => {
                     <Text className="text-white font-semibold text-lg">Save Receipt</Text>
                 </TouchableOpacity>
             </View>
+            </ScrollableLayout>
         )
     }
 
