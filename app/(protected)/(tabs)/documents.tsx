@@ -21,6 +21,7 @@ const DocumentsScreen = () => {
 
     return (
         <DataPreview
+            itemType="document"
             data={documents.objects}
             title="Tax Documents"
             selectionTitle="Select Report Documents"
