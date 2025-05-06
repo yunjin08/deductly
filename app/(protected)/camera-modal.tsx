@@ -9,7 +9,14 @@ import { ScrollableLayout } from '@/components/ScrollableLayout';
 
 interface ExtractedData {
     store_name?: string;
+    tin?: string;
+    branch?: string;
     date?: string;
+    time?: string;
+    payment_method?: string;
+    vat?: string;
+    service_charge?: string;
+    discount?: string;
     total_amount?: string;
     items?: Array<{
         name: string;
@@ -29,9 +36,21 @@ const CameraModalScreen = () => {
         try {
             setIsAnalyzing(true);
             const response = await cameraService.processReceipt(pictureUri as string);
-            
             if (response.success && response.data) {
-                setExtractedData(response.data);
+                const { store_info, transaction_info, items, totals } = response.data;
+                setExtractedData({
+                    store_name: store_info?.name || '',
+                    tin: store_info?.tin || '',
+                    branch: store_info?.branch || '',
+                    date: transaction_info?.date || '',
+                    time: transaction_info?.time || '',
+                    payment_method: transaction_info?.payment_method || '',
+                    vat: totals?.vat || '',
+                    service_charge: totals?.service_charge || '',
+                    discount: totals?.discount || '',
+                    total_amount: totals?.total || '',
+                    items: items || [],
+                });
             } else {
                 Alert.alert('Error', 'Failed to analyze receipt');
             }
@@ -44,10 +63,12 @@ const CameraModalScreen = () => {
     };
 
     const handleSave = () => {
-        // TODO: Save the edited data
         router.push({
             pathname: '/(protected)/(tabs)/home',
-            params: { receipt_data: JSON.stringify(extractedData) }
+            params: { 
+                receipt_data: JSON.stringify(extractedData),
+                picture_uri: pictureUri as string
+            }
         });
     };
 
@@ -96,6 +117,34 @@ const CameraModalScreen = () => {
                     )}
                 </View>
 
+                {/* TIN */}
+                <View className="mb-4">
+                    <Text className="text-gray-600 mb-1">TIN</Text>
+                    {isEditing ? (
+                        <TextInput
+                            value={extractedData.tin}
+                            onChangeText={(value) => updateField('tin', value)}
+                            className="border border-gray-300 rounded-lg p-2"
+                        />
+                    ) : (
+                        <Text className="text-lg">{extractedData.tin}</Text>
+                    )}
+                </View>
+
+                {/* Branch */}
+                <View className="mb-4">
+                    <Text className="text-gray-600 mb-1">Branch</Text>
+                    {isEditing ? (
+                        <TextInput
+                            value={extractedData.branch}
+                            onChangeText={(value) => updateField('branch', value)}
+                            className="border border-gray-300 rounded-lg p-2"
+                        />
+                    ) : (
+                        <Text className="text-lg">{extractedData.branch}</Text>
+                    )}
+                </View>
+
                 {/* Date */}
                 <View className="mb-4">
                     <Text className="text-gray-600 mb-1">Date</Text>
@@ -107,6 +156,34 @@ const CameraModalScreen = () => {
                         />
                     ) : (
                         <Text className="text-lg">{extractedData.date}</Text>
+                    )}
+                </View>
+
+                {/* Time */}
+                <View className="mb-4">
+                    <Text className="text-gray-600 mb-1">Time</Text>
+                    {isEditing ? (
+                        <TextInput
+                            value={extractedData.time}
+                            onChangeText={(value) => updateField('time', value)}
+                            className="border border-gray-300 rounded-lg p-2"
+                        />
+                    ) : (
+                        <Text className="text-lg">{extractedData.time}</Text>
+                    )}
+                </View>
+
+                {/* Payment Method */}
+                <View className="mb-4">
+                    <Text className="text-gray-600 mb-1">Payment Method</Text>
+                    {isEditing ? (
+                        <TextInput
+                            value={extractedData.payment_method}
+                            onChangeText={(value) => updateField('payment_method', value)}
+                            className="border border-gray-300 rounded-lg p-2"
+                        />
+                    ) : (
+                        <Text className="text-lg">{extractedData.payment_method}</Text>
                     )}
                 </View>
 
@@ -151,6 +228,51 @@ const CameraModalScreen = () => {
                             )}
                         </View>
                     ))}
+                </View>
+
+                {/* VAT */}
+                <View className="mb-4">
+                    <Text className="text-gray-600 mb-1">VAT</Text>
+                    {isEditing ? (
+                        <TextInput
+                            value={extractedData.vat}
+                            onChangeText={(value) => updateField('vat', value)}
+                            className="border border-gray-300 rounded-lg p-2"
+                            keyboardType="numeric"
+                        />
+                    ) : (
+                        <Text className="text-lg">₱{extractedData.vat}</Text>
+                    )}
+                </View>
+
+                {/* Service Charge */}
+                <View className="mb-4">
+                    <Text className="text-gray-600 mb-1">Service Charge</Text>
+                    {isEditing ? (
+                        <TextInput
+                            value={extractedData.service_charge}
+                            onChangeText={(value) => updateField('service_charge', value)}
+                            className="border border-gray-300 rounded-lg p-2"
+                            keyboardType="numeric"
+                        />
+                    ) : (
+                        <Text className="text-lg">₱{extractedData.service_charge}</Text>
+                    )}
+                </View>
+
+                {/* Discount */}
+                <View className="mb-4">
+                    <Text className="text-gray-600 mb-1">Discount</Text>
+                    {isEditing ? (
+                        <TextInput
+                            value={extractedData.discount}
+                            onChangeText={(value) => updateField('discount', value)}
+                            className="border border-gray-300 rounded-lg p-2"
+                            keyboardType="numeric"
+                        />
+                    ) : (
+                        <Text className="text-lg">₱{extractedData.discount}</Text>
+                    )}
                 </View>
 
                 {/* Total Amount */}

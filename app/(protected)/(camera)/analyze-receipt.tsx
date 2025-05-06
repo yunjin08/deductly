@@ -69,10 +69,16 @@ const AnalyzeReceiptScreen = () => {
             setIsAnalyzing(true);
             console.log('Starting receipt analysis...');
             const response = await cameraService.processReceipt(pictureUri as string) as BackendResponse;
-            console.log('Received response:', JSON.stringify(response, null, 2));
+            console.log('Raw backend response:', JSON.stringify(response, null, 2));
             
             if (response.success && response.data) {
-                console.log('Setting extracted data:', response.data);
+                console.log('Backend data received:', {
+                    store_info: response.data.store_info,
+                    transaction_info: response.data.transaction_info,
+                    items: response.data.items,
+                    totals: response.data.totals
+                });
+
                 // Transform the data to match the frontend interface
                 const transformedData: ExtractedData = {
                     store_name: response.data.store_info?.name,
@@ -89,7 +95,10 @@ const AnalyzeReceiptScreen = () => {
                     discount: response.data.totals?.discount,
                     total_amount: response.data.totals?.total
                 };
+
+                console.log('Transformed data:', JSON.stringify(transformedData, null, 2));
                 setExtractedData(transformedData);
+                console.log('State updated with extracted data');
             } else {
                 console.error('Analysis failed:', response.error);
                 Alert.alert('Error', response.error || 'Failed to analyze receipt');

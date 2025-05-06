@@ -1,25 +1,44 @@
 import { api } from '../baseApi';
 import * as FileSystem from 'expo-file-system';
 
-interface ExtractedData {
-    store_name?: string;
-    date?: string;
-    total_amount?: string;
-    items?: Array<{
-        name: string;
-        price: string;
-        quantity?: string;
-    }>;
-}
-
-interface OCRResponse {
+interface BackendResponse {
     success: boolean;
-    data: ExtractedData;
+    data: {
+        store_info: {
+            name: string;
+            tin: string;
+            branch: string;
+        };
+        transaction_info: {
+            date: string;
+            time: string;
+            payment_method: string;
+        };
+        items: Array<{
+            name: string;
+            price: string;
+            quantity: string;
+        }>;
+        totals: {
+            subtotal: string;
+            vat: string;
+            service_charge: string;
+            discount: string;
+            total: string;
+        };
+        metadata: {
+            currency: string;
+            vat_rate: number;
+            bir_accreditation: string;
+            serial_number: string;
+        };
+        image_url: string;
+    };
     error?: string;
 }
 
 export const cameraService = {
-    processReceipt: async (imageUri: string): Promise<OCRResponse> => {
+    processReceipt: async (imageUri: string): Promise<BackendResponse> => {
         try {
             console.log('Starting receipt processing...');
             // Create a permanent directory for receipts if it doesn't exist
@@ -46,7 +65,7 @@ export const cameraService = {
 
             console.log('Sending image to backend...');
             // Make API call
-            const response = await api.post<OCRResponse>('/camera/process_receipt/', {
+            const response = await api.post<BackendResponse>('/camera/process_receipt/', {
                 image: base64Image
             });
             console.log('Received response from backend:', JSON.stringify(response.data, null, 2));
