@@ -21,7 +21,7 @@ interface ReceiptDetails {
     user_id?: string;
     category: string;
     items?: any[];
-    total_expenditure: string;
+    total_expediture: string;
     created_at: string;
     updated_at: string;
     payment_method: string;
@@ -73,6 +73,9 @@ export const DataPreview = ({
     onGenerateDocument,
     generateButtonText = 'Generate Tax Document',
 }: DataPreviewProps) => {
+    // Debug log to check incoming data
+    // console.log(`DataPreview received ${data.length} ${itemType} items:`, data);
+
     const [selectedItems, setSelectedItems] = useState<number[]>([]);
     const [isSelectionMode, setIsSelectionMode] = useState(false);
     const [receiptModalVisible, setReceiptModalVisible] = useState(false);
@@ -104,13 +107,24 @@ export const DataPreview = ({
             }
         } else {
             // Show modal with details based on item type
+            console.log('Item clicked:', item); // Debug log
+
+            // Make sure the item is an object with an id before proceeding
+            if (!item || typeof item !== 'object' || !item.id) {
+                console.error('Invalid item clicked:', item);
+                return;
+            }
+
             if (itemType === 'receipt') {
+                console.log('Setting receipt:', item); // Debug log
                 setSelectedReceipt(item as ReceiptDetails);
                 setReceiptModalVisible(true);
             } else if (itemType === 'document') {
+                console.log('Setting document:', item); // Debug log
                 setSelectedDocument(item as DocumentDetails);
                 setDocumentModalVisible(true);
             } else if (itemType === 'report') {
+                console.log('Setting report:', item); // Debug log
                 setSelectedReport(item as ReportDetails);
                 setReportModalVisible(true);
             }

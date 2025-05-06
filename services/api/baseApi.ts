@@ -3,7 +3,8 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
 // Determine if running in an Android emulator
-const isAndroidEmulator = Platform.OS === 'android' && Constants.isDevice === false;
+const isAndroidEmulator =
+    Platform.OS === 'android' && Constants.isDevice === false;
 
 // Choose the appropriate base URL
 const baseURL = isAndroidEmulator
@@ -12,13 +13,15 @@ const baseURL = isAndroidEmulator
 
 export const api = axios.create({
     baseURL,
-    timeout: 30000, // 30 seconds timeout
+    // timeout: 30000, // 30 seconds timeout
 });
 
 // Add request interceptor for debugging
 api.interceptors.request.use(
     (config) => {
-        console.log(`Making ${config.method?.toUpperCase()} request to: ${config.baseURL}${config.url}`);
+        console.log(
+            `Making ${config.method?.toUpperCase()} request to: ${config.baseURL}${config.url}`
+        );
         return config;
     },
     (error) => {
@@ -50,7 +53,7 @@ export const createApiService = <T>(endpoint: string) => ({
     },
 
     getOne: async (id: string) => {
-        const response = await api.get<T>(`${endpoint}/${id}`);
+        const response = await api.get<T>(`${endpoint}/${id}/`);
         return response.data;
     },
 
@@ -60,7 +63,7 @@ export const createApiService = <T>(endpoint: string) => ({
     },
 
     update: async (id: string, data: Partial<T>) => {
-        const response = await api.put<T>(`${endpoint}/${id}`, data);
+        const response = await api.put<T>(`${endpoint}/${id}/`, data);
         return response.data;
     },
 
