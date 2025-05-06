@@ -22,6 +22,42 @@ interface ExtractedData {
     tin?: string;
 }
 
+interface BackendResponse {
+    success: boolean;
+    data: {
+        store_info: {
+            name: string;
+            tin: string;
+            branch: string;
+        };
+        transaction_info: {
+            date: string;
+            time: string;
+            payment_method: string;
+        };
+        items: Array<{
+            name: string;
+            price: string;
+            quantity: string;
+        }>;
+        totals: {
+            subtotal: string;
+            vat: string;
+            service_charge: string;
+            discount: string;
+            total: string;
+        };
+        metadata: {
+            currency: string;
+            vat_rate: number;
+            bir_accreditation: string;
+            serial_number: string;
+        };
+        image_url: string;
+    };
+    error?: string;
+}
+
 const AnalyzeReceiptScreen = () => {
     const { pictureUri } = useLocalSearchParams();
     const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -32,15 +68,28 @@ const AnalyzeReceiptScreen = () => {
         try {
             setIsAnalyzing(true);
             console.log('Starting receipt analysis...');
-            const response = await cameraService.processReceipt(pictureUri as string);
+            const response = await cameraService.processReceipt(pictureUri as string) as BackendResponse;
             console.log('Received response:', JSON.stringify(response, null, 2));
             
             if (response.success && response.data) {
                 console.log('Setting extracted data:', response.data);
-                setExtractedData({
-                    ...response.data,
-                    items: response.data.items || []
-                });
+                // Transform the data to match the frontend interface
+                const transformedData: ExtractedData = {
+                    store_name: response.data.store_info?.name,
+                    tin: response.data.store_info?.tin,
+                    date: response.data.transaction_info?.date,
+                    payment_method: response.data.transaction_info?.payment_method,
+                    items: response.data.items?.map(item => ({
+                        name: item.name,
+                        price: item.price,
+                        quantity: item.quantity
+                    })) || [],
+                    vat: response.data.totals?.vat,
+                    service_charge: response.data.totals?.service_charge,
+                    discount: response.data.totals?.discount,
+                    total_amount: response.data.totals?.total
+                };
+                setExtractedData(transformedData);
             } else {
                 console.error('Analysis failed:', response.error);
                 Alert.alert('Error', response.error || 'Failed to analyze receipt');
