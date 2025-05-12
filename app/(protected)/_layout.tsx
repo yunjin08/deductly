@@ -3,6 +3,7 @@ import { AuthAwareLayout } from '@/components/AuthAwareLayout';
 import { useAppSelector } from '@/hooks/useAuthHooks';
 import { useEffect } from 'react';
 import { router } from 'expo-router';
+import { View, ActivityIndicator } from 'react-native';
 
 const ProtectedLayout = () => {
     const { session } = useAppSelector((state) => state.auth);
@@ -14,7 +15,11 @@ const ProtectedLayout = () => {
     }, [session]);
 
     if (!session) {
-        return null;
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+                <ActivityIndicator size="large" color="#1fddee" />
+            </View>
+        );
     }
 
     return (
