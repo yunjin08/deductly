@@ -35,7 +35,6 @@ const mockReceipts = [
 
 const ReceiptsScreen = () => {
     const dispatch = useAppDispatch();
-    const reduxState = useAppSelector((state) => state);
     const receipts = useSelector((state: any) => state.receipts.receipts);
 
     useEffect(() => {
@@ -48,6 +47,7 @@ const ReceiptsScreen = () => {
 
     return (
         <DataPreview
+            itemType="receipt"
             data={receipts.objects}
             title="Receipt List"
             selectionTitle="Select Receipts"

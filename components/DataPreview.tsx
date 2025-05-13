@@ -9,17 +9,58 @@ import {
 import { FontAwesome6 } from '@expo/vector-icons';
 import { ScrollableLayout } from './ScrollableLayout';
 import Header from '@/components/Header';
-import { Receipt } from '@/interfaces';
-interface Item {
-    id: number;
+import { Receipt, Document } from '@/interfaces';
+import { ReceiptDetailsModal } from './ReceiptDetailsModal';
+import { DocumentDetailsModal } from './DocumentDetailsModal';
+import { ReportDetailsModal } from './ReportDetailsModal';
+
+// Custom interface that extends Receipt for our specific use case
+interface ReceiptDetails {
+    id: string;
     title: string;
-    date: string;
+    user_id?: string;
+    category: string;
+    items?: any[];
+    total_expediture: string;
+    created_at: string;
+    updated_at: string;
+    payment_method: string;
+    discount: string;
+    value_added_tax: string;
 }
 
+// Custom interface for Document
+interface DocumentDetails {
+    id: string;
+    document_id?: string; // In case the API uses document_id
+    title: string;
+    document_url: string;
+    type: string;
+    created_at: string;
+    updated_at: string;
+}
+
+// Custom interface for Report
+interface ReportDetails {
+    id: string;
+    title: string;
+    category: string;
+    start_date: string;
+    end_date: string;
+    grand_total_expenditure: string;
+    total_tax_deductions: string;
+    created_at: string;
+    updated_at: string;
+}
+
+// Union type for items that can be displayed
+type ItemDetails = ReceiptDetails | DocumentDetails | ReportDetails;
+
 interface DataPreviewProps {
-    data: Receipt[];
+    data: ItemDetails[];
     title: string;
     selectionTitle: string;
+    itemType: 'receipt' | 'document' | 'report';
     onGenerateDocument?: () => void;
     generateButtonText?: string;
 }
@@ -28,18 +69,32 @@ export const DataPreview = ({
     data,
     title,
     selectionTitle,
+    itemType,
     onGenerateDocument,
     generateButtonText = 'Generate Tax Document',
 }: DataPreviewProps) => {
+    // Debug log to check incoming data
+    // console.log(`DataPreview received ${data.length} ${itemType} items:`, data);
+
     const [selectedItems, setSelectedItems] = useState<number[]>([]);
     const [isSelectionMode, setIsSelectionMode] = useState(false);
+    const [receiptModalVisible, setReceiptModalVisible] = useState(false);
+    const [documentModalVisible, setDocumentModalVisible] = useState(false);
+    const [reportModalVisible, setReportModalVisible] = useState(false);
+    const [selectedReceipt, setSelectedReceipt] =
+        useState<ReceiptDetails | null>(null);
+    const [selectedDocument, setSelectedDocument] =
+        useState<DocumentDetails | null>(null);
+    const [selectedReport, setSelectedReport] = useState<ReportDetails | null>(
+        null
+    );
 
     const handleLongPress = (id: number) => {
         setIsSelectionMode(true);
         setSelectedItems([id]);
     };
 
-    const handlePress = (id: number) => {
+    const handlePress = (id: number, item: ItemDetails) => {
         if (isSelectionMode) {
             if (selectedItems.includes(id)) {
                 const newSelected = selectedItems.filter((item) => item !== id);
@@ -49,6 +104,29 @@ export const DataPreview = ({
                 }
             } else {
                 setSelectedItems([...selectedItems, id]);
+            }
+        } else {
+            // Show modal with details based on item type
+            console.log('Item clicked:', item); // Debug log
+
+            // Make sure the item is an object with an id before proceeding
+            if (!item || typeof item !== 'object' || !item.id) {
+                console.error('Invalid item clicked:', item);
+                return;
+            }
+
+            if (itemType === 'receipt') {
+                console.log('Setting receipt:', item); // Debug log
+                setSelectedReceipt(item as ReceiptDetails);
+                setReceiptModalVisible(true);
+            } else if (itemType === 'document') {
+                console.log('Setting document:', item); // Debug log
+                setSelectedDocument(item as DocumentDetails);
+                setDocumentModalVisible(true);
+            } else if (itemType === 'report') {
+                console.log('Setting report:', item); // Debug log
+                setSelectedReport(item as ReportDetails);
+                setReportModalVisible(true);
             }
         }
     };
@@ -78,18 +156,31 @@ export const DataPreview = ({
         </>
     );
 
-    const renderItem = ({ item }: { item: Receipt }) => {
+    const renderItem = ({ item }: { item: ItemDetails }) => {
         const isSelected = selectedItems.includes(Number(item.id));
+
+        // Different icon based on item type
+        let iconName = 'receipt';
+        let iconColor = '#A0A0A0';
+
+        if (itemType === 'document') {
+            iconName = 'file-pdf';
+            iconColor = '#e74c3c';
+        } else if (itemType === 'report') {
+            iconName = 'chart-line';
+            iconColor = '#3498db';
+        }
+
         return (
             <Pressable
                 onLongPress={() => handleLongPress(Number(item.id))}
-                onPress={() => handlePress(Number(item.id))}
+                onPress={() => handlePress(Number(item.id), item)}
                 className={`flex-row items-center pr-4 rounded-xl mb-2 ${
                     isSelected ? 'bg-gray-200' : 'bg-gray-50'
                 }`}
             >
                 <View className="w-24 h-24 bg-gray-200 rounded-lg rounded-r-none items-center justify-center mr-4">
-                    <FontAwesome6 name="image" size={24} color="#A0A0A0" />
+                    <FontAwesome6 name={iconName} size={24} color={iconColor} />
                 </View>
                 <View className="flex-1">
                     <Text className="text-base font-medium">{item.title}</Text>
@@ -137,6 +228,27 @@ export const DataPreview = ({
                     </Text>
                 </TouchableOpacity>
             )}
+
+            {/* Receipt Details Modal */}
+            <ReceiptDetailsModal
+                isVisible={receiptModalVisible}
+                onClose={() => setReceiptModalVisible(false)}
+                receipt={selectedReceipt}
+            />
+
+            {/* Document Details Modal */}
+            <DocumentDetailsModal
+                isVisible={documentModalVisible}
+                onClose={() => setDocumentModalVisible(false)}
+                document={selectedDocument}
+            />
+
+            {/* Report Details Modal */}
+            <ReportDetailsModal
+                isVisible={reportModalVisible}
+                onClose={() => setReportModalVisible(false)}
+                report={selectedReport}
+            />
         </ScrollableLayout>
     );
 };

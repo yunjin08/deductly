@@ -21,10 +21,7 @@ const GalleryScreen = () => {
     const images = useSelector((state: any) => state.gallery.images);
 
     useEffect(() => {
-        // Dispatch action to fetch images when component mounts
-        // Note: This will work once gallery reducer is added to rootReducer
-        // dispatch(fetchImages());
-        console.log('images', images);
+        dispatch(fetchImages());
     }, []);
 
     const ViewToggle = () => (

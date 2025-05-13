@@ -1,8 +1,13 @@
 import { View, Text, TouchableOpacity, Image, FlatList } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { ScrollableLayout } from '@/components/ScrollableLayout';
 import Header from '@/components/Header';
+import { useAppDispatch } from '@/hooks/useAuthHooks';
+import { useSelector } from 'react-redux';
+import { fetchReceipts } from '@/contexts/actions/receiptsActions';
+import { useEffect } from 'react';
+import { fetchDocuments } from '@/contexts/actions/documentsActions';
 
 // Mock data with more items
 const receipts = [
@@ -58,6 +63,19 @@ const document = [
 ];
 
 const HomeScreen = () => {
+    const dispatch = useAppDispatch();
+    const receipts = useSelector((state: any) => state.receipts.receipts);
+
+    useEffect(() => {
+        dispatch(fetchReceipts());
+    }, []);
+
+    const documents = useSelector((state: any) => state.documents.documents);
+
+    useEffect(() => {
+        dispatch(fetchDocuments());
+    }, []);
+
     const renderHeader = () => (
         <>
             <Header />
@@ -76,7 +94,10 @@ const HomeScreen = () => {
                         Deduct your taxes
                     </Text>
                 </View>
-                <TouchableOpacity className="mt-4 w-full border border-primary rounded-full p-4 items-center">
+                <TouchableOpacity
+                    onPress={() => router.push('/(protected)/(camera)/camera')}
+                    className="mt-4 w-full border border-primary rounded-full p-4 items-center"
+                >
                     <Text className="text-primary font-semibold text-lg">
                         Scan Now
                     </Text>
@@ -109,19 +130,19 @@ const HomeScreen = () => {
             </View>
 
             <FlatList
-                data={document}
+                data={documents.objects}
                 renderItem={({ item }) => (
                     <TouchableOpacity>
                         <View className="w-80 h-48 bg-gray-50 rounded-xl items-center justify-center">
                             <View className="bg-primary/20 p-3 rounded-full">
                                 <FontAwesome6
-                                    name="camera"
+                                    name="file-pdf"
                                     size={24}
                                     color="#4CD4E2"
                                 />
                             </View>
                             <Text className="mt-2 text-primary font-medium">
-                                {item.date}
+                                {item.title}
                             </Text>
                         </View>
                     </TouchableOpacity>
@@ -142,8 +163,8 @@ const HomeScreen = () => {
                 <FontAwesome6 name="image" size={24} color="#A0A0A0" />
             </View>
             <View className="ml-4 p-4  flex-1">
-                <Text className="font-semibold text-lg">{item.name}</Text>
-                <Text className="text-gray-500">{item.location}</Text>
+                <Text className="font-semibold text-lg">{item.title}</Text>
+                <Text className="text-gray-500">{item.created_at}</Text>
             </View>
             <FontAwesome6 name="chevron-right" size={20} color="#A0A0A0" />
         </TouchableOpacity>
@@ -152,7 +173,7 @@ const HomeScreen = () => {
     return (
         <ScrollableLayout>
             <FlatList
-                data={receipts}
+                data={receipts.objects}
                 renderItem={renderReceiptItem}
                 keyExtractor={(item) => item.id.toString()}
                 ListHeaderComponent={renderHeader}

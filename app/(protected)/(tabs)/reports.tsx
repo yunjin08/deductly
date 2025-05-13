@@ -18,6 +18,7 @@ const ReportsScreen = () => {
 
     return (
         <DataPreview
+            itemType="report"
             data={reports.objects}
             title="Tax Reports"
             selectionTitle="Select Tax Reports"
