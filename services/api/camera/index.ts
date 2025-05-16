@@ -45,7 +45,9 @@ export const cameraService = {
             const receiptsDir = `${FileSystem.documentDirectory}receipts/`;
             const dirInfo = await FileSystem.getInfoAsync(receiptsDir);
             if (!dirInfo.exists) {
-                await FileSystem.makeDirectoryAsync(receiptsDir, { intermediates: true });
+                await FileSystem.makeDirectoryAsync(receiptsDir, {
+                    intermediates: true,
+                });
             }
 
             // Generate a new filename for the copied image
@@ -55,20 +57,32 @@ export const cameraService = {
             // Copy the image to the permanent location
             await FileSystem.copyAsync({
                 from: imageUri,
-                to: newUri
+                to: newUri,
             });
 
-            // Convert the copied image to base64
-            const base64Image = await FileSystem.readAsStringAsync(newUri, {
-                encoding: FileSystem.EncodingType.Base64,
-            });
+            // Create FormData object
+            const formData = new FormData();
+            formData.append('image', {
+                uri: newUri,
+                type: 'image/jpeg',
+                name: filename,
+            } as any);
 
             console.log('Sending image to backend...');
-            // Make API call
-            const response = await api.post<BackendResponse>('/camera/process_receipt/', {
-                image: base64Image
-            });
-            console.log('Received response from backend:', JSON.stringify(response.data, null, 2));
+            // Make API call with multipart/form-data
+            const response = await api.post<BackendResponse>(
+                '/camera/process_receipt/',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+            console.log(
+                'Received response from backend:',
+                JSON.stringify(response.data, null, 2)
+            );
 
             // Clean up - delete the copied image after processing
             await FileSystem.deleteAsync(newUri);
@@ -78,5 +92,5 @@ export const cameraService = {
             console.error('Error processing receipt:', error);
             throw error;
         }
-    }
-}; 
+    },
+};
