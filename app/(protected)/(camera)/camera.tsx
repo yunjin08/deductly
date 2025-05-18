@@ -1,4 +1,11 @@
-import { Text, View, Button, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import {
+    Text,
+    View,
+    Button,
+    StyleSheet,
+    TouchableOpacity,
+    Dimensions,
+} from 'react-native';
 import { useCameraPermissions, CameraView } from 'expo-camera';
 import { CAMERA_FACE_DIRECTION } from '@/constants/Camera';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
@@ -11,7 +18,6 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import * as FileSystem from 'expo-file-system';
 import GoBackRoute from '@/components/GoBackRoute';
 
-
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -23,12 +29,12 @@ const CameraScreen = () => {
     const [permission, requestPermission] = useCameraPermissions();
     const [lastImage, setLastImage] = useState('');
     const [isCropping, setIsCropping] = useState(false);
-    const cameraRef = useRef(null);
+    const cameraRef = useRef<any>(null);
 
     // Keep the camera view dimensions for accurate cropping
     const [cameraViewDimensions, setCameraViewDimensions] = useState({
         width: SCREEN_WIDTH,
-        height: SCREEN_HEIGHT
+        height: SCREEN_HEIGHT,
     });
 
     // Function to get the last image
@@ -74,15 +80,15 @@ const CameraScreen = () => {
     const calculateCropArea = (photoWidth: number, photoHeight: number) => {
         const viewWidth = cameraViewDimensions.width;
         const viewHeight = cameraViewDimensions.height;
-        
+
         // Calculate aspect ratios
         const photoAspectRatio = photoWidth / photoHeight;
         const viewAspectRatio = viewWidth / viewHeight;
-        
+
         // Adjust for aspect ratio differences (this is key to fixing zoom issues)
         let scaledViewWidth = viewWidth;
         let scaledViewHeight = viewHeight;
-        
+
         if (photoAspectRatio > viewAspectRatio) {
             // Photo is wider than view
             scaledViewHeight = viewWidth / photoAspectRatio;
@@ -90,74 +96,40 @@ const CameraScreen = () => {
             // Photo is taller than view
             scaledViewWidth = viewHeight * photoAspectRatio;
         }
-        
+
         // Calculate position of frame relative to adjusted view
         const frameX = (scaledViewWidth - RECEIPT_WIDTH) / 2;
         const frameY = (scaledViewHeight - RECEIPT_HEIGHT) / 2;
-        
+
         // Calculate new scale factors
         const scaleX = photoWidth / scaledViewWidth;
         const scaleY = photoHeight / scaledViewHeight;
-        
+
         // Calculate the crop area
         const originX = frameX * scaleX;
         const originY = frameY * scaleY;
         const width = RECEIPT_WIDTH * scaleX * 1.3;
         const height = RECEIPT_HEIGHT * scaleY * 1.5;
-        
+
         console.log('Photo dimensions:', photoWidth, photoHeight);
         console.log('View dimensions:', viewWidth, viewHeight);
-        console.log('Scaled view dimensions:', scaledViewWidth, scaledViewHeight);
+        console.log(
+            'Scaled view dimensions:',
+            scaledViewWidth,
+            scaledViewHeight
+        );
         console.log('Frame position:', frameX, frameY);
         console.log('Crop coordinates:', originX, originY, width, height);
-        
+
         return { originX, originY, width, height };
     };
-    
-    // Function to save image to app storage
-    const saveImageToStorage = async (uri: string) => {
-        const receiptsDir = `${FileSystem.documentDirectory}receipts/`;
-        const dirInfo = await FileSystem.getInfoAsync(receiptsDir);
-        if (!dirInfo.exists) {
-            await FileSystem.makeDirectoryAsync(receiptsDir, { intermediates: true });
-        }
 
-        const filename = `receipt_${Date.now()}.jpg`;
-        const newUri = `${receiptsDir}${filename}`;
-
-        await FileSystem.copyAsync({
-            from: uri,
-            to: newUri
-        });
-
-        return newUri;
-    };
-
-    // Add gallery picker function
-    const pickImage = async () => {
-        try {
-            const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                quality: 0.8,
-                base64: true,
-                exif: true,
-                allowsEditing: false,
-            });
-
-            if (!result.canceled && result.assets[0]) {
-                // Crop the selected image to the receipt area
-                const croppedUri = await cropAndProcess(result.assets[0]);
-                
-                // Navigate to the next screen with the cropped image
-                router.push(`/camera-modal?pictureUri=${croppedUri}`);
-            }
-        } catch (error) {
-            console.error('Failed to pick image:', error);
-        }
-    };
-
-    // Function to crop the image and save it
-    const cropAndProcess = async (photo) => {
+    // Function to process and save image
+    const processAndSaveImage = async (photo: {
+        uri: string;
+        width: number;
+        height: number;
+    }) => {
         setIsCropping(true);
         try {
             const { width, height, uri } = photo;
@@ -166,11 +138,30 @@ const CameraScreen = () => {
             const validCropArea = {
                 originX: Math.max(0, Math.round(cropArea.originX)),
                 originY: Math.max(0, Math.round(cropArea.originY)),
-                width: Math.min(width - cropArea.originX, Math.round(cropArea.width)),
-                height: Math.min(height - cropArea.originY, Math.round(cropArea.height))
+                width: Math.min(
+                    width - cropArea.originX,
+                    Math.round(cropArea.width)
+                ),
+                height: Math.min(
+                    height - cropArea.originY,
+                    Math.round(cropArea.height)
+                ),
             };
-            
-            // Crop the image using ImageManipulator
+
+            // Create receipts directory if it doesn't exist
+            const receiptsDir = `${FileSystem.documentDirectory}receipts/`;
+            const dirInfo = await FileSystem.getInfoAsync(receiptsDir);
+            if (!dirInfo.exists) {
+                await FileSystem.makeDirectoryAsync(receiptsDir, {
+                    intermediates: true,
+                });
+            }
+
+            // Generate filename and path
+            const filename = `receipt_${Date.now()}.jpg`;
+            const newUri = `${receiptsDir}${filename}`;
+
+            // Crop and save in one operation
             const croppedImage = await ImageManipulator.manipulateAsync(
                 uri,
                 [
@@ -178,17 +169,31 @@ const CameraScreen = () => {
                         crop: validCropArea,
                     },
                 ],
-                { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+                {
+                    compress: 0.8,
+                    format: ImageManipulator.SaveFormat.JPEG,
+                    base64: false,
+                }
             );
-            
-            // Save the cropped image to app's permanent storage
-            const savedUri = await saveImageToStorage(croppedImage.uri);
-            return savedUri;
+
+            // Save the cropped image
+            await FileSystem.copyAsync({
+                from: croppedImage.uri,
+                to: newUri,
+            });
+
+            return newUri;
         } catch (error) {
-            console.error('Failed to crop image:', error);
+            console.error('Failed to process image:', error);
             // Fallback to use the original photo
-            const savedUri = await saveImageToStorage(photo.uri);
-            return savedUri;
+            const receiptsDir = `${FileSystem.documentDirectory}receipts/`;
+            const filename = `receipt_${Date.now()}.jpg`;
+            const newUri = `${receiptsDir}${filename}`;
+            await FileSystem.copyAsync({
+                from: photo.uri,
+                to: newUri,
+            });
+            return newUri;
         } finally {
             setIsCropping(false);
         }
@@ -205,17 +210,35 @@ const CameraScreen = () => {
                 });
 
                 if (photo && photo.uri) {
-                    const processedUri = await cropAndProcess(photo);
-                    
-                    // Navigate using the cropped image
+                    const processedUri = await processAndSaveImage(photo);
                     router.back();
                     router.push(`/camera-modal?pictureUri=${processedUri}`);
                 }
-
-                return photo;
             } catch (error) {
                 console.error('Failed to take picture:', error);
             }
+        }
+    };
+
+    // Add gallery picker function
+    const pickImage = async () => {
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                quality: 0.8,
+                base64: true,
+                exif: true,
+                allowsEditing: false,
+            });
+
+            if (!result.canceled && result.assets[0]) {
+                const processedUri = await processAndSaveImage(
+                    result.assets[0]
+                );
+                router.push(`/camera-modal?pictureUri=${processedUri}`);
+            }
+        } catch (error) {
+            console.error('Failed to pick image:', error);
         }
     };
 
@@ -268,13 +291,24 @@ const CameraScreen = () => {
 
                     <TouchableOpacity
                         onPress={capture}
-                        style={[styles.captureButton, isCropping && styles.disabledButton]}
+                        style={[
+                            styles.captureButton,
+                            isCropping && styles.disabledButton,
+                        ]}
                         disabled={isCropping}
                     >
                         {isCropping ? (
-                            <MaterialIcons name="hourglass-top" size={30} color="white" />
+                            <MaterialIcons
+                                name="hourglass-top"
+                                size={30}
+                                color="white"
+                            />
                         ) : (
-                            <FontAwesome name="camera" size={30} color="white" />
+                            <FontAwesome
+                                name="camera"
+                                size={30}
+                                color="white"
+                            />
                         )}
                     </TouchableOpacity>
 

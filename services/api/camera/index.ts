@@ -18,6 +18,9 @@ interface BackendResponse {
             name: string;
             price: string;
             quantity: string;
+            is_deductible: boolean;
+            deductible_amount: string;
+            category: string;
         }>;
         totals: {
             subtotal: string;
@@ -31,6 +34,9 @@ interface BackendResponse {
             vat_rate: number;
             bir_accreditation: string;
             serial_number: string;
+            transaction_category: string;
+            is_deductible: boolean;
+            deductible_amount: string;
         };
         image_url: string;
     };
@@ -91,6 +97,70 @@ export const cameraService = {
         } catch (error: any) {
             console.error('Error processing receipt:', error);
             throw error;
+        }
+    },
+
+    saveReceipt: async (
+        receiptData: any
+    ): Promise<{ success: boolean; receipt_id?: number; error?: string }> => {
+        try {
+            console.log('Starting to save receipt with data:', receiptData);
+            
+            // Transform the data to match backend expectations
+            const transformedData = {
+                store_info: {
+                    name: receiptData.store_info.name,
+                    tin: receiptData.store_info.tin,
+                    address: '', // Add default empty values for required fields
+                    email: '',
+                    contact_number: '',
+                    establishment: receiptData.store_info.name
+                },
+                transaction_info: {
+                    date: receiptData.transaction_info.date,
+                    time: receiptData.transaction_info.time,
+                    payment_method: receiptData.transaction_info.payment_method,
+                },
+                items: receiptData.items.map((item: any) => ({
+                    title: item.title,
+                    quantity: parseInt(item.quantity),
+                    price: parseFloat(item.price),
+                    subtotal: parseFloat(item.subtotal),
+                    deductible_amount: parseFloat(item.deductible_amount || '0'),
+                })),
+                totals: {
+                    total_expediture: parseFloat(receiptData.totals.total_expediture),
+                    value_added_tax: parseFloat(receiptData.totals.value_added_tax),
+                    discount: parseFloat(receiptData.totals.discount),
+                },
+                metadata: {
+                    transaction_category: receiptData.metadata.transaction_category,
+                    is_deductible: receiptData.metadata.is_deductible,
+                    deductible_amount: parseFloat(receiptData.metadata.deductible_amount || '0'),
+                },
+            };
+
+            console.log('Transformed data for saving:', transformedData);
+            console.log('Making POST request to /camera/save_receipt/');
+
+            const response = await api.post(
+                '/camera/save_receipt/',
+                transformedData
+            );
+            
+            console.log('Save receipt response:', response.data);
+            return response.data;
+        } catch (error: any) {
+            console.error('Error saving receipt:', error);
+            console.error('Error details:', {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status
+            });
+            return {
+                success: false,
+                error: error.response?.data?.error || 'Failed to save receipt',
+            };
         }
     },
 };
