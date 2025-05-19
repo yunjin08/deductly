@@ -85,39 +85,33 @@ const CameraScreen = () => {
         const photoAspectRatio = photoWidth / photoHeight;
         const viewAspectRatio = viewWidth / viewHeight;
 
-        // Adjust for aspect ratio differences (this is key to fixing zoom issues)
-        let scaledViewWidth = viewWidth;
-        let scaledViewHeight = viewHeight;
-
+        // Calculate scale factor to fit the photo within the view while maintaining aspect ratio
+        let scale = 1;
         if (photoAspectRatio > viewAspectRatio) {
             // Photo is wider than view
-            scaledViewHeight = viewWidth / photoAspectRatio;
+            scale = viewHeight / photoHeight;
         } else {
             // Photo is taller than view
-            scaledViewWidth = viewHeight * photoAspectRatio;
+            scale = viewWidth / photoWidth;
         }
 
-        // Calculate position of frame relative to adjusted view
-        const frameX = (scaledViewWidth - RECEIPT_WIDTH) / 2;
-        const frameY = (scaledViewHeight - RECEIPT_HEIGHT) / 2;
+        // Calculate scaled photo dimensions
+        const scaledPhotoWidth = photoWidth * scale;
+        const scaledPhotoHeight = photoHeight * scale;
 
-        // Calculate new scale factors
-        const scaleX = photoWidth / scaledViewWidth;
-        const scaleY = photoHeight / scaledViewHeight;
+        // Calculate position of frame relative to scaled photo
+        const frameX = (scaledPhotoWidth - RECEIPT_WIDTH) / 2;
+        const frameY = (scaledPhotoHeight - RECEIPT_HEIGHT) / 2;
 
-        // Calculate the crop area
-        const originX = frameX * scaleX;
-        const originY = frameY * scaleY;
-        const width = RECEIPT_WIDTH * scaleX * 1.3;
-        const height = RECEIPT_HEIGHT * scaleY * 1.5;
+        // Convert frame coordinates back to original photo scale
+        const originX = Math.max(0, (frameX / scale));
+        const originY = Math.max(0, (frameY / scale));
+        const width = Math.min(photoWidth - originX, (RECEIPT_WIDTH / scale) * 1.3);
+        const height = Math.min(photoHeight - originY, (RECEIPT_HEIGHT / scale) * 1.5);
 
         console.log('Photo dimensions:', photoWidth, photoHeight);
         console.log('View dimensions:', viewWidth, viewHeight);
-        console.log(
-            'Scaled view dimensions:',
-            scaledViewWidth,
-            scaledViewHeight
-        );
+        console.log('Scaled photo dimensions:', scaledPhotoWidth, scaledPhotoHeight);
         console.log('Frame position:', frameX, frameY);
         console.log('Crop coordinates:', originX, originY, width, height);
 

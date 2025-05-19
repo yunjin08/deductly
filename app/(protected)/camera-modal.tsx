@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
-import { StyleSheet, TouchableOpacity, View, Alert, Text, TextInput, ActivityIndicator } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Alert, Text, TextInput, ActivityIndicator, Modal } from 'react-native';
 import { Image } from 'expo-image';
 import GoBackRoute from '@/components/GoBackRoute';
 import { FontAwesome6 } from '@expo/vector-icons';
@@ -31,6 +31,12 @@ const CameraModalScreen = () => {
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [extractedData, setExtractedData] = useState<ExtractedData | null>(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [showDeductionModal, setShowDeductionModal] = useState(false);
+    const [deductionInfo, setDeductionInfo] = useState<{
+        isEligible: boolean;
+        amount: string;
+        reason: string;
+    } | null>(null);
 
     const handleAnalyze = async () => {
         try {
@@ -65,6 +71,18 @@ const CameraModalScreen = () => {
     const handleSave = async () => {
         try {
             if (!extractedData) return;
+
+            // Calculate potential deduction (this is a simplified example)
+            const totalAmount = parseFloat(extractedData.total_amount || '0');
+            const isEligible = totalAmount > 0;
+            const deductionAmount = isEligible ? (totalAmount * 0.1).toFixed(2) : '0'; // Example: 10% deduction
+
+            setDeductionInfo({
+                isEligible,
+                amount: deductionAmount,
+                reason: isEligible ? 'This receipt may be eligible for tax deduction based on the total amount.' : 'This receipt is not eligible for tax deduction.'
+            });
+            setShowDeductionModal(true);
 
             // Transform the data to match the expected format
             const receiptData = {
@@ -340,6 +358,49 @@ const CameraModalScreen = () => {
                     <FontAwesome6 name="save" size={20} color="white" className="mr-2" />
                     <Text className="text-white font-semibold text-lg">Save Receipt</Text>
                 </TouchableOpacity>
+
+                {/* Tax Deduction Modal */}
+                <Modal
+                    visible={showDeductionModal}
+                    transparent={true}
+                    animationType="slide"
+                    onRequestClose={() => setShowDeductionModal(false)}
+                >
+                    <View className="flex-1 justify-center items-center bg-black/50">
+                        <View className="bg-white p-6 rounded-xl w-[90%] max-w-[400px]">
+                            <Text className="text-2xl font-bold mb-4 text-center">
+                                Tax Deduction Eligibility
+                            </Text>
+                            
+                            {deductionInfo && (
+                                <>
+                                    <View className="mb-4">
+                                        <Text className="text-lg font-semibold mb-2">
+                                            Status: {deductionInfo.isEligible ? 'Eligible' : 'Not Eligible'}
+                                        </Text>
+                                        <Text className="text-gray-600 mb-2">
+                                            {deductionInfo.reason}
+                                        </Text>
+                                        {deductionInfo.isEligible && (
+                                            <Text className="text-lg font-bold text-primary">
+                                                Potential Deduction: ₱{deductionInfo.amount}
+                                            </Text>
+                                        )}
+                                    </View>
+                                    
+                                    <TouchableOpacity
+                                        onPress={() => setShowDeductionModal(false)}
+                                        className="bg-primary py-3 rounded-lg"
+                                    >
+                                        <Text className="text-white text-center font-semibold">
+                                            Continue
+                                        </Text>
+                                    </TouchableOpacity>
+                                </>
+                            )}
+                        </View>
+                    </View>
+                </Modal>
             </View>
             </ScrollableLayout>
         )
