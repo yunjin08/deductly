@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 const ReportsScreen = () => {
     const dispatch = useAppDispatch();
     const reports = useSelector((state: any) => state.reports.reports);
+    console.log(reports,'reports')
 
     useEffect(() => {
         dispatch(fetchReports());
