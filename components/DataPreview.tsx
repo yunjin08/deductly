@@ -220,7 +220,7 @@ export const DataPreview = ({
                     <TimePeriodButton period="yearly" label="Yearly" className="rounded-r-lg" />
                 </View>
             )}
-            {itemType === 'document' && (
+            {(itemType === 'document' || itemType === 'receipt') && (
                 <View className="flex-row justify-center space-x-2 mb-4">
                     <SortButton order="latest" label="Latest" className="rounded-l-lg" />
                     <SortButton order="oldest" label="Oldest" className="rounded-r-lg" />
