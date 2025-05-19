@@ -123,7 +123,7 @@ export const cameraService = {
                 },
                 items: receiptData.items.map((item: any) => ({
                     title: item.title,
-                    quantity: parseInt(item.quantity),
+                    quantity: parseInt(item.quantity, 10),
                     price: parseFloat(item.price),
                     subtotal: parseFloat(item.subtotal),
                     deductible_amount: parseFloat(item.deductible_amount || '0'),
