@@ -62,14 +62,56 @@ const CameraModalScreen = () => {
         }
     };
 
-    const handleSave = () => {
-        router.push({
-            pathname: '/(protected)/(tabs)/home',
-            params: { 
-                receipt_data: JSON.stringify(extractedData),
-                picture_uri: pictureUri as string
+    const handleSave = async () => {
+        try {
+            if (!extractedData) return;
+
+            // Transform the data to match the expected format
+            const receiptData = {
+                store_info: {
+                    name: extractedData.store_name || '',
+                    tin: extractedData.tin || '',
+                },
+                transaction_info: {
+                    date: extractedData.date || '',
+                    time: extractedData.time || '',
+                    payment_method: extractedData.payment_method || '',
+                },
+                items: extractedData.items?.map(item => ({
+                    title: item.name,
+                    quantity: item.quantity || '1',
+                    price: item.price,
+                    subtotal: (parseFloat(item.price) * parseInt(item.quantity || '1')).toString(),
+                    deductible_amount: '0', // Default to 0 if not specified
+                })) || [],
+                totals: {
+                    total_expediture: extractedData.total_amount || '0',
+                    value_added_tax: extractedData.vat || '0',
+                    discount: extractedData.discount || '0',
+                },
+                metadata: {
+                    transaction_category: 'OTHER', // Default category
+                    is_deductible: false, // Default to false
+                    deductible_amount: '0', // Default to 0
+                },
+            };
+
+            const response = await cameraService.saveReceipt(receiptData);
+            
+            if (response.success) {
+                Alert.alert('Success', 'Receipt saved successfully', [
+                    {
+                        text: 'OK',
+                        onPress: () => router.push('/(protected)/(tabs)/home'),
+                    },
+                ]);
+            } else {
+                Alert.alert('Error', response.error || 'Failed to save receipt');
             }
-        });
+        } catch (error) {
+            console.error('Error saving receipt:', error);
+            Alert.alert('Error', 'Failed to save receipt. Please try again.');
+        }
     };
 
     const updateField = (field: keyof ExtractedData, value: string) => {
