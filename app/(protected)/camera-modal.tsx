@@ -173,7 +173,7 @@ const CameraModalScreen = () => {
                 scrollEventThrottle={16}
                 onContentSizeChange={(_, h) => setContentHeight(h)}
                 onLayout={e => setScrollViewHeight(e.nativeEvent.layout.height)}
-                contentContainerStyle={{ padding: 16 }}
+                contentContainerStyle={{ padding: 16, paddingBottom: 200 }}
             >
                 <View className="p-4">
                     <View className="flex-row justify-between items-center mb-4">
@@ -191,7 +191,7 @@ const CameraModalScreen = () => {
                     </View>
 
                     {/* Store Name */}
-                    <View className="mb-4">
+                    <View className="mb-6">
                         <Text className="text-gray-600 mb-1">Store Name</Text>
                         {isEditing ? (
                             <TextInput
@@ -205,7 +205,7 @@ const CameraModalScreen = () => {
                     </View>
 
                     {/* TIN */}
-                    <View className="mb-4">
+                    <View className="mb-6">
                         <Text className="text-gray-600 mb-1">TIN</Text>
                         {isEditing ? (
                             <TextInput
@@ -219,7 +219,7 @@ const CameraModalScreen = () => {
                     </View>
 
                     {/* Branch */}
-                    <View className="mb-4">
+                    <View className="mb-6">
                         <Text className="text-gray-600 mb-1">Branch</Text>
                         {isEditing ? (
                             <TextInput
@@ -233,7 +233,7 @@ const CameraModalScreen = () => {
                     </View>
 
                     {/* Date */}
-                    <View className="mb-4">
+                    <View className="mb-6">
                         <Text className="text-gray-600 mb-1">Date</Text>
                         {isEditing ? (
                             <TextInput
@@ -247,7 +247,7 @@ const CameraModalScreen = () => {
                     </View>
 
                     {/* Time */}
-                    <View className="mb-4">
+                    <View className="mb-6">
                         <Text className="text-gray-600 mb-1">Time</Text>
                         {isEditing ? (
                             <TextInput
@@ -261,7 +261,7 @@ const CameraModalScreen = () => {
                     </View>
 
                     {/* Payment Method */}
-                    <View className="mb-4">
+                    <View className="mb-6">
                         <Text className="text-gray-600 mb-1">Payment Method</Text>
                         {isEditing ? (
                             <TextInput
@@ -275,16 +275,16 @@ const CameraModalScreen = () => {
                     </View>
 
                     {/* Items */}
-                    <View className="mb-4">
+                    <View className="mb-6">
                         <Text className="text-gray-600 mb-2">Items</Text>
                         {extractedData.items?.map((item, index) => (
-                            <View key={index} className="border-b border-gray-200 py-2">
+                            <View key={index} className="border-b border-gray-200 py-3 mb-3">
                                 {isEditing ? (
                                     <View>
                                         <TextInput
                                             value={item.name}
                                             onChangeText={(value) => updateItem(index, 'name', value)}
-                                            className="border border-gray-300 rounded-lg p-2 mb-1"
+                                            className="border border-gray-300 rounded-lg p-2 mb-2"
                                             placeholder="Item name"
                                         />
                                         <View className="flex-row">
@@ -307,7 +307,7 @@ const CameraModalScreen = () => {
                                 ) : (
                                     <View>
                                         <Text className="text-lg">{item.name}</Text>
-                                        <View className="flex-row justify-between">
+                                        <View className="flex-row justify-between mt-1">
                                             <Text className="text-gray-600">Qty: {item.quantity}</Text>
                                             <Text className="text-gray-600">₱{item.price}</Text>
                                         </View>
@@ -318,7 +318,7 @@ const CameraModalScreen = () => {
                     </View>
 
                     {/* VAT */}
-                    <View className="mb-4">
+                    <View className="mb-6">
                         <Text className="text-gray-600 mb-1">VAT</Text>
                         {isEditing ? (
                             <TextInput
@@ -333,7 +333,7 @@ const CameraModalScreen = () => {
                     </View>
 
                     {/* Service Charge */}
-                    <View className="mb-4">
+                    <View className="mb-6">
                         <Text className="text-gray-600 mb-1">Service Charge</Text>
                         {isEditing ? (
                             <TextInput
@@ -348,7 +348,7 @@ const CameraModalScreen = () => {
                     </View>
 
                     {/* Discount */}
-                    <View className="mb-4">
+                    <View className="mb-6">
                         <Text className="text-gray-600 mb-1">Discount</Text>
                         {isEditing ? (
                             <TextInput
@@ -363,7 +363,7 @@ const CameraModalScreen = () => {
                     </View>
 
                     {/* Total Amount */}
-                    <View className="mb-4">
+                    <View className="mb-8">
                         <Text className="text-gray-600 mb-1">Total Amount</Text>
                         {isEditing ? (
                             <TextInput
@@ -380,7 +380,7 @@ const CameraModalScreen = () => {
                     {/* Save Button */}
                     <TouchableOpacity
                         onPress={handleSave}
-                        className="bg-primary py-3 rounded-lg flex-row justify-center items-center mt-4"
+                        className="bg-primary py-3 rounded-lg flex-row justify-center items-center mt-4 mb-8"
                     >
                         <FontAwesome6 name="save" size={20} color="white" className="mr-2" />
                         <Text className="text-white font-semibold text-lg">Save Receipt</Text>
@@ -428,7 +428,7 @@ const CameraModalScreen = () => {
                     </Modal>
                 </View>
             </ScrollView>
-        )
+        );
     }
 
     return (
