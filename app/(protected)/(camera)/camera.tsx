@@ -29,7 +29,7 @@ const CameraScreen = () => {
     const [permission, requestPermission] = useCameraPermissions();
     const [lastImage, setLastImage] = useState('');
     const [isCropping, setIsCropping] = useState(false);
-    const cameraRef = useRef<any>(null);
+    const cameraRef = useRef<Camera | null>(null);
 
     // Keep the camera view dimensions for accurate cropping
     const [cameraViewDimensions, setCameraViewDimensions] = useState({
