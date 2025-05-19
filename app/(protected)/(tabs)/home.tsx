@@ -10,58 +10,6 @@ import { useEffect, useState } from 'react';
 import { fetchDocuments } from '@/contexts/actions/documentsActions';
 import { formatDate } from '@/utils/formatDate';
 
-// Mock data with more items
-const receipts = [
-    {
-        id: 1,
-        name: 'Alicia Keys',
-        location: 'Olinda, Brazil',
-    },
-    {
-        id: 2,
-        name: 'Michael Jackson',
-        location: 'Recife, Brazil',
-    },
-    {
-        id: 3,
-        name: 'Maxell Milay',
-        location: 'Racist, Brazil',
-    },
-    {
-        id: 4,
-        name: 'John Doe',
-        location: 'Salvador, Brazil',
-    },
-    {
-        id: 5,
-        name: 'Jane Smith',
-        location: 'Rio, Brazil',
-    },
-    {
-        id: 6,
-        name: 'Bob Wilson h',
-        location: 'Manaus, Brazil',
-    },
-];
-
-const document = [
-    {
-        id: 1,
-        date: 'Mar 05',
-    },
-    {
-        id: 2,
-        date: 'Aug 26',
-    },
-    {
-        id: 3,
-        date: 'Nov 8',
-    },
-    {
-        id: 4,
-        date: 'Dec 12',
-    },
-];
 
 const EmptyReceiptsState = () => (
     <View className="items-center justify-center py-8">
@@ -111,29 +59,33 @@ const HomeScreen = () => {
         );
     }
 
-    const renderReceiptsSection = () => (
-        <View className="mt-8">
-            <View className="flex-row justify-between mb-2 items-center">
-                <Text className="text-xl font-bold">Your Receipts</Text>
-                <Link href="/(protected)/(tabs)/receipts" asChild>
-                    <TouchableOpacity>
-                        <Text className="text-primary">See more</Text>
-                    </TouchableOpacity>
-                </Link>
+    const renderReceiptsSection = () => {
+        const recentReceipts = receipts?.objects?.slice(0, 5) || [];
+
+        return (
+            <View className="mt-8">
+                <View className="flex-row justify-between mb-2 items-center">
+                    <Text className="text-xl font-bold">Your Receipts</Text>
+                    <Link href="/(protected)/(tabs)/receipts" asChild>
+                        <TouchableOpacity>
+                            <Text className="text-primary">See all {receipts?.objects?.length || 0} receipts</Text>
+                        </TouchableOpacity>
+                    </Link>
+                </View>
+                {(!receipts?.objects || receipts.objects.length === 0) ? (
+                    <EmptyReceiptsState />
+                ) : (
+                    <FlatList
+                        data={recentReceipts}
+                        renderItem={renderReceiptItem}
+                        keyExtractor={(item) => item.id.toString()}
+                        scrollEnabled={false}
+                        showsVerticalScrollIndicator={false}
+                    />
+                )}
             </View>
-            {(!receipts?.objects || receipts.objects.length === 0) ? (
-                <EmptyReceiptsState />
-            ) : (
-                <FlatList
-                    data={receipts.objects}
-                    renderItem={renderReceiptItem}
-                    keyExtractor={(item) => item.id.toString()} 
-                    scrollEnabled={false}
-                    showsVerticalScrollIndicator={false}
-                />
-            )}
-        </View>
-    );
+        );
+    };
 
     const renderHeader = () => (
         <>
@@ -213,17 +165,20 @@ const HomeScreen = () => {
                 <FontAwesome6 name="image" size={24} color="#A0A0A0" />
             </View>
             <View className="ml-2 p-4  flex-1">
-                <Text className="font-semibold text-md">{item.title}</Text>
-                <Text className="text-gray-500">{formatDate(item.created_at)}</Text>
+                <Text className="font-semibold text-sm">{item.title}</Text>
+                <Text className="text-xs">Category: {item.category}</Text>
+                <Text className=" text-xs">Total Expenditure: P{item.total_expediture}</Text>
+
+                <Text className="text-xs text-gray-500">{formatDate(item.created_at)}</Text>
             </View>
-            <FontAwesome6 name="chevron-right" size={20} color="#A0A0A0" />
+            <FontAwesome6 className="mr-4" name="chevron-right" size={10} color="#A0A0A0" />
         </TouchableOpacity>
     );
 
     return (
         <ScrollableLayout>
             <FlatList
-                data={receipts.objects}
+                data={[]}
                 renderItem={renderReceiptItem}
                 keyExtractor={(item) => item.id.toString()}
                 ListHeaderComponent={renderHeader}
