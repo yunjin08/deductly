@@ -9,7 +9,6 @@ import {
 import { FontAwesome6 } from '@expo/vector-icons';
 import { ScrollableLayout } from './ScrollableLayout';
 import Header from '@/components/Header';
-import { Receipt, Document } from '@/interfaces';
 import { ReceiptDetailsModal } from './ReceiptDetailsModal';
 import { DocumentDetailsModal } from './DocumentDetailsModal';
 import { ReportDetailsModal } from './ReportDetailsModal';
@@ -164,7 +163,15 @@ export const DataPreview = ({
         setIsSelectionMode(false);
     };
 
-    const TimePeriodButton = ({ period, label, className = '' }: { period: TimePeriod; label: string, className?: string }) => (
+    const TimePeriodButton = ({
+        period,
+        label,
+        className = '',
+    }: {
+        period: TimePeriod;
+        label: string;
+        className?: string;
+    }) => (
         <TouchableOpacity
             onPress={() => setSelectedPeriod(period)}
             className={`px-4 py-2 ${
@@ -181,7 +188,15 @@ export const DataPreview = ({
         </TouchableOpacity>
     );
 
-    const SortButton = ({ order, label, className = '' }: { order: SortOrder; label: string; className?: string }) => (
+    const SortButton = ({
+        order,
+        label,
+        className = '',
+    }: {
+        order: SortOrder;
+        label: string;
+        className?: string;
+    }) => (
         <TouchableOpacity
             onPress={() => setSortOrder(order)}
             className={`px-4 py-2 ${
@@ -215,23 +230,46 @@ export const DataPreview = ({
                 )}
             </View>
             {itemType === 'report' && (
-                <>  {data && data.length > 0 && (
-                        <ReportGraph reports={data?.filter((item): item is ReportDetails => 
-                            'start_date' in item && 'end_date' in item && 
-                            'grand_total_expenditure' in item && 'total_tax_deductions' in item
-                        )} />
+                <>
+                    {' '}
+                    {data && data.length > 0 && (
+                        <ReportGraph
+                            reports={data?.filter(
+                                (item): item is ReportDetails =>
+                                    'start_date' in item &&
+                                    'end_date' in item &&
+                                    'grand_total_expenditure' in item &&
+                                    'total_tax_deductions' in item
+                            )}
+                        />
                     )}
                     <View className="flex-row justify-center space-x-2 mb-4">
-                        <TimePeriodButton period="weekly" label="Weekly" className="rounded-l-lg" />
+                        <TimePeriodButton
+                            period="weekly"
+                            label="Weekly"
+                            className="rounded-l-lg"
+                        />
                         <TimePeriodButton period="monthly" label="Monthly" />
-                        <TimePeriodButton period="yearly" label="Yearly" className="rounded-r-lg" />
+                        <TimePeriodButton
+                            period="yearly"
+                            label="Yearly"
+                            className="rounded-r-lg"
+                        />
                     </View>
                 </>
             )}
             {(itemType === 'document' || itemType === 'receipt') && (
                 <View className="flex-row justify-center space-x-2 mb-4">
-                    <SortButton order="latest" label="Latest" className="rounded-l-lg" />
-                    <SortButton order="oldest" label="Oldest" className="rounded-r-lg" />
+                    <SortButton
+                        order="latest"
+                        label="Latest"
+                        className="rounded-l-lg"
+                    />
+                    <SortButton
+                        order="oldest"
+                        label="Oldest"
+                        className="rounded-r-lg"
+                    />
                 </View>
             )}
         </>
@@ -265,7 +303,9 @@ export const DataPreview = ({
                 </View>
                 <View className="flex-1">
                     <Text className="text-base font-medium">{item.title}</Text>
-                    <Text className="text-gray-500">{formatDate(item.created_at)}</Text>
+                    <Text className="text-gray-500">
+                        {formatDate(item.created_at)}
+                    </Text>
                 </View>
                 {isSelectionMode && (
                     <View

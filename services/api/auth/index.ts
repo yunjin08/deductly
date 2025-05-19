@@ -1,4 +1,5 @@
 import { api } from '../baseApi';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const login = async (username: string, password: string) => {
     try {
@@ -10,6 +11,9 @@ export const login = async (username: string, password: string) => {
         const data = response.data;
         const jwtToken = data['token'];
         const user = data['user'];
+
+        // Store token in AsyncStorage
+        await AsyncStorage.setItem('auth_token', jwtToken);
 
         return {
             token: jwtToken,
@@ -37,6 +41,15 @@ export const register = async (registrationData: any) => {
 
         return registeredUsername;
     } catch (error) {
+        throw error;
+    }
+};
+
+export const logout = async () => {
+    try {
+        await AsyncStorage.removeItem('auth_token');
+    } catch (error) {
+        console.error('Error during logout:', error);
         throw error;
     }
 };

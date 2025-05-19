@@ -4,10 +4,9 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import Header from '@/components/Header';
 import { FlatList } from 'react-native';
 import { useState, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '@/hooks/useAuthHooks';
+import { useAppDispatch } from '@/hooks/useAuthHooks';
 import { fetchImages } from '@/contexts/actions/galleryActions';
 import { router } from 'expo-router';
-import type { RootState } from '@/contexts/reducers';
 import { useSelector } from 'react-redux';
 
 // Define the type for gallery image items
@@ -22,7 +21,9 @@ const EmptyGalleryState = () => (
         <View className="bg-primary/10 p-4 rounded-full mb-4">
             <FontAwesome6 name="image" size={32} color="#1fddee" />
         </View>
-        <Text className="text-xl font-semibold text-gray-800 mb-2">No Images Yet</Text>
+        <Text className="text-xl font-semibold text-gray-800 mb-2">
+            No Images Yet
+        </Text>
         <Text className="text-gray-500 text-center px-8">
             Start capturing or uploading images to build your gallery
         </Text>
@@ -30,7 +31,9 @@ const EmptyGalleryState = () => (
             onPress={() => router.push('/(protected)/(camera)/camera')}
             className="mt-4 border border-primary rounded-full px-6 py-2"
         >
-            <Text className="text-primary font-semibold">Take Your First Photo</Text>
+            <Text className="text-primary font-semibold">
+                Take Your First Photo
+            </Text>
         </TouchableOpacity>
     </View>
 );
@@ -129,7 +132,8 @@ const GalleryScreen = () => {
             <View className="flex-1 items-center justify-center p-4">
                 <Text className="text-red-500 text-center mb-4">{error}</Text>
                 <Text className="text-gray-500 text-center">
-                    Please try again later or contact support if the problem persists.
+                    Please try again later or contact support if the problem
+                    persists.
                 </Text>
             </View>
         );
@@ -157,7 +161,9 @@ const GalleryScreen = () => {
                                   }
                                 : undefined
                         }
-                        renderItem={isGridView ? renderGridItem : renderListItem}
+                        renderItem={
+                            isGridView ? renderGridItem : renderListItem
+                        }
                     />
                 </View>
             )}

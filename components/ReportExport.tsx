@@ -9,25 +9,25 @@ import * as MediaLibrary from 'expo-media-library';
  * @param report - The report data to export
  */
 export const exportReportToPDF = async (report: any) => {
-  try {
-    // Format dates for display
-    const formatDate = (dateString: string) => {
-      if (!dateString) return 'N/A';
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-      });
-    };
+    try {
+        // Format dates for display
+        const formatDate = (dateString: string) => {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric',
+            });
+        };
 
-    // Calculate net expenditure
-    const grandTotal = parseFloat(report.grand_total_expenditure || '0');
-    const taxDeductions = parseFloat(report.total_tax_deductions || '0');
-    const netExpenditure = (grandTotal - taxDeductions).toFixed(2);
+        // Calculate net expenditure
+        const grandTotal = parseFloat(report.grand_total_expenditure || '0');
+        const taxDeductions = parseFloat(report.total_tax_deductions || '0');
+        const netExpenditure = (grandTotal - taxDeductions).toFixed(2);
 
-    // Create HTML content for the PDF
-    const htmlContent = `
+        // Create HTML content for the PDF
+        const htmlContent = `
       <!DOCTYPE html>
       <html>
         <head>
@@ -145,87 +145,100 @@ export const exportReportToPDF = async (report: any) => {
           <div class="section">
             <div class="section-title">Additional Information</div>
             ${Object.entries(report)
-              .filter(([key]) => 
-                !['id', 'title', 'category', 'start_date', 'end_date', 
-                  'grand_total_expenditure', 'total_tax_deductions', 
-                  'created_at', 'updated_at'].includes(key)
-              )
-              .map(([key, value]) => {
-                if (typeof value === 'object' && value !== null) {
-                  return `
+                .filter(
+                    ([key]) =>
+                        ![
+                            'id',
+                            'title',
+                            'category',
+                            'start_date',
+                            'end_date',
+                            'grand_total_expenditure',
+                            'total_tax_deductions',
+                            'created_at',
+                            'updated_at',
+                        ].includes(key)
+                )
+                .map(([key, value]) => {
+                    if (typeof value === 'object' && value !== null) {
+                        return `
                     <div class="row">
-                      <span class="label">${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:</span>
+                      <span class="label">${key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}:</span>
                       <span class="value">${JSON.stringify(value)}</span>
                     </div>
                   `;
-                } else {
-                  return `
+                    } else {
+                        return `
                     <div class="row">
-                      <span class="label">${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:</span>
+                      <span class="label">${key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}:</span>
                       <span class="value">${value}</span>
                     </div>
                   `;
-                }
-              }).join('')}
+                    }
+                })
+                .join('')}
           </div>
           
           <div class="footer">
             <p>Generated on ${new Date().toLocaleDateString('en-US', {
-              month: 'long',
-              day: 'numeric',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
             })}</p>
           </div>
         </body>
       </html>
     `;
 
-    // Generate the PDF file
-    const { uri } = await Print.printToFileAsync({ 
-      html: htmlContent,
-      base64: false 
-    });
-    
-    // Create a more readable filename
-    const sanitizedTitle = (report.title || 'Report')
-      .replace(/[^a-z0-9]/gi, '_')
-      .toLowerCase();
-      
-    const fileName = `${sanitizedTitle}_${new Date().toISOString().split('T')[0]}.pdf`;
-    const fileUri = FileSystem.documentDirectory + fileName;
-    
-    // Copy to the new location with a readable name
-    await FileSystem.copyAsync({
-      from: uri,
-      to: fileUri
-    });
-    
-    // Clean up the original file
-    await FileSystem.deleteAsync(uri, { idempotent: true });
-    
-    if (Platform.OS === 'android') {
-      // Save to device storage on Android
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      
-      if (status === 'granted') {
-        // Save file to media library
-        await MediaLibrary.createAssetAsync(fileUri);
-        Alert.alert('Success', 'Report saved to your device');
-      } else {
-        // If no permission, just share the file
-        await Sharing.shareAsync(fileUri);
-      }
-    } else {
-      // On iOS, just use the sharing dialog
-      await Sharing.shareAsync(fileUri);
+        // Generate the PDF file
+        const { uri } = await Print.printToFileAsync({
+            html: htmlContent,
+            base64: false,
+        });
+
+        // Create a more readable filename
+        const sanitizedTitle = (report.title || 'Report')
+            .replace(/[^a-z0-9]/gi, '_')
+            .toLowerCase();
+
+        const fileName = `${sanitizedTitle}_${new Date().toISOString().split('T')[0]}.pdf`;
+        const fileUri = FileSystem.documentDirectory + fileName;
+
+        // Copy to the new location with a readable name
+        await FileSystem.copyAsync({
+            from: uri,
+            to: fileUri,
+        });
+
+        // Clean up the original file
+        await FileSystem.deleteAsync(uri, { idempotent: true });
+
+        if (Platform.OS === 'android') {
+            // Save to device storage on Android
+            const { status } = await MediaLibrary.requestPermissionsAsync();
+
+            if (status === 'granted') {
+                // Save file to media library
+                await MediaLibrary.createAssetAsync(fileUri);
+                Alert.alert('Success', 'Report saved to your device');
+            } else {
+                // If no permission, just share the file
+                await Sharing.shareAsync(fileUri);
+            }
+        } else {
+            // On iOS, just use the sharing dialog
+            await Sharing.shareAsync(fileUri);
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Error exporting report:', error);
+        Alert.alert(
+            'Export Failed',
+            'There was an error exporting your report.'
+        );
+        return false;
     }
-    
-    return true;
-  } catch (error) {
-    console.error('Error exporting report:', error);
-    Alert.alert('Export Failed', 'There was an error exporting your report.');
-    return false;
-  }
 };

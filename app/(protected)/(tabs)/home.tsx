@@ -1,4 +1,11 @@
-import { View, Text, TouchableOpacity, Image, FlatList, ActivityIndicator } from 'react-native';
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    Image,
+    FlatList,
+    ActivityIndicator,
+} from 'react-native';
 import { Link, router } from 'expo-router';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { ScrollableLayout } from '@/components/ScrollableLayout';
@@ -10,13 +17,14 @@ import { useEffect, useState } from 'react';
 import { fetchDocuments } from '@/contexts/actions/documentsActions';
 import { formatDate } from '@/utils/formatDate';
 
-
 const EmptyReceiptsState = () => (
     <View className="items-center justify-center py-8">
         <View className="bg-primary/10 p-4 rounded-full mb-4">
             <FontAwesome6 name="receipt" size={32} color="#1fddee" />
         </View>
-        <Text className="text-xl font-semibold text-gray-800 mb-2">No Receipts Yet</Text>
+        <Text className="text-xl font-semibold text-gray-800 mb-2">
+            No Receipts Yet
+        </Text>
         <Text className="text-gray-500 text-center px-8">
             Start scanning your receipts to keep track of your expenses
         </Text>
@@ -24,7 +32,9 @@ const EmptyReceiptsState = () => (
             onPress={() => router.push('/(protected)/(camera)/camera')}
             className="mt-4 border border-primary rounded-full px-6 py-2"
         >
-            <Text className="text-primary font-semibold">Scan Your First Receipt</Text>
+            <Text className="text-primary font-semibold">
+                Scan Your First Receipt
+            </Text>
         </TouchableOpacity>
     </View>
 );
@@ -42,18 +52,25 @@ const HomeScreen = () => {
             try {
                 await Promise.all([
                     dispatch(fetchReceipts()),
-                    dispatch(fetchDocuments())
+                    dispatch(fetchDocuments()),
                 ]);
             } finally {
                 setIsLoading(false);
             }
         };
         loadData();
-    }, []);
+    }, [dispatch]);
 
     if (isLoading) {
         return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: '#fff',
+                }}
+            >
                 <ActivityIndicator size="large" color="#1fddee" />
             </View>
         );
@@ -68,11 +85,14 @@ const HomeScreen = () => {
                     <Text className="text-xl font-bold">Your Receipts</Text>
                     <Link href="/(protected)/(tabs)/receipts" asChild>
                         <TouchableOpacity>
-                            <Text className="text-primary">See all {receipts?.objects?.length || 0} receipts</Text>
+                            <Text className="text-primary">
+                                See all {receipts?.objects?.length || 0}{' '}
+                                receipts
+                            </Text>
                         </TouchableOpacity>
                     </Link>
                 </View>
-                {(!receipts?.objects || receipts.objects.length === 0) ? (
+                {!receipts?.objects || receipts.objects.length === 0 ? (
                     <EmptyReceiptsState />
                 ) : (
                     <FlatList
@@ -132,7 +152,7 @@ const HomeScreen = () => {
             </View>
 
             <FlatList
-                data={documents.objects}
+                data={documents?.objects || []}
                 renderItem={({ item }) => (
                     <TouchableOpacity>
                         <View className="w-80 h-48 bg-gray-50 rounded-xl items-center justify-center">
@@ -167,18 +187,27 @@ const HomeScreen = () => {
             <View className="ml-2 p-4  flex-1">
                 <Text className="font-semibold text-sm">{item.title}</Text>
                 <Text className="text-xs">Category: {item.category}</Text>
-                <Text className=" text-xs">Total Expenditure: P{item.total_expediture}</Text>
+                <Text className=" text-xs">
+                    Total Expenditure: P{item.total_expediture}
+                </Text>
 
-                <Text className="text-xs text-gray-500">{formatDate(item.created_at)}</Text>
+                <Text className="text-xs text-gray-500">
+                    {formatDate(item.created_at)}
+                </Text>
             </View>
-            <FontAwesome6 className="mr-4" name="chevron-right" size={10} color="#A0A0A0" />
+            <FontAwesome6
+                className="mr-4"
+                name="chevron-right"
+                size={10}
+                color="#A0A0A0"
+            />
         </TouchableOpacity>
     );
 
     return (
         <ScrollableLayout>
             <FlatList
-                data={[]}
+                data={receipts?.objects || []}
                 renderItem={renderReceiptItem}
                 keyExtractor={(item) => item.id.toString()}
                 ListHeaderComponent={renderHeader}
