@@ -35,7 +35,7 @@ const mockReceipts = [
 
 const ReceiptsScreen = () => {
     const dispatch = useAppDispatch();
-    const receipts = useSelector((state: any) => state.receipts.receipts);
+    const receipts = useSelector((state: any) => state.receipts?.receipts);
 
     useEffect(() => {
         dispatch(fetchReceipts());

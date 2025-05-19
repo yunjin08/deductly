@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -13,6 +13,8 @@ import { Receipt, Document } from '@/interfaces';
 import { ReceiptDetailsModal } from './ReceiptDetailsModal';
 import { DocumentDetailsModal } from './DocumentDetailsModal';
 import { ReportDetailsModal } from './ReportDetailsModal';
+import { ReportGraph } from './ReportGraph';
+import { formatDate } from '@/utils/formatDate';
 
 // Custom interface that extends Receipt for our specific use case
 interface ReceiptDetails {
@@ -65,6 +67,9 @@ interface DataPreviewProps {
     generateButtonText?: string;
 }
 
+type TimePeriod = 'weekly' | 'monthly' | 'yearly';
+type SortOrder = 'latest' | 'oldest';
+
 export const DataPreview = ({
     data,
     title,
@@ -88,6 +93,28 @@ export const DataPreview = ({
     const [selectedReport, setSelectedReport] = useState<ReportDetails | null>(
         null
     );
+    const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('monthly');
+    const [sortOrder, setSortOrder] = useState<SortOrder>('latest');
+    const [filteredData, setFilteredData] = useState(data);
+
+    useEffect(() => {
+        let processedData = [...(data || [])];
+
+        if (itemType === 'report') {
+            processedData = processedData.filter((item: any) => {
+                return item?.category?.toLowerCase() === selectedPeriod;
+            });
+        }
+
+        // Sort by created_at date
+        processedData.sort((a: any, b: any) => {
+            const dateA = new Date(a.created_at).getTime();
+            const dateB = new Date(b.created_at).getTime();
+            return sortOrder === 'latest' ? dateB - dateA : dateA - dateB;
+        });
+
+        setFilteredData(processedData);
+    }, [selectedPeriod, sortOrder, data, itemType]);
 
     const handleLongPress = (id: number) => {
         setIsSelectionMode(true);
@@ -137,10 +164,44 @@ export const DataPreview = ({
         setIsSelectionMode(false);
     };
 
+    const TimePeriodButton = ({ period, label, className = '' }: { period: TimePeriod; label: string, className?: string }) => (
+        <TouchableOpacity
+            onPress={() => setSelectedPeriod(period)}
+            className={`px-4 py-2 ${
+                selectedPeriod === period ? 'bg-primary' : 'bg-gray-200'
+            } ${className}`}
+        >
+            <Text
+                className={`font-medium ${
+                    selectedPeriod === period ? 'text-white' : 'text-gray-700'
+                }`}
+            >
+                {label}
+            </Text>
+        </TouchableOpacity>
+    );
+
+    const SortButton = ({ order, label, className = '' }: { order: SortOrder; label: string; className?: string }) => (
+        <TouchableOpacity
+            onPress={() => setSortOrder(order)}
+            className={`px-4 py-2 ${
+                sortOrder === order ? 'bg-primary' : 'bg-gray-200'
+            } ${className}`}
+        >
+            <Text
+                className={`font-medium ${
+                    sortOrder === order ? 'text-white' : 'text-gray-700'
+                }`}
+            >
+                {label}
+            </Text>
+        </TouchableOpacity>
+    );
+
     const renderHeader = () => (
         <>
             <Header />
-            <View className="flex-row justify-between items-center mb-6">
+            <View className="flex-row justify-between items-center mb-4">
                 <Text className="text-2xl w-full text-center font-bold">
                     {isSelectionMode ? selectionTitle : title}
                 </Text>
@@ -153,6 +214,26 @@ export const DataPreview = ({
                     </TouchableOpacity>
                 )}
             </View>
+            {itemType === 'report' && (
+                <>  {data && data.length > 0 && (
+                        <ReportGraph reports={data?.filter((item): item is ReportDetails => 
+                            'start_date' in item && 'end_date' in item && 
+                            'grand_total_expenditure' in item && 'total_tax_deductions' in item
+                        )} />
+                    )}
+                    <View className="flex-row justify-center space-x-2 mb-4">
+                        <TimePeriodButton period="weekly" label="Weekly" className="rounded-l-lg" />
+                        <TimePeriodButton period="monthly" label="Monthly" />
+                        <TimePeriodButton period="yearly" label="Yearly" className="rounded-r-lg" />
+                    </View>
+                </>
+            )}
+            {(itemType === 'document' || itemType === 'receipt') && (
+                <View className="flex-row justify-center space-x-2 mb-4">
+                    <SortButton order="latest" label="Latest" className="rounded-l-lg" />
+                    <SortButton order="oldest" label="Oldest" className="rounded-r-lg" />
+                </View>
+            )}
         </>
     );
 
@@ -184,7 +265,7 @@ export const DataPreview = ({
                 </View>
                 <View className="flex-1">
                     <Text className="text-base font-medium">{item.title}</Text>
-                    <Text className="text-gray-500">{item.created_at}</Text>
+                    <Text className="text-gray-500">{formatDate(item.created_at)}</Text>
                 </View>
                 {isSelectionMode && (
                     <View
@@ -210,7 +291,7 @@ export const DataPreview = ({
     return (
         <ScrollableLayout>
             <FlatList
-                data={data}
+                data={filteredData}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={renderItem}
                 ListHeaderComponent={renderHeader}
