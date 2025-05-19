@@ -1,3 +1,4 @@
+import React from 'react';
 import { View, Text, TouchableOpacity, Image, FlatList } from 'react-native';
 import { Link, router } from 'expo-router';
 import { FontAwesome6 } from '@expo/vector-icons';
@@ -65,14 +66,10 @@ const document = [
 const HomeScreen = () => {
     const dispatch = useAppDispatch();
     const receipts = useSelector((state: any) => state.receipts.receipts);
-
-    useEffect(() => {
-        dispatch(fetchReceipts());
-    }, []);
-
     const documents = useSelector((state: any) => state.documents.documents);
 
     useEffect(() => {
+        dispatch(fetchReceipts());
         dispatch(fetchDocuments());
     }, []);
 
@@ -130,7 +127,7 @@ const HomeScreen = () => {
             </View>
 
             <FlatList
-                data={documents.objects}
+                data={documents?.objects || []}
                 renderItem={({ item }) => (
                     <TouchableOpacity>
                         <View className="w-80 h-48 bg-gray-50 rounded-xl items-center justify-center">
@@ -173,7 +170,7 @@ const HomeScreen = () => {
     return (
         <ScrollableLayout>
             <FlatList
-                data={receipts.objects}
+                data={receipts?.objects || []}
                 renderItem={renderReceiptItem}
                 keyExtractor={(item) => item.id.toString()}
                 ListHeaderComponent={renderHeader}
