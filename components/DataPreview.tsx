@@ -13,6 +13,7 @@ import { Receipt, Document } from '@/interfaces';
 import { ReceiptDetailsModal } from './ReceiptDetailsModal';
 import { DocumentDetailsModal } from './DocumentDetailsModal';
 import { ReportDetailsModal } from './ReportDetailsModal';
+import { ReportGraph } from './ReportGraph';
 import { formatDate } from '@/utils/formatDate';
 
 // Custom interface that extends Receipt for our specific use case
@@ -214,11 +215,18 @@ export const DataPreview = ({
                 )}
             </View>
             {itemType === 'report' && (
-                <View className="flex-row justify-center space-x-2 mb-4">
-                    <TimePeriodButton period="weekly" label="Weekly" className="rounded-l-lg" />
-                    <TimePeriodButton period="monthly" label="Monthly" />
-                    <TimePeriodButton period="yearly" label="Yearly" className="rounded-r-lg" />
-                </View>
+                <>  {data && data.length > 0 && (
+                        <ReportGraph reports={data?.filter((item): item is ReportDetails => 
+                            'start_date' in item && 'end_date' in item && 
+                            'grand_total_expenditure' in item && 'total_tax_deductions' in item
+                        )} />
+                    )}
+                    <View className="flex-row justify-center space-x-2 mb-4">
+                        <TimePeriodButton period="weekly" label="Weekly" className="rounded-l-lg" />
+                        <TimePeriodButton period="monthly" label="Monthly" />
+                        <TimePeriodButton period="yearly" label="Yearly" className="rounded-r-lg" />
+                    </View>
+                </>
             )}
             {(itemType === 'document' || itemType === 'receipt') && (
                 <View className="flex-row justify-center space-x-2 mb-4">
