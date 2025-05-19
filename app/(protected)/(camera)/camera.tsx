@@ -10,7 +10,7 @@ import { useCameraPermissions, CameraView } from 'expo-camera';
 import { CAMERA_FACE_DIRECTION } from '@/constants/Camera';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { useEffect, useState, useRef } from 'react';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
 import * as MediaLibrary from 'expo-media-library';
@@ -29,7 +29,7 @@ const CameraScreen = () => {
     const [permission, requestPermission] = useCameraPermissions();
     const [lastImage, setLastImage] = useState('');
     const [isCropping, setIsCropping] = useState(false);
-    const cameraRef = useRef<Camera | null>(null);
+    const cameraRef = useRef<any | null>(null);
 
     // Keep the camera view dimensions for accurate cropping
     const [cameraViewDimensions, setCameraViewDimensions] = useState({
@@ -104,14 +104,24 @@ const CameraScreen = () => {
         const frameY = (scaledPhotoHeight - RECEIPT_HEIGHT) / 2;
 
         // Convert frame coordinates back to original photo scale
-        const originX = Math.max(0, (frameX / scale));
-        const originY = Math.max(0, (frameY / scale));
-        const width = Math.min(photoWidth - originX, (RECEIPT_WIDTH / scale) * 1.3);
-        const height = Math.min(photoHeight - originY, (RECEIPT_HEIGHT / scale) * 1.5);
+        const originX = Math.max(0, frameX / scale);
+        const originY = Math.max(0, frameY / scale);
+        const width = Math.min(
+            photoWidth - originX,
+            (RECEIPT_WIDTH / scale) * 1.3
+        );
+        const height = Math.min(
+            photoHeight - originY,
+            (RECEIPT_HEIGHT / scale) * 1.5
+        );
 
         console.log('Photo dimensions:', photoWidth, photoHeight);
         console.log('View dimensions:', viewWidth, viewHeight);
-        console.log('Scaled photo dimensions:', scaledPhotoWidth, scaledPhotoHeight);
+        console.log(
+            'Scaled photo dimensions:',
+            scaledPhotoWidth,
+            scaledPhotoHeight
+        );
         console.log('Frame position:', frameX, frameY);
         console.log('Crop coordinates:', originX, originY, width, height);
 

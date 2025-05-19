@@ -7,8 +7,6 @@ import {
     ScrollView,
 } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { ScrollableLayout } from './ScrollableLayout';
-import { Document } from '@/interfaces';
 
 // Custom interface that extends Document for our specific use case
 interface DocumentDetails {

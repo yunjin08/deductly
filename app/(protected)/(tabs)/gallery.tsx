@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { ScrollableLayout } from '@/components/ScrollableLayout';
 import { FontAwesome6 } from '@expo/vector-icons';
 import Header from '@/components/Header';
@@ -6,6 +6,7 @@ import { FlatList } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useAppDispatch } from '@/hooks/useAuthHooks';
 import { fetchImages } from '@/contexts/actions/galleryActions';
+import { router } from 'expo-router';
 import { useSelector } from 'react-redux';
 
 // Define the type for gallery image items
@@ -15,14 +16,38 @@ interface GalleryImage {
     location?: string;
 }
 
+const EmptyGalleryState = () => (
+    <View className="items-center h-[80%] justify-center py-8">
+        <View className="bg-primary/10 p-4 rounded-full mb-4">
+            <FontAwesome6 name="image" size={32} color="#1fddee" />
+        </View>
+        <Text className="text-xl font-semibold text-gray-800 mb-2">
+            No Images Yet
+        </Text>
+        <Text className="text-gray-500 text-center px-8">
+            Start capturing or uploading images to build your gallery
+        </Text>
+        <TouchableOpacity
+            onPress={() => router.push('/(protected)/(camera)/camera')}
+            className="mt-4 border border-primary rounded-full px-6 py-2"
+        >
+            <Text className="text-primary font-semibold">
+                Take Your First Photo
+            </Text>
+        </TouchableOpacity>
+    </View>
+);
+
 const GalleryScreen = () => {
     const [isGridView, setIsGridView] = useState(true);
     const dispatch = useAppDispatch();
-    const images = useSelector((state: any) => state.gallery.images);
+    const images = useSelector((state: any) => state.gallery?.images);
+    const isLoading = useSelector((state: any) => state.gallery?.isLoading);
+    const error = useSelector((state: any) => state.gallery?.error);
 
     useEffect(() => {
         dispatch(fetchImages());
-    }, []);
+    }, [dispatch]);
 
     const ViewToggle = () => (
         <View className="flex-row gap-2 mb-4">
@@ -94,28 +119,54 @@ const GalleryScreen = () => {
         </View>
     );
 
+    if (isLoading) {
+        return (
+            <View className="flex-1 items-center justify-center">
+                <ActivityIndicator size="large" color="#1fddee" />
+            </View>
+        );
+    }
+
+    if (error) {
+        return (
+            <View className="flex-1 items-center justify-center p-4">
+                <Text className="text-red-500 text-center mb-4">{error}</Text>
+                <Text className="text-gray-500 text-center">
+                    Please try again later or contact support if the problem
+                    persists.
+                </Text>
+            </View>
+        );
+    }
+
     return (
         <ScrollableLayout>
             <Header />
             <ViewToggle />
-            <View className="flex-row flex-wrap gap-4">
-                <FlatList
-                    key={isGridView ? 'grid' : 'list'}
-                    data={images.objects}
-                    keyExtractor={(item) => item.id.toString()}
-                    numColumns={isGridView ? 2 : 1}
-                    scrollEnabled={false}
-                    showsVerticalScrollIndicator={false}
-                    columnWrapperStyle={
-                        isGridView
-                            ? {
-                                  gap: 16,
-                              }
-                            : undefined
-                    }
-                    renderItem={isGridView ? renderGridItem : renderListItem}
-                />
-            </View>
+            {images?.length === 0 || !images ? (
+                <EmptyGalleryState />
+            ) : (
+                <View className="flex-row flex-wrap gap-4">
+                    <FlatList
+                        key={isGridView ? 'grid' : 'list'}
+                        data={images}
+                        keyExtractor={(item) => item.id.toString()}
+                        numColumns={isGridView ? 2 : 1}
+                        scrollEnabled={false}
+                        showsVerticalScrollIndicator={false}
+                        columnWrapperStyle={
+                            isGridView
+                                ? {
+                                      gap: 16,
+                                  }
+                                : undefined
+                        }
+                        renderItem={
+                            isGridView ? renderGridItem : renderListItem
+                        }
+                    />
+                </View>
+            )}
         </ScrollableLayout>
     );
 };

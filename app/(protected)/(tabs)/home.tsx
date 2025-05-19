@@ -1,5 +1,11 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Image, FlatList } from 'react-native';
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    Image,
+    FlatList,
+    ActivityIndicator,
+} from 'react-native';
 import { Link, router } from 'expo-router';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { ScrollableLayout } from '@/components/ScrollableLayout';
@@ -7,71 +13,99 @@ import Header from '@/components/Header';
 import { useAppDispatch } from '@/hooks/useAuthHooks';
 import { useSelector } from 'react-redux';
 import { fetchReceipts } from '@/contexts/actions/receiptsActions';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchDocuments } from '@/contexts/actions/documentsActions';
+import { formatDate } from '@/utils/formatDate';
 
-// Mock data with more items
-const receipts = [
-    {
-        id: 1,
-        name: 'Alicia Keys',
-        location: 'Olinda, Brazil',
-    },
-    {
-        id: 2,
-        name: 'Michael Jackson',
-        location: 'Recife, Brazil',
-    },
-    {
-        id: 3,
-        name: 'Maxell Milay',
-        location: 'Racist, Brazil',
-    },
-    {
-        id: 4,
-        name: 'John Doe',
-        location: 'Salvador, Brazil',
-    },
-    {
-        id: 5,
-        name: 'Jane Smith',
-        location: 'Rio, Brazil',
-    },
-    {
-        id: 6,
-        name: 'Bob Wilson h',
-        location: 'Manaus, Brazil',
-    },
-];
-
-const document = [
-    {
-        id: 1,
-        date: 'Mar 05',
-    },
-    {
-        id: 2,
-        date: 'Aug 26',
-    },
-    {
-        id: 3,
-        date: 'Nov 8',
-    },
-    {
-        id: 4,
-        date: 'Dec 12',
-    },
-];
+const EmptyReceiptsState = () => (
+    <View className="items-center justify-center py-8">
+        <View className="bg-primary/10 p-4 rounded-full mb-4">
+            <FontAwesome6 name="receipt" size={32} color="#1fddee" />
+        </View>
+        <Text className="text-xl font-semibold text-gray-800 mb-2">
+            No Receipts Yet
+        </Text>
+        <Text className="text-gray-500 text-center px-8">
+            Start scanning your receipts to keep track of your expenses
+        </Text>
+        <TouchableOpacity
+            onPress={() => router.push('/(protected)/(camera)/camera')}
+            className="mt-4 border border-primary rounded-full px-6 py-2"
+        >
+            <Text className="text-primary font-semibold">
+                Scan Your First Receipt
+            </Text>
+        </TouchableOpacity>
+    </View>
+);
 
 const HomeScreen = () => {
     const dispatch = useAppDispatch();
     const receipts = useSelector((state: any) => state.receipts.receipts);
     const documents = useSelector((state: any) => state.documents.documents);
+    const [isLoading, setIsLoading] = useState(true);
+
+    console.log(receipts.objects);
 
     useEffect(() => {
-        dispatch(fetchReceipts());
-        dispatch(fetchDocuments());
-    }, []);
+        const loadData = async () => {
+            try {
+                await Promise.all([
+                    dispatch(fetchReceipts()),
+                    dispatch(fetchDocuments()),
+                ]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadData();
+    }, [dispatch]);
+
+    if (isLoading) {
+        return (
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: '#fff',
+                }}
+            >
+                <ActivityIndicator size="large" color="#1fddee" />
+            </View>
+        );
+    }
+
+    const renderReceiptsSection = () => {
+        const recentReceipts = receipts?.objects?.slice(0, 5) || [];
+
+        return (
+            <View className="mt-8">
+                <View className="flex-row justify-between mb-2 items-center">
+                    <Text className="text-xl font-bold">Your Receipts</Text>
+                    <Link href="/(protected)/(tabs)/receipts" asChild>
+                        <TouchableOpacity>
+                            <Text className="text-primary">
+                                See all {receipts?.objects?.length || 0}{' '}
+                                receipts
+                            </Text>
+                        </TouchableOpacity>
+                    </Link>
+                </View>
+                {!receipts?.objects || receipts.objects.length === 0 ? (
+                    <EmptyReceiptsState />
+                ) : (
+                    <FlatList
+                        data={recentReceipts}
+                        renderItem={renderReceiptItem}
+                        keyExtractor={(item) => item.id.toString()}
+                        scrollEnabled={false}
+                        showsVerticalScrollIndicator={false}
+                    />
+                )}
+            </View>
+        );
+    };
 
     const renderHeader = () => (
         <>
@@ -93,25 +127,16 @@ const HomeScreen = () => {
                 </View>
                 <TouchableOpacity
                     onPress={() => router.push('/(protected)/(camera)/camera')}
-                    className="mt-4 w-full border border-primary rounded-full p-4 items-center"
+                    className="mt-4 w-full border border-primary rounded-full p-3 items-center"
                 >
-                    <Text className="text-primary font-semibold text-lg">
+                    <Text className="text-primary font-semibold text-md">
                         Scan Now
                     </Text>
                 </TouchableOpacity>
             </View>
 
             {/* Receipts Section */}
-            <View className="mt-8">
-                <View className="flex-row justify-between items-center">
-                    <Text className="text-xl font-bold">Your Receipts</Text>
-                    <Link href="/(protected)/(tabs)/receipts" asChild>
-                        <TouchableOpacity>
-                            <Text className="text-primary">See more</Text>
-                        </TouchableOpacity>
-                    </Link>
-                </View>
-            </View>
+            {renderReceiptsSection()}
         </>
     );
 
@@ -159,11 +184,23 @@ const HomeScreen = () => {
             <View className="w-24 h-full bg-gray-200 rounded-lg items-center justify-center">
                 <FontAwesome6 name="image" size={24} color="#A0A0A0" />
             </View>
-            <View className="ml-4 p-4  flex-1">
-                <Text className="font-semibold text-lg">{item.title}</Text>
-                <Text className="text-gray-500">{item.created_at}</Text>
+            <View className="ml-2 p-4  flex-1">
+                <Text className="font-semibold text-sm">{item.title}</Text>
+                <Text className="text-xs">Category: {item.category}</Text>
+                <Text className=" text-xs">
+                    Total Expenditure: P{item.total_expediture}
+                </Text>
+
+                <Text className="text-xs text-gray-500">
+                    {formatDate(item.created_at)}
+                </Text>
             </View>
-            <FontAwesome6 name="chevron-right" size={20} color="#A0A0A0" />
+            <FontAwesome6
+                className="mr-4"
+                name="chevron-right"
+                size={10}
+                color="#A0A0A0"
+            />
         </TouchableOpacity>
     );
 

@@ -5,7 +5,6 @@ import {
     Text,
     TouchableOpacity,
     TextInput,
-    ActivityIndicator,
 } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
@@ -26,7 +25,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 const SignInScreen = () => {
     const dispatch = useAppDispatch();
-    const { errors, isLoading } = useAppSelector((state) => state.auth);
+    const { errors } = useAppSelector((state) => state.auth);
     const { registeredUsername } = useLocalSearchParams<{
         registeredUsername: string;
     }>();

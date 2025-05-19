@@ -1,6 +1,13 @@
-import { View, Text, Modal, TouchableOpacity, ScrollView } from 'react-native';
+import {
+    View,
+    Text,
+    Modal,
+    TouchableOpacity,
+    ScrollView,
+    Alert,
+} from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { ScrollableLayout } from './ScrollableLayout';
+import { exportReportToPDF } from './ReportExport';
 
 interface ReportDetails {
     id: string;
@@ -34,6 +41,27 @@ export const ReportDetailsModal = ({
             day: 'numeric',
             year: 'numeric',
         });
+    };
+
+    const handleExportReport = async () => {
+        if (!report) {
+            Alert.alert('Error', 'No report data available to export');
+            return;
+        }
+
+        try {
+            const success = await exportReportToPDF(report);
+            if (success) {
+                // The exportReportToPDF function already shows success alerts
+                console.log('Report exported successfully');
+            }
+        } catch (error) {
+            console.error('Failed to export report:', error);
+            Alert.alert(
+                'Export Failed',
+                'There was an error exporting your report'
+            );
+        }
     };
 
     return (
@@ -160,7 +188,10 @@ export const ReportDetailsModal = ({
                             </View>
 
                             {/* Export Report Button */}
-                            <TouchableOpacity className="bg-primary py-4 rounded-xl mt-4 mb-6">
+                            <TouchableOpacity
+                                onPress={handleExportReport}
+                                className="bg-primary py-4 rounded-xl mt-4 mb-6"
+                            >
                                 <Text className="text-white text-center font-semibold">
                                     Export Report
                                 </Text>

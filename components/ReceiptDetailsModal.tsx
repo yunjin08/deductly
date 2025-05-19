@@ -1,7 +1,5 @@
 import { View, Text, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { ScrollableLayout } from './ScrollableLayout';
-import { Receipt } from '@/interfaces';
 
 // ReceiptItem interface for the items property
 interface ReceiptItem {
