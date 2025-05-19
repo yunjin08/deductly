@@ -129,7 +129,7 @@ export const cameraService = {
                     deductible_amount: parseFloat(item.deductible_amount || '0'),
                 })),
                 totals: {
-                    total_expediture: parseFloat(receiptData.totals.total_expediture),
+                    total_expenditure: parseFloat(receiptData.totals.total_expediture),
                     value_added_tax: parseFloat(receiptData.totals.value_added_tax),
                     discount: parseFloat(receiptData.totals.discount),
                 },
