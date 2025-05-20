@@ -61,7 +61,7 @@ api.interceptors.response.use(
 
 export const createApiService = <T>(endpoint: string) => ({
     getAll: async () => {
-        const response = await api.get<T[]>(endpoint);
+        const response = await api.get<T[]>(`${endpoint}/`);
         return response.data;
     },
 
@@ -71,7 +71,7 @@ export const createApiService = <T>(endpoint: string) => ({
     },
 
     create: async (data: Partial<T>) => {
-        const response = await api.post<T>(endpoint, data);
+        const response = await api.post<T>(`${endpoint}/`, data);
         return response.data;
     },
 
