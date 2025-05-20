@@ -39,6 +39,28 @@ const EmptyReceiptsState = () => (
     </View>
 );
 
+const EmptyDocumentsState = () => (
+    <View className="items-center justify-center py-8">
+        <View className="bg-primary/10 p-4 rounded-full mb-4">
+            <FontAwesome6 name="file-pdf" size={32} color="#1fddee" />
+        </View>
+        <Text className="text-xl font-semibold text-gray-800 mb-2">
+            No Documents Yet
+        </Text>
+        <Text className="text-gray-500 text-center px-8">
+            Upload your documents to keep them organized and accessible
+        </Text>
+        <TouchableOpacity
+            onPress={() => router.push('/(protected)/(tabs)/documents')}
+            className="mt-4 border border-primary rounded-full px-6 py-2"
+        >
+            <Text className="text-primary font-semibold">
+                Upload Your First Document
+            </Text>
+        </TouchableOpacity>
+    </View>
+);
+
 const HomeScreen = () => {
     const dispatch = useAppDispatch();
     const receipts = useSelector((state: any) => state.receipts.receipts);
@@ -85,10 +107,12 @@ const HomeScreen = () => {
                     <Text className="text-xl font-bold">Your Receipts</Text>
                     <Link href="/(protected)/(tabs)/receipts" asChild>
                         <TouchableOpacity>
-                            <Text className="text-primary">
-                                See all {receipts?.objects?.length || 0}{' '}
-                                receipts
-                            </Text>
+                            {receipts?.objects?.length > 5 && (
+                                <Text className="text-primary">
+                                    See all {receipts?.objects?.length || 0}{' '}
+                                    receipts
+                                </Text>
+                            )}
                         </TouchableOpacity>
                     </Link>
                 </View>
@@ -151,31 +175,35 @@ const HomeScreen = () => {
                 </Link>
             </View>
 
-            <FlatList
-                data={documents?.objects || []}
-                renderItem={({ item }) => (
-                    <TouchableOpacity>
-                        <View className="w-80 h-48 bg-gray-50 rounded-xl items-center justify-center">
-                            <View className="bg-primary/20 p-3 rounded-full">
-                                <FontAwesome6
-                                    name="file-pdf"
-                                    size={24}
-                                    color="#4CD4E2"
-                                />
+            {!documents?.objects || documents.objects.length === 0 ? (
+                <EmptyDocumentsState />
+            ) : (
+                <FlatList
+                    data={documents?.objects || []}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity>
+                            <View className="w-80 h-48 bg-gray-50 rounded-xl items-center justify-center">
+                                <View className="bg-primary/20 p-3 rounded-full">
+                                    <FontAwesome6
+                                        name="file-pdf"
+                                        size={24}
+                                        color="#4CD4E2"
+                                    />
+                                </View>
+                                <Text className="mt-2 text-primary font-medium">
+                                    {item.title}
+                                </Text>
                             </View>
-                            <Text className="mt-2 text-primary font-medium">
-                                {item.title}
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-                )}
-                keyExtractor={(item) => item.id.toString()}
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-                ItemSeparatorComponent={() => <View className="w-2" />}
-                contentContainerStyle={{ gap: 8 }}
-                className="mt-4"
-            />
+                        </TouchableOpacity>
+                    )}
+                    keyExtractor={(item) => item.id.toString()}
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    ItemSeparatorComponent={() => <View className="w-2" />}
+                    contentContainerStyle={{ gap: 8 }}
+                    className="mt-4"
+                />
+            )}
         </View>
     );
 

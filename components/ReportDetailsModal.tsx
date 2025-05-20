@@ -54,6 +54,7 @@ export const ReportDetailsModal = ({
             if (success) {
                 // The exportReportToPDF function already shows success alerts
                 console.log('Report exported successfully');
+                onClose(); // Close the modal after successful export
             }
         } catch (error) {
             console.error('Failed to export report:', error);
