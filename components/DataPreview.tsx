@@ -231,7 +231,6 @@ export const DataPreview = ({
             </View>
             {itemType === 'report' && (
                 <>
-                    {' '}
                     {data && data.length > 0 && (
                         <ReportGraph
                             reports={data?.filter(
