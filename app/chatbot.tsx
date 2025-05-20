@@ -142,6 +142,16 @@ const ChatbotScreen = () => {
             setTotalPages(result.payload.num_pages);
             setCurrentPage((prev) => prev + 1);
 
+            // Add initial Cynerate message if this is the last page and there are no messages
+            if (currentPage >= result.payload.num_pages && formattedMessages.length === 0) {
+                const initialMessage: ChatMessage = {
+                    id: 'initial-message',
+                    text: 'Hi, I am Cynerate. How may I help you?',
+                    sender: 'Cynerate',
+                };
+                setMessages([initialMessage]);
+            }
+
             // After rendering, maintain scroll position based on average message height
             setTimeout(() => {
                 // Estimate the height of new content based on number of new messages
@@ -161,6 +171,15 @@ const ChatbotScreen = () => {
             }, 200);
         } else {
             setIsLoadingMore(false);
+            // If fetch fails and there are no messages, show initial message
+            if (messages.length === 0) {
+                const initialMessage: ChatMessage = {
+                    id: 'initial-message',
+                    text: 'Hi, I am Cynerate. How may I help you?',
+                    sender: 'Cynerate',
+                };
+                setMessages([initialMessage]);
+            }
         }
         setIsLoading(false);
     }, [
@@ -178,6 +197,7 @@ const ChatbotScreen = () => {
 
     useEffect(() => {
         if (userId) {
+            setIsLoading(true);
             fetchChats();
         }
     }, [userId]);
@@ -316,6 +336,62 @@ const ChatbotScreen = () => {
                                     </Text>
                                 </View>
                             )}
+                            {!hasMore && messages.length > 1 && (
+                                <TouchableOpacity
+                                    className="my-2 items-start"
+                                    activeOpacity={0.7}
+                                >
+                                    <Text className="text-gray-600 ml-2 text-xs mb-1">
+                                        Cynerate
+                                    </Text>
+                                    <View className="rounded-2xl p-3 py-2 max-w-[80%] bg-gray-200">
+                                        <Markdown
+                                            style={getMarkdownStyles(true)}
+                                        >
+                                            Hi, I am Cynerate. How may I help you?
+                                        </Markdown>
+                                        <View className="mt-3 border-t border-gray-300 pt-2">
+                                            <Text className="text-gray-600 text-xs mb-1">
+                                                You can try scanning your tax documents here:
+                                            </Text>
+                                            <TouchableOpacity
+                                                onPress={navigateToScan}
+                                                className="bg-primary py-1 px-3 rounded-full mt-1 self-start"
+                                            >
+                                                <Text className="text-white text-xs font-medium">Scan</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                            )}
+                            {messages.length === 0 && !isLoading && (
+                                <TouchableOpacity
+                                    className="my-2 items-start"
+                                    activeOpacity={0.7}
+                                >
+                                    <Text className="text-gray-600 ml-2 text-xs mb-1">
+                                        Cynerate
+                                    </Text>
+                                    <View className="rounded-2xl p-3 py-2 max-w-[80%] bg-gray-200">
+                                        <Markdown
+                                            style={getMarkdownStyles(true)}
+                                        >
+                                            Hi, I am Cynerate. How may I help you?
+                                        </Markdown>
+                                        <View className="mt-3 border-t border-gray-300 pt-2">
+                                            <Text className="text-gray-600 text-xs mb-1">
+                                                You can try scanning your tax documents here:
+                                            </Text>
+                                            <TouchableOpacity
+                                                onPress={navigateToScan}
+                                                className="bg-primary py-1 px-3 rounded-full mt-1 self-start"
+                                            >
+                                                <Text className="text-white text-xs font-medium">Scan</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                            )}
                             {messages.map((message) => (
                                 <TouchableOpacity
                                     key={message.id}
@@ -403,6 +479,7 @@ const ChatbotScreen = () => {
                                 value={inputText}
                                 onChangeText={setInputText}
                                 multiline={false}
+                                disabled={inputText === '...'}
                             />
                             <TouchableOpacity
                                 onPress={handleSend}
