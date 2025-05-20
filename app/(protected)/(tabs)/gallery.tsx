@@ -17,7 +17,7 @@ interface GalleryImage {
 }
 
 const EmptyGalleryState = () => (
-    <View className="items-center h-[80%] justify-center py-8">
+    <View className="items-center h-[90%] justify-center py-8">
         <View className="bg-primary/10 p-4 rounded-full mb-4">
             <FontAwesome6 name="image" size={32} color="#1fddee" />
         </View>
@@ -142,7 +142,7 @@ const GalleryScreen = () => {
     return (
         <ScrollableLayout>
             <Header />
-            <ViewToggle />
+            {images && images.length > 0 ? <ViewToggle /> : <Text className="text-2xl font-bold text-center">Images</Text>} 
             {images?.length === 0 || !images ? (
                 <EmptyGalleryState />
             ) : (
