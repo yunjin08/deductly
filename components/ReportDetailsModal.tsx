@@ -1,6 +1,12 @@
-import { View, Text, Modal, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import {
+    View,
+    Text,
+    Modal,
+    TouchableOpacity,
+    ScrollView,
+    Alert,
+} from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { ScrollableLayout } from './ScrollableLayout';
 import { exportReportToPDF } from './ReportExport';
 
 interface ReportDetails {
@@ -48,10 +54,14 @@ export const ReportDetailsModal = ({
             if (success) {
                 // The exportReportToPDF function already shows success alerts
                 console.log('Report exported successfully');
+                onClose(); // Close the modal after successful export
             }
         } catch (error) {
             console.error('Failed to export report:', error);
-            Alert.alert('Export Failed', 'There was an error exporting your report');
+            Alert.alert(
+                'Export Failed',
+                'There was an error exporting your report'
+            );
         }
     };
 

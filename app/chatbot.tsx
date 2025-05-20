@@ -15,7 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { fetchChatHistory, sendMessage } from '@/contexts/actions/userActions';
 import { useAppSelector, useAppDispatch } from '@/hooks/useAuthHooks';
 import Markdown from 'react-native-markdown-display';
-import { useRouter } from 'expo-router'
+import { useRouter } from 'expo-router';
 
 // Dummy chat data type
 type ChatMessage = {
@@ -51,19 +51,19 @@ const ChatbotScreen = () => {
     useEffect(() => {
         // This function will run when the component unmounts
         return () => {
-          // Reset all state variables to their initial values
-          setMessages([]);
-          setInputText('');
-          setKeyboardVisible(false);
-          setCurrentPage(1);
-          setIsLoading(false);
-          setHasMore(true);
-          setTotalPages(1);
-          setContentHeight(0);
-          setIsLoadingMore(false);
-          setSelectedMessage(null);
+            // Reset all state variables to their initial values
+            setMessages([]);
+            setInputText('');
+            setKeyboardVisible(false);
+            setCurrentPage(1);
+            setIsLoading(false);
+            setHasMore(true);
+            setTotalPages(1);
+            setContentHeight(0);
+            setIsLoadingMore(false);
+            setSelectedMessage(null);
         };
-      }, []); 
+    }, []);
 
     // Handle keyboard events
     useEffect(() => {
@@ -97,17 +97,16 @@ const ChatbotScreen = () => {
 
     useEffect(() => {
         if (messages.length > 0) {
-          setTimeout(() => {
-            scrollViewRef.current?.scrollToEnd({ animated: false });
-          }, 300); // Slightly longer timeout to ensure content is rendered
+            setTimeout(() => {
+                scrollViewRef.current?.scrollToEnd({ animated: false });
+            }, 300); // Slightly longer timeout to ensure content is rendered
         }
-      }, [messages.length === 0]);
+    }, [messages.length === 0]);
 
     // Fetch chat history
     const fetchChats = useCallback(async () => {
         if (!userId || !hasMore || isLoading) return;
-        setIsLoadingMore(true)
-
+        setIsLoadingMore(true);
 
         let filters: any = {
             user_id: userId,
@@ -143,6 +142,16 @@ const ChatbotScreen = () => {
             setTotalPages(result.payload.num_pages);
             setCurrentPage((prev) => prev + 1);
 
+            // Add initial Cynerate message if this is the last page and there are no messages
+            if (currentPage >= result.payload.num_pages && formattedMessages.length === 0) {
+                const initialMessage: ChatMessage = {
+                    id: 'initial-message',
+                    text: 'Hi, I am Cynerate. How may I help you?',
+                    sender: 'Cynerate',
+                };
+                setMessages([initialMessage]);
+            }
+
             // After rendering, maintain scroll position based on average message height
             setTimeout(() => {
                 // Estimate the height of new content based on number of new messages
@@ -150,18 +159,27 @@ const ChatbotScreen = () => {
                 const avgMessageHeight = 100; // Approximate height per message in pixels
                 const newMessagesCount = formattedMessages.length;
                 const scrollOffset = newMessagesCount * avgMessageHeight;
-                
+
                 // Scroll to maintain position
                 if (scrollViewRef.current && newMessagesCount > 0) {
-                    scrollViewRef.current.scrollTo({ 
-                        y: scrollOffset, 
-                        animated: false 
+                    scrollViewRef.current.scrollTo({
+                        y: scrollOffset,
+                        animated: false,
                     });
                 }
                 setIsLoadingMore(false);
             }, 200);
         } else {
             setIsLoadingMore(false);
+            // If fetch fails and there are no messages, show initial message
+            if (messages.length === 0) {
+                const initialMessage: ChatMessage = {
+                    id: 'initial-message',
+                    text: 'Hi, I am Cynerate. How may I help you?',
+                    sender: 'Cynerate',
+                };
+                setMessages([initialMessage]);
+            }
         }
         setIsLoading(false);
     }, [
@@ -174,11 +192,12 @@ const ChatbotScreen = () => {
     ]);
 
     const navigateToScan = () => {
-        router.push('/(protected)/(camera)/camera')
+        router.push('/(protected)/(camera)/camera');
     };
 
     useEffect(() => {
         if (userId) {
+            setIsLoading(true);
             fetchChats();
         }
     }, [userId]);
@@ -205,7 +224,6 @@ const ChatbotScreen = () => {
             );
             // Type guard to check if the action was fulfilled
             if (sendMessage.fulfilled.match(resultAction)) {
-
                 // Add bot response to messages
                 const botMessage: ChatMessage = {
                     id: Date.now().toString(),
@@ -255,7 +273,7 @@ const ChatbotScreen = () => {
         // Store current scroll position before updating content height
         const prevHeight = contentHeight;
         setContentHeight(height);
-        
+
         // If we're adding new content at the bottom (like sending a message)
         // we should scroll to the bottom
         if (height > prevHeight && !isLoadingMore) {
@@ -273,12 +291,12 @@ const ChatbotScreen = () => {
         }
     }, [messages.length]);
 
-
     // Handle scroll to top
     const handleScroll = (event: any) => {
         if (isLoadingMore) return;
-        
-        const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+
+        const { contentOffset, contentSize, layoutMsurement } =
+            event.nativeEvent;
 
         // Only load more if:
         // 1. We're near the top (within 20 pixels)
@@ -318,6 +336,62 @@ const ChatbotScreen = () => {
                                     </Text>
                                 </View>
                             )}
+                            {!hasMore && messages.length > 1 && (
+                                <TouchableOpacity
+                                    className="my-2 items-start"
+                                    activeOpacity={0.7}
+                                >
+                                    <Text className="text-gray-600 ml-2 text-xs mb-1">
+                                        Cynerate
+                                    </Text>
+                                    <View className="rounded-2xl p-3 py-2 max-w-[80%] bg-gray-200">
+                                        <Markdown
+                                            style={getMarkdownStyles(true)}
+                                        >
+                                            Hi, I am Cynerate. How may I help you?
+                                        </Markdown>
+                                        <View className="mt-3 border-t border-gray-300 pt-2">
+                                            <Text className="text-gray-600 text-xs mb-1">
+                                                You can try scanning your tax documents here:
+                                            </Text>
+                                            <TouchableOpacity
+                                                onPress={navigateToScan}
+                                                className="bg-primary py-1 px-3 rounded-full mt-1 self-start"
+                                            >
+                                                <Text className="text-white text-xs font-medium">Scan</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                            )}
+                            {messages.length === 0 && !isLoading && (
+                                <TouchableOpacity
+                                    className="my-2 items-start"
+                                    activeOpacity={0.7}
+                                >
+                                    <Text className="text-gray-600 ml-2 text-xs mb-1">
+                                        Cynerate
+                                    </Text>
+                                    <View className="rounded-2xl p-3 py-2 max-w-[80%] bg-gray-200">
+                                        <Markdown
+                                            style={getMarkdownStyles(true)}
+                                        >
+                                            Hi, I am Cynerate. How may I help you?
+                                        </Markdown>
+                                        <View className="mt-3 border-t border-gray-300 pt-2">
+                                            <Text className="text-gray-600 text-xs mb-1">
+                                                You can try scanning your tax documents here:
+                                            </Text>
+                                            <TouchableOpacity
+                                                onPress={navigateToScan}
+                                                className="bg-primary py-1 px-3 rounded-full mt-1 self-start"
+                                            >
+                                                <Text className="text-white text-xs font-medium">Scan</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                            )}
                             {messages.map((message) => (
                                 <TouchableOpacity
                                     key={message.id}
@@ -353,13 +427,16 @@ const ChatbotScreen = () => {
                                         {message.sender === 'Cynerate' && (
                                             <View className="mt-3 border-t border-gray-300 pt-2">
                                                 <Text className="text-gray-600 text-xs mb-1">
-                                                    You can try scanning your tax documents here:
+                                                    You can try scanning your
+                                                    tax documents here:
                                                 </Text>
                                                 <TouchableOpacity
                                                     onPress={navigateToScan}
                                                     className="bg-primary py-1 px-3 rounded-full mt-1 self-start"
                                                 >
-                                                    <Text className="text-white text-xs font-medium">Scan</Text>
+                                                    <Text className="text-white text-xs font-medium">
+                                                        Scan
+                                                    </Text>
                                                 </TouchableOpacity>
                                             </View>
                                         )}
@@ -402,6 +479,7 @@ const ChatbotScreen = () => {
                                 value={inputText}
                                 onChangeText={setInputText}
                                 multiline={false}
+                                disabled={inputText === '...'}
                             />
                             <TouchableOpacity
                                 onPress={handleSend}

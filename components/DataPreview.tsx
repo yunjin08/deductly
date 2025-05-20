@@ -9,12 +9,12 @@ import {
 import { FontAwesome6 } from '@expo/vector-icons';
 import { ScrollableLayout } from './ScrollableLayout';
 import Header from '@/components/Header';
-import { Receipt, Document } from '@/interfaces';
 import { ReceiptDetailsModal } from './ReceiptDetailsModal';
 import { DocumentDetailsModal } from './DocumentDetailsModal';
 import { ReportDetailsModal } from './ReportDetailsModal';
 import { ReportGraph } from './ReportGraph';
 import { formatDate } from '@/utils/formatDate';
+import { router } from 'expo-router';
 
 // Custom interface that extends Receipt for our specific use case
 interface ReceiptDetails {
@@ -69,6 +69,72 @@ interface DataPreviewProps {
 
 type TimePeriod = 'weekly' | 'monthly' | 'yearly';
 type SortOrder = 'latest' | 'oldest';
+
+const EmptyReceiptsState = () => (
+    <View className="flex-1 items-center justify-center">
+        <View className="bg-primary/10 p-4 rounded-full mb-4">
+            <FontAwesome6 name="receipt" size={32} color="#1fddee" />
+        </View>
+        <Text className="text-xl font-semibold text-gray-800 mb-2">
+            No Receipts Yet
+        </Text>
+        <Text className="text-gray-500 text-center px-8">
+            Start scanning your receipts to keep track of your expenses
+        </Text>
+        <TouchableOpacity
+            onPress={() => router.push('/(protected)/(camera)/camera')}
+            className="mt-4 border border-primary rounded-full px-6 py-2"
+        >
+            <Text className="text-primary font-semibold">
+                Scan Your First Receipt
+            </Text>
+        </TouchableOpacity>
+    </View>
+);
+
+const EmptyDocumentsState = () => (
+    <View className="flex-1 items-center justify-center">
+        <View className="bg-primary/10 p-4 rounded-full mb-4">
+            <FontAwesome6 name="file-pdf" size={32} color="#1fddee" />
+        </View>
+        <Text className="text-xl font-semibold text-gray-800 mb-2">
+            No Documents Yet
+        </Text>
+        <Text className="text-gray-500 text-center px-8">
+            Start scanning your receipts to generate tax documents
+        </Text>
+        <TouchableOpacity
+            onPress={() => router.push('/(protected)/(camera)/camera')}
+            className="mt-4 border border-primary rounded-full px-6 py-2"
+        >
+            <Text className="text-primary font-semibold">
+                Scan Receipts to Generate Documents
+            </Text>
+        </TouchableOpacity>
+    </View>
+);
+
+const EmptyReportsState = () => (
+    <View className="flex-1 items-center justify-center">
+        <View className="bg-primary/10 p-4 rounded-full mb-4">
+            <FontAwesome6 name="chart-line" size={32} color="#1fddee" />
+        </View>
+        <Text className="text-xl font-semibold text-gray-800 mb-2">
+            No Reports Yet
+        </Text>
+        <Text className="text-gray-500 text-center px-8">
+            Start scanning your receipts to generate tax reports
+        </Text>
+        <TouchableOpacity
+            onPress={() => router.push('/(protected)/(camera)/camera')}
+            className="mt-4 border border-primary rounded-full px-6 py-2"
+        >
+            <Text className="text-primary font-semibold">
+                Scan Receipts to Generate Reports
+            </Text>
+        </TouchableOpacity>
+    </View>
+);
 
 export const DataPreview = ({
     data,
@@ -164,7 +230,15 @@ export const DataPreview = ({
         setIsSelectionMode(false);
     };
 
-    const TimePeriodButton = ({ period, label, className = '' }: { period: TimePeriod; label: string, className?: string }) => (
+    const TimePeriodButton = ({
+        period,
+        label,
+        className = '',
+    }: {
+        period: TimePeriod;
+        label: string;
+        className?: string;
+    }) => (
         <TouchableOpacity
             onPress={() => setSelectedPeriod(period)}
             className={`px-4 py-2 ${
@@ -181,7 +255,15 @@ export const DataPreview = ({
         </TouchableOpacity>
     );
 
-    const SortButton = ({ order, label, className = '' }: { order: SortOrder; label: string; className?: string }) => (
+    const SortButton = ({
+        order,
+        label,
+        className = '',
+    }: {
+        order: SortOrder;
+        label: string;
+        className?: string;
+    }) => (
         <TouchableOpacity
             onPress={() => setSortOrder(order)}
             className={`px-4 py-2 ${
@@ -215,23 +297,49 @@ export const DataPreview = ({
                 )}
             </View>
             {itemType === 'report' && (
-                <>  {data && data.length > 0 && (
-                        <ReportGraph reports={data?.filter((item): item is ReportDetails => 
-                            'start_date' in item && 'end_date' in item && 
-                            'grand_total_expenditure' in item && 'total_tax_deductions' in item
-                        )} />
+                <>
+                    {data && data.length > 0 && (
+                        <ReportGraph
+                            reports={data?.filter(
+                                (item): item is ReportDetails =>
+                                    'start_date' in item &&
+                                    'end_date' in item &&
+                                    'grand_total_expenditure' in item &&
+                                    'total_tax_deductions' in item
+                            )}
+                        />
                     )}
-                    <View className="flex-row justify-center space-x-2 mb-4">
-                        <TimePeriodButton period="weekly" label="Weekly" className="rounded-l-lg" />
-                        <TimePeriodButton period="monthly" label="Monthly" />
-                        <TimePeriodButton period="yearly" label="Yearly" className="rounded-r-lg" />
-                    </View>
+                    {data && data.length > 0 && (
+                        <View className="flex-row justify-center space-x-2 mb-4">
+                            <TimePeriodButton
+                                period="weekly"
+                                label="Weekly"
+                                className="rounded-l-lg"
+                            />
+                            <TimePeriodButton period="monthly" label="Monthly" />
+                            <TimePeriodButton
+                                period="yearly"
+                                label="Yearly"
+                                className="rounded-r-lg"
+                            />
+                        </View>
+                    )}
                 </>
             )}
-            {(itemType === 'document' || itemType === 'receipt') && (
-                <View className="flex-row justify-center space-x-2 mb-4">
-                    <SortButton order="latest" label="Latest" className="rounded-l-lg" />
-                    <SortButton order="oldest" label="Oldest" className="rounded-r-lg" />
+            {(itemType === 'document' || itemType === 'receipt') &&
+                data &&
+                data.length > 0 && (
+                    <View className="flex-row justify-center space-x-2 mb-4">
+                        <SortButton
+                            order="latest"
+                        label="Latest"
+                        className="rounded-l-lg"
+                    />
+                    <SortButton
+                        order="oldest"
+                        label="Oldest"
+                        className="rounded-r-lg"
+                    />
                 </View>
             )}
         </>
@@ -265,7 +373,9 @@ export const DataPreview = ({
                 </View>
                 <View className="flex-1">
                     <Text className="text-base font-medium">{item.title}</Text>
-                    <Text className="text-gray-500">{formatDate(item.created_at)}</Text>
+                    <Text className="text-gray-500">
+                        {formatDate(item.created_at)}
+                    </Text>
                 </View>
                 {isSelectionMode && (
                     <View
@@ -288,6 +398,19 @@ export const DataPreview = ({
         );
     };
 
+    const renderEmptyState = () => {
+        if (!data || data.length === 0) {
+            return (
+                <View className="h-[75%]">
+                    {itemType === 'receipt' && <EmptyReceiptsState />}
+                    {itemType === 'document' && <EmptyDocumentsState />}
+                    {itemType === 'report' && <EmptyReportsState />}
+                </View>
+            );
+        }
+        return null;
+    };
+
     return (
         <ScrollableLayout>
             <FlatList
@@ -295,9 +418,11 @@ export const DataPreview = ({
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={renderItem}
                 ListHeaderComponent={renderHeader}
+                ListEmptyComponent={renderEmptyState}
                 ItemSeparatorComponent={() => <View className="h-2" />}
                 scrollEnabled={false}
                 showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ flexGrow: 1 }}
             />
             {isSelectionMode && (
                 <TouchableOpacity

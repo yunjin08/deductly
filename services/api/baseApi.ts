@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Determine if running in an Android emulator
 const isAndroidEmulator =
@@ -13,12 +14,24 @@ const baseURL = isAndroidEmulator
 
 export const api = axios.create({
     baseURL,
-    // timeout: 30000, // 30 seconds timeout
+    timeout: 120000, // 120 seconds timeout (2 minutes)
 });
 
 // Add request interceptor for debugging
 api.interceptors.request.use(
-    (config) => {
+    async (config) => {
+        // Get the auth token and email from AsyncStorage
+        const token = await AsyncStorage.getItem('auth_token');
+        const email = await AsyncStorage.getItem('user_email');
+
+        // Add auth headers if they exist
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        if (email) {
+            config.headers['X-User-Email'] = email;
+        }
+
         console.log(
             `Making ${config.method?.toUpperCase()} request to: ${config.baseURL}${config.url}`
         );
@@ -48,7 +61,7 @@ api.interceptors.response.use(
 
 export const createApiService = <T>(endpoint: string) => ({
     getAll: async () => {
-        const response = await api.get<T[]>(endpoint);
+        const response = await api.get<T[]>(`${endpoint}/`);
         return response.data;
     },
 
@@ -58,7 +71,7 @@ export const createApiService = <T>(endpoint: string) => ({
     },
 
     create: async (data: Partial<T>) => {
-        const response = await api.post<T>(endpoint, data);
+        const response = await api.post<T>(`${endpoint}/`, data);
         return response.data;
     },
 
