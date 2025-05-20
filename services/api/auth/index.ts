@@ -12,8 +12,11 @@ export const login = async (username: string, password: string) => {
         const jwtToken = data['token'];
         const user = data['user'];
 
-        // Store token in AsyncStorage
+        // Store token and email in AsyncStorage
         await AsyncStorage.setItem('auth_token', jwtToken);
+        if (user?.email) {
+            await AsyncStorage.setItem('user_email', user.email);
+        }
 
         return {
             token: jwtToken,
@@ -48,6 +51,7 @@ export const register = async (registrationData: any) => {
 export const logout = async () => {
     try {
         await AsyncStorage.removeItem('auth_token');
+        await AsyncStorage.removeItem('user_email');
     } catch (error) {
         console.error('Error during logout:', error);
         throw error;
