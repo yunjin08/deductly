@@ -2,7 +2,7 @@ import { loginWithGoogle } from '@/contexts/actions/authActions';
 import type { AuthState, Session } from '@/interfaces/authenticationInterface';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { registerUser, loginUser } from '@/contexts/actions/authActions';
-
+import { updateUserProfile } from "../actions/authActions";
 const initialState: AuthState = {
     session: null,
     isLoading: false,
@@ -82,10 +82,20 @@ const authSlice = createSlice({
                     };
                 }
             )
+            .addCase(updateUserProfile.fulfilled, (state, action) => {
+            console.log("Updated user payload:", action.payload);
+            if (state.session) {
+                // Use the payload directly
+                state.session.user = action.payload;
+            }
+            })
+
             .addCase(loginWithGoogle.rejected, (state, action) => {
                 state.isLoading = false;
                 state.errors = action.payload as string[];
             });
+            
+            
     },
 });
 

@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { register, login } from '@/services/api/auth';
 import { handleSignInWithGoogle } from '@/services/sso/google';
 import { isAxiosError } from 'axios';
+import { updateProfile } from "@/services/api/user";
 import { AuthSessionResult } from 'expo-auth-session';
 import type {
     RegisterData,
@@ -56,6 +57,22 @@ export const loginWithGoogle = createAsyncThunk(
             return rejectWithValue([
                 'An unknown error occurred during Google sign-in',
             ]);
+        }
+    }
+);
+
+export const updateUserProfile = createAsyncThunk(
+    "user/updateProfile",
+    async (formData: any, { rejectWithValue }) => {
+        try {
+        const result = await updateProfile(formData);
+        return result;
+        } catch (error) {
+        if (isAxiosError(error)) {
+            console.log("Error response data:", error.response?.data);
+            return rejectWithValue([`${error.name}: ${error.message}`]);
+        }
+        return rejectWithValue(["An unknown error occurred"]);
         }
     }
 );

@@ -6,6 +6,7 @@ import { FontAwesome6 } from "@expo/vector-icons"
 import { useAppDispatch, useAppSelector } from "@/hooks/useAuthHooks"
 import { router } from "expo-router"
 import { Image } from "expo-image"
+import { updateUserProfile } from "@/contexts/actions/authActions"
 
 const EditProfileScreen = () => {
   const dispatch = useAppDispatch()
@@ -25,7 +26,7 @@ const EditProfileScreen = () => {
 
   // Set the form data with the session data when it changes
   useEffect(() => {
-    if (session) {
+    if (session && session.user) {
       // Handle both camelCase and snake_case property names
       const firstName = session.user.firstName || session.user.first_name || ""
       const lastName = session.user.lastName || session.user.last_name || ""
@@ -42,27 +43,61 @@ const EditProfileScreen = () => {
     }
   }, [session])
 
-  const handleChange = (field, value) => {
+  const handleChange = (field: keyof typeof formData, value: string | null) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
-    }))
+    }));
   }
 
-  const handleSave = () => {
-    // Here you would save the changes without requiring the old password
+
+  
+
+  const handleSave = async () => {
+  try {
+    const safeFormData: any = {
+      username: formData.username,
+      first_name: formData.firstName,
+      last_name: formData.lastName,
+      email: formData.email,
+      profilePicture: formData.profilePicture,
+    };
+
+    if (formData.password) {
+      safeFormData.password = formData.password;
+    }
+
+    await dispatch(updateUserProfile(safeFormData)).unwrap();
     Alert.alert("Success", "Profile updated successfully", [
       {
         text: "OK",
-        onPress: () => router.back(),
+        onPress: () => {
+          setTimeout(() => {
+            router.back();
+          }, 300); // Give Redux time to update session safely
+        },
       },
-    ])
+    ]);
+
+  } catch (err) {
+    Alert.alert("Error", err?.toString() || "Profile update failed");
   }
+};
+
 
   const handleChangePicture = () => {
     // In a real app, this would open the image picker
     Alert.alert("Change Picture", "This would open the image picker in a real app")
   }
+
+  if (!session || !session.user) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
 
   return (
     <ScrollView style={styles.container}>
