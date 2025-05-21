@@ -40,7 +40,6 @@ export const ReceiptDetailsModal = ({
     onClose,
     receipt,
 }: ReceiptDetailsModalProps) => {
-    console.log('ReceiptDetailsModal received receipt:', receipt); // Debug log
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
