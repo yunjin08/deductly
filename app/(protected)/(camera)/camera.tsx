@@ -114,17 +114,6 @@ const CameraScreen = () => {
             photoHeight - originY,
             (RECEIPT_HEIGHT / scale) * 1.5
         );
-
-        console.log('Photo dimensions:', photoWidth, photoHeight);
-        console.log('View dimensions:', viewWidth, viewHeight);
-        console.log(
-            'Scaled photo dimensions:',
-            scaledPhotoWidth,
-            scaledPhotoHeight
-        );
-        console.log('Frame position:', frameX, frameY);
-        console.log('Crop coordinates:', originX, originY, width, height);
-
         return { originX, originY, width, height };
     };
 
