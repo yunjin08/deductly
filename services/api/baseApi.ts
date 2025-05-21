@@ -31,10 +31,6 @@ api.interceptors.request.use(
         if (email) {
             config.headers['X-User-Email'] = email;
         }
-
-        console.log(
-            `Making ${config.method?.toUpperCase()} request to: ${config.baseURL}${config.url}`
-        );
         return config;
     },
     (error) => {
@@ -46,7 +42,6 @@ api.interceptors.request.use(
 // Add response interceptor for debugging
 api.interceptors.response.use(
     (response) => {
-        console.log('Response received:', response.status);
         return response;
     },
     (error) => {
