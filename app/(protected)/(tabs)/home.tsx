@@ -67,8 +67,6 @@ const HomeScreen = () => {
     const documents = useSelector((state: any) => state.documents.documents);
     const [isLoading, setIsLoading] = useState(true);
 
-    console.log(receipts.objects);
-
     useEffect(() => {
         const loadData = async () => {
             try {
@@ -232,10 +230,12 @@ const HomeScreen = () => {
         </TouchableOpacity>
     );
 
+    const recentReceipts = receipts?.objects?.slice(0, 5) || [];
+
     return (
         <ScrollableLayout>
             <FlatList
-                data={receipts?.objects || []}
+                data={recentReceipts}
                 renderItem={renderReceiptItem}
                 keyExtractor={(item) => item.id.toString()}
                 ListHeaderComponent={renderHeader}
