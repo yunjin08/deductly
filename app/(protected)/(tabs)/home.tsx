@@ -104,7 +104,6 @@ const HomeScreen = () => {
 
     const renderReceiptsSection = () => {
         const recentReceipts = receipts?.objects?.slice(0, 5) || [];
-        console.log(recentReceipts.length, 'recentReceipts');
 
         return (
             <View className="mt-8">
