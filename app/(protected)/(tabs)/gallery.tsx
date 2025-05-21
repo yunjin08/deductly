@@ -49,7 +49,6 @@ const GalleryScreen = () => {
     const images = useSelector((state: any) => state.gallery?.images);
     const isLoading = useSelector((state: any) => state.gallery?.isLoading);
     const error = useSelector((state: any) => state.gallery?.error);
-    console.log(images, 'images');
 
     useEffect(() => {
         dispatch(fetchImages());
