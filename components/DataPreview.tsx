@@ -365,7 +365,13 @@ export const DataPreview = ({
                     <FontAwesome6 name={iconName} size={24} color={iconColor} />
                 </View>
                 <View className="flex-1">
-                    <Text className="text-base font-medium">{item.title}</Text>
+                    <Text 
+                        className="text-base font-medium"
+                        numberOfLines={2}
+                        ellipsizeMode="tail"
+                    >
+                        {item.title}
+                    </Text>
                     <Text className="text-gray-500">
                         {formatDate(item.created_at)}
                     </Text>
