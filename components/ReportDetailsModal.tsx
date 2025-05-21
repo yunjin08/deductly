@@ -32,7 +32,6 @@ export const ReportDetailsModal = ({
     onClose,
     report,
 }: ReportDetailsModalProps) => {
-    console.log('ReportDetailsModal received report:', report); // Debug log
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -52,8 +51,6 @@ export const ReportDetailsModal = ({
         try {
             const success = await exportReportToPDF(report);
             if (success) {
-                // The exportReportToPDF function already shows success alerts
-                console.log('Report exported successfully');
                 onClose(); // Close the modal after successful export
             }
         } catch (error) {
