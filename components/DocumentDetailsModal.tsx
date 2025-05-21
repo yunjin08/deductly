@@ -30,7 +30,6 @@ export const DocumentDetailsModal = ({
     onClose,
     document,
 }: DocumentDetailsModalProps) => {
-    console.log('DocumentDetailsModal received document:', document); // Debug log
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);

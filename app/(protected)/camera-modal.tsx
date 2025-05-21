@@ -11,12 +11,12 @@ import {
     Modal,
     NativeSyntheticEvent,
     NativeScrollEvent,
-    ScrollView,
 } from 'react-native';
 import { Image } from 'expo-image';
 import GoBackRoute from '@/components/GoBackRoute';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { cameraService } from '@/services/api/camera';
+import { ScrollableLayout } from '@/components/ScrollableLayout';
 
 interface ExtractedData {
     store_name?: string;
@@ -206,23 +206,15 @@ const CameraModalScreen = () => {
 
     if (extractedData) {
         return (
-            <ScrollView
-                onScroll={handleScroll}
-                scrollEventThrottle={16}
-                onContentSizeChange={(_, h) => setContentHeight(h)}
-                onLayout={(e) =>
-                    setScrollViewHeight(e.nativeEvent.layout.height)
-                }
-                contentContainerStyle={{ padding: 16, paddingBottom: 200 }}
-            >
+            <ScrollableLayout>
                 <View className="p-4">
-                    <View className="flex-row justify-between items-center mb-4">
-                        <Text className="text-xl font-bold">
+                    <View className="flex-row justify-between items-center mb-6">
+                        <Text className="text-2xl font-bold text-gray-800">
                             Receipt Details
                         </Text>
                         <TouchableOpacity
                             onPress={() => setIsEditing(!isEditing)}
-                            className="bg-gray-100 p-2 rounded-full"
+                            className="bg-gray-100 p-3 rounded-full"
                         >
                             <FontAwesome6
                                 name={isEditing ? 'check' : 'pen'}
@@ -232,156 +224,125 @@ const CameraModalScreen = () => {
                         </TouchableOpacity>
                     </View>
 
-                    {/* Store Name */}
-                    <View className="mb-6">
-                        <Text className="text-gray-600 mb-1">Store Name</Text>
-                        {isEditing ? (
-                            <TextInput
-                                value={extractedData.store_name}
-                                onChangeText={(value) =>
-                                    updateField('store_name', value)
-                                }
-                                className="border border-gray-300 rounded-lg p-2"
-                            />
-                        ) : (
-                            <Text className="text-lg">
-                                {extractedData.store_name}
-                            </Text>
-                        )}
+                    {/* Store Info Section */}
+                    <View className="bg-white rounded-2xl p-4 mb-6 shadow-sm">
+                        <Text className="text-lg font-semibold text-gray-800 mb-4">Store Information</Text>
+                        
+                        {/* Store Name */}
+                        <View className="mb-4">
+                            <Text className="text-gray-600 mb-1">Store Name</Text>
+                            {isEditing ? (
+                                <TextInput
+                                    value={extractedData.store_name}
+                                    onChangeText={(value) => updateField('store_name', value)}
+                                    className="border border-gray-300 rounded-xl p-3 bg-gray-50"
+                                />
+                            ) : (
+                                <Text className="text-lg text-gray-800">{extractedData.store_name}</Text>
+                            )}
+                        </View>
+
+                        {/* TIN */}
+                        <View className="mb-4">
+                            <Text className="text-gray-600 mb-1">TIN</Text>
+                            {isEditing ? (
+                                <TextInput
+                                    value={extractedData.tin}
+                                    onChangeText={(value) => updateField('tin', value)}
+                                    className="border border-gray-300 rounded-xl p-3 bg-gray-50"
+                                />
+                            ) : (
+                                <Text className="text-lg text-gray-800">{extractedData.tin}</Text>
+                            )}
+                        </View>
+
+                        {/* Branch */}
+                        <View className="mb-4">
+                            <Text className="text-gray-600 mb-1">Branch</Text>
+                            {isEditing ? (
+                                <TextInput
+                                    value={extractedData.branch}
+                                    onChangeText={(value) => updateField('branch', value)}
+                                    className="border border-gray-300 rounded-xl p-3 bg-gray-50"
+                                />
+                            ) : (
+                                <Text className="text-lg text-gray-800">{extractedData.branch}</Text>
+                            )}
+                        </View>
                     </View>
 
-                    {/* TIN */}
-                    <View className="mb-6">
-                        <Text className="text-gray-600 mb-1">TIN</Text>
-                        {isEditing ? (
-                            <TextInput
-                                value={extractedData.tin}
-                                onChangeText={(value) =>
-                                    updateField('tin', value)
-                                }
-                                className="border border-gray-300 rounded-lg p-2"
-                            />
-                        ) : (
-                            <Text className="text-lg">{extractedData.tin}</Text>
-                        )}
+                    {/* Transaction Info Section */}
+                    <View className="bg-white rounded-2xl p-4 mb-6 shadow-sm">
+                        <Text className="text-lg font-semibold text-gray-800 mb-4">Transaction Details</Text>
+                        
+                        {/* Date and Time */}
+                        <View className="flex-row mb-4">
+                            <View className="flex-1 mr-2">
+                                <Text className="text-gray-600 mb-1">Date</Text>
+                                {isEditing ? (
+                                    <TextInput
+                                        value={extractedData.date}
+                                        onChangeText={(value) => updateField('date', value)}
+                                        className="border border-gray-300 rounded-xl p-3 bg-gray-50"
+                                    />
+                                ) : (
+                                    <Text className="text-lg text-gray-800">{extractedData.date}</Text>
+                                )}
+                            </View>
+                            <View className="flex-1 ml-2">
+                                <Text className="text-gray-600 mb-1">Time</Text>
+                                {isEditing ? (
+                                    <TextInput
+                                        value={extractedData.time}
+                                        onChangeText={(value) => updateField('time', value)}
+                                        className="border border-gray-300 rounded-xl p-3 bg-gray-50"
+                                    />
+                                ) : (
+                                    <Text className="text-lg text-gray-800">{extractedData.time}</Text>
+                                )}
+                            </View>
+                        </View>
+
+                        {/* Payment Method */}
+                        <View className="mb-4">
+                            <Text className="text-gray-600 mb-1">Payment Method</Text>
+                            {isEditing ? (
+                                <TextInput
+                                    value={extractedData.payment_method}
+                                    onChangeText={(value) => updateField('payment_method', value)}
+                                    className="border border-gray-300 rounded-xl p-3 bg-gray-50"
+                                />
+                            ) : (
+                                <Text className="text-lg text-gray-800">{extractedData.payment_method}</Text>
+                            )}
+                        </View>
                     </View>
 
-                    {/* Branch */}
-                    <View className="mb-6">
-                        <Text className="text-gray-600 mb-1">Branch</Text>
-                        {isEditing ? (
-                            <TextInput
-                                value={extractedData.branch}
-                                onChangeText={(value) =>
-                                    updateField('branch', value)
-                                }
-                                className="border border-gray-300 rounded-lg p-2"
-                            />
-                        ) : (
-                            <Text className="text-lg">
-                                {extractedData.branch}
-                            </Text>
-                        )}
-                    </View>
-
-                    {/* Date */}
-                    <View className="mb-6">
-                        <Text className="text-gray-600 mb-1">Date</Text>
-                        {isEditing ? (
-                            <TextInput
-                                value={extractedData.date}
-                                onChangeText={(value) =>
-                                    updateField('date', value)
-                                }
-                                className="border border-gray-300 rounded-lg p-2"
-                            />
-                        ) : (
-                            <Text className="text-lg">
-                                {extractedData.date}
-                            </Text>
-                        )}
-                    </View>
-
-                    {/* Time */}
-                    <View className="mb-6">
-                        <Text className="text-gray-600 mb-1">Time</Text>
-                        {isEditing ? (
-                            <TextInput
-                                value={extractedData.time}
-                                onChangeText={(value) =>
-                                    updateField('time', value)
-                                }
-                                className="border border-gray-300 rounded-lg p-2"
-                            />
-                        ) : (
-                            <Text className="text-lg">
-                                {extractedData.time}
-                            </Text>
-                        )}
-                    </View>
-
-                    {/* Payment Method */}
-                    <View className="mb-6">
-                        <Text className="text-gray-600 mb-1">
-                            Payment Method
-                        </Text>
-                        {isEditing ? (
-                            <TextInput
-                                value={extractedData.payment_method}
-                                onChangeText={(value) =>
-                                    updateField('payment_method', value)
-                                }
-                                className="border border-gray-300 rounded-lg p-2"
-                            />
-                        ) : (
-                            <Text className="text-lg">
-                                {extractedData.payment_method}
-                            </Text>
-                        )}
-                    </View>
-
-                    {/* Items */}
-                    <View className="mb-6">
-                        <Text className="text-gray-600 mb-2">Items</Text>
+                    {/* Items Section */}
+                    <View className="bg-white rounded-2xl p-4 mb-6 shadow-sm">
+                        <Text className="text-lg font-semibold text-gray-800 mb-4">Items</Text>
                         {extractedData.items?.map((item, index) => (
-                            <View
-                                key={index}
-                                className="border-b border-gray-200 py-3 mb-3"
-                            >
+                            <View key={index} className="border-b border-gray-200 py-4 last:border-0">
                                 {isEditing ? (
                                     <View>
                                         <TextInput
                                             value={item.name}
-                                            onChangeText={(value) =>
-                                                updateItem(index, 'name', value)
-                                            }
-                                            className="border border-gray-300 rounded-lg p-2 mb-2"
+                                            onChangeText={(value) => updateItem(index, 'name', value)}
+                                            className="border border-gray-300 rounded-xl p-3 bg-gray-50 mb-2"
                                             placeholder="Item name"
                                         />
                                         <View className="flex-row">
                                             <TextInput
                                                 value={item.quantity}
-                                                onChangeText={(value) =>
-                                                    updateItem(
-                                                        index,
-                                                        'quantity',
-                                                        value
-                                                    )
-                                                }
-                                                className="border border-gray-300 rounded-lg p-2 flex-1 mr-2"
+                                                onChangeText={(value) => updateItem(index, 'quantity', value)}
+                                                className="border border-gray-300 rounded-xl p-3 bg-gray-50 flex-1 mr-2"
                                                 placeholder="Quantity"
                                                 keyboardType="numeric"
                                             />
                                             <TextInput
                                                 value={item.price}
-                                                onChangeText={(value) =>
-                                                    updateItem(
-                                                        index,
-                                                        'price',
-                                                        value
-                                                    )
-                                                }
-                                                className="border border-gray-300 rounded-lg p-2 flex-1"
+                                                onChangeText={(value) => updateItem(index, 'price', value)}
+                                                className="border border-gray-300 rounded-xl p-3 bg-gray-50 flex-1"
                                                 placeholder="Price"
                                                 keyboardType="numeric"
                                             />
@@ -389,16 +350,10 @@ const CameraModalScreen = () => {
                                     </View>
                                 ) : (
                                     <View>
-                                        <Text className="text-lg">
-                                            {item.name}
-                                        </Text>
-                                        <View className="flex-row justify-between mt-1">
-                                            <Text className="text-gray-600">
-                                                Qty: {item.quantity}
-                                            </Text>
-                                            <Text className="text-gray-600">
-                                                ₱{item.price}
-                                            </Text>
+                                        <Text className="text-lg text-gray-800">{item.name}</Text>
+                                        <View className="flex-row justify-between mt-2">
+                                            <Text className="text-gray-600">Qty: {item.quantity}</Text>
+                                            <Text className="text-gray-800 font-medium">₱{item.price}</Text>
                                         </View>
                                     </View>
                                 )}
@@ -406,98 +361,78 @@ const CameraModalScreen = () => {
                         ))}
                     </View>
 
-                    {/* VAT */}
-                    <View className="mb-6">
-                        <Text className="text-gray-600 mb-1">VAT</Text>
-                        {isEditing ? (
-                            <TextInput
-                                value={extractedData.vat}
-                                onChangeText={(value) =>
-                                    updateField('vat', value)
-                                }
-                                className="border border-gray-300 rounded-lg p-2"
-                                keyboardType="numeric"
-                            />
-                        ) : (
-                            <Text className="text-lg">
-                                ₱{extractedData.vat}
-                            </Text>
-                        )}
-                    </View>
+                    {/* Totals Section */}
+                    <View className="bg-white rounded-2xl p-4 mb-6 shadow-sm">
+                        <Text className="text-lg font-semibold text-gray-800 mb-4">Totals</Text>
+                        
+                        {/* VAT */}
+                        <View className="flex-row justify-between mb-4">
+                            <Text className="text-gray-600">VAT</Text>
+                            {isEditing ? (
+                                <TextInput
+                                    value={extractedData.vat}
+                                    onChangeText={(value) => updateField('vat', value)}
+                                    className="border border-gray-300 rounded-xl p-3 bg-gray-50 w-32 text-right"
+                                    keyboardType="numeric"
+                                />
+                            ) : (
+                                <Text className="text-gray-800">₱{extractedData.vat}</Text>
+                            )}
+                        </View>
 
-                    {/* Service Charge */}
-                    <View className="mb-6">
-                        <Text className="text-gray-600 mb-1">
-                            Service Charge
-                        </Text>
-                        {isEditing ? (
-                            <TextInput
-                                value={extractedData.service_charge}
-                                onChangeText={(value) =>
-                                    updateField('service_charge', value)
-                                }
-                                className="border border-gray-300 rounded-lg p-2"
-                                keyboardType="numeric"
-                            />
-                        ) : (
-                            <Text className="text-lg">
-                                ₱{extractedData.service_charge}
-                            </Text>
-                        )}
-                    </View>
+                        {/* Service Charge */}
+                        <View className="flex-row justify-between mb-4">
+                            <Text className="text-gray-600">Service Charge</Text>
+                            {isEditing ? (
+                                <TextInput
+                                    value={extractedData.service_charge}
+                                    onChangeText={(value) => updateField('service_charge', value)}
+                                    className="border border-gray-300 rounded-xl p-3 bg-gray-50 w-32 text-right"
+                                    keyboardType="numeric"
+                                />
+                            ) : (
+                                <Text className="text-gray-800">₱{extractedData.service_charge}</Text>
+                            )}
+                        </View>
 
-                    {/* Discount */}
-                    <View className="mb-6">
-                        <Text className="text-gray-600 mb-1">Discount</Text>
-                        {isEditing ? (
-                            <TextInput
-                                value={extractedData.discount}
-                                onChangeText={(value) =>
-                                    updateField('discount', value)
-                                }
-                                className="border border-gray-300 rounded-lg p-2"
-                                keyboardType="numeric"
-                            />
-                        ) : (
-                            <Text className="text-lg">
-                                ₱{extractedData.discount}
-                            </Text>
-                        )}
-                    </View>
+                        {/* Discount */}
+                        <View className="flex-row justify-between mb-4">
+                            <Text className="text-gray-600">Discount</Text>
+                            {isEditing ? (
+                                <TextInput
+                                    value={extractedData.discount}
+                                    onChangeText={(value) => updateField('discount', value)}
+                                    className="border border-gray-300 rounded-xl p-3 bg-gray-50 w-32 text-right"
+                                    keyboardType="numeric"
+                                />
+                            ) : (
+                                <Text className="text-gray-800">₱{extractedData.discount}</Text>
+                            )}
+                        </View>
 
-                    {/* Total Amount */}
-                    <View className="mb-8">
-                        <Text className="text-gray-600 mb-1">Total Amount</Text>
-                        {isEditing ? (
-                            <TextInput
-                                value={extractedData.total_amount}
-                                onChangeText={(value) =>
-                                    updateField('total_amount', value)
-                                }
-                                className="border border-gray-300 rounded-lg p-2"
-                                keyboardType="numeric"
-                            />
-                        ) : (
-                            <Text className="text-xl font-bold">
-                                ₱{extractedData.total_amount}
-                            </Text>
-                        )}
+                        {/* Total Amount */}
+                        <View className="flex-row justify-between pt-4 border-t border-gray-200">
+                            <Text className="text-lg font-semibold text-gray-800">Total Amount</Text>
+                            {isEditing ? (
+                                <TextInput
+                                    value={extractedData.total_amount}
+                                    onChangeText={(value) => updateField('total_amount', value)}
+                                    className="border border-gray-300 rounded-xl p-3 bg-gray-50 w-32 text-right"
+                                    keyboardType="numeric"
+                                />
+                            ) : (
+                                <Text className="text-xl font-bold text-gray-800">₱{extractedData.total_amount}</Text>
+                            )}
+                        </View>
                     </View>
 
                     {/* Save Button */}
                     <TouchableOpacity
                         onPress={handleSave}
-                        className="bg-primary py-3 rounded-lg flex-row justify-center items-center mt-4 mb-8"
+                        className="bg-primary py-4 rounded-xl flex-row justify-center items-center mb-8 shadow-sm"
                     >
-                        <FontAwesome6
-                            name="save"
-                            size={20}
-                            color="white"
-                            className="mr-2"
-                        />
-                        <Text className="text-white font-semibold text-lg">
-                            Save Receipt
-                        </Text>
+                        <FontAwesome6 name="save" size={20} color="white" className="mr-2" />
+                        <Text className="text-white font-semibold text-lg">Save Receipt</Text>
                     </TouchableOpacity>
 
                     {/* Tax Deduction Modal */}
@@ -508,36 +443,30 @@ const CameraModalScreen = () => {
                         onRequestClose={() => setShowDeductionModal(false)}
                     >
                         <View className="flex-1 justify-center items-center bg-black/50">
-                            <View className="bg-white p-6 rounded-xl w-[90%] max-w-[400px]">
-                                <Text className="text-2xl font-bold mb-4 text-center">
+                            <View className="bg-white p-6 rounded-2xl w-[90%] max-w-[400px] shadow-lg">
+                                <Text className="text-2xl font-bold mb-4 text-center text-gray-800">
                                     Tax Deduction Eligibility
                                 </Text>
                                 {deductionInfo && (
                                     <>
-                                        <View className="mb-4">
-                                            <Text className="text-lg font-semibold mb-2">
-                                                Status:{' '}
-                                                {deductionInfo.isEligible
-                                                    ? 'Eligible'
-                                                    : 'Not Eligible'}
+                                        <View className="mb-6">
+                                            <Text className="text-lg font-semibold mb-2 text-gray-800">
+                                                Status: {deductionInfo.isEligible ? 'Eligible' : 'Not Eligible'}
                                             </Text>
-                                            <Text className="text-gray-600 mb-2">
+                                            <Text className="text-gray-600 mb-3">
                                                 {deductionInfo.reason}
                                             </Text>
                                             {deductionInfo.isEligible && (
                                                 <Text className="text-lg font-bold text-primary">
-                                                    Potential Deduction: ₱
-                                                    {deductionInfo.amount}
+                                                    Potential Deduction: ₱{deductionInfo.amount}
                                                 </Text>
                                             )}
                                         </View>
                                         <TouchableOpacity
-                                            onPress={() =>
-                                                setShowDeductionModal(false)
-                                            }
-                                            className="bg-primary py-3 rounded-lg"
+                                            onPress={() => setShowDeductionModal(false)}
+                                            className="bg-primary py-4 rounded-xl"
                                         >
-                                            <Text className="text-white text-center font-semibold">
+                                            <Text className="text-white text-center font-semibold text-lg">
                                                 Continue
                                             </Text>
                                         </TouchableOpacity>
@@ -547,7 +476,7 @@ const CameraModalScreen = () => {
                         </View>
                     </Modal>
                 </View>
-            </ScrollView>
+            </ScrollableLayout>
         );
     }
 
@@ -564,15 +493,10 @@ const CameraModalScreen = () => {
                     <ActivityIndicator size="large" color="#1fddee" />
                 ) : (
                     <TouchableOpacity
-                        className="bg-primary rounded-full size-20 flex items-center justify-center"
+                        className="bg-primary rounded-full size-20 flex items-center justify-center shadow-lg"
                         onPress={handleAnalyze}
                     >
-                        <FontAwesome6
-                            name="check"
-                            size={30}
-                            color="white"
-                            solid
-                        />
+                        <FontAwesome6 name="check" size={30} color="white" solid />
                     </TouchableOpacity>
                 )}
             </View>
