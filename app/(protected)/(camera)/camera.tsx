@@ -122,24 +122,10 @@ const CameraScreen = () => {
         uri: string;
         width: number;
         height: number;
-    }) => {
+    }, isFromGallery: boolean = false) => {
         setIsCropping(true);
         try {
             const { width, height, uri } = photo;
-            const cropArea = calculateCropArea(width, height);
-
-            const validCropArea = {
-                originX: Math.max(0, Math.round(cropArea.originX)),
-                originY: Math.max(0, Math.round(cropArea.originY)),
-                width: Math.min(
-                    width - cropArea.originX,
-                    Math.round(cropArea.width)
-                ),
-                height: Math.min(
-                    height - cropArea.originY,
-                    Math.round(cropArea.height)
-                ),
-            };
 
             // Create receipts directory if it doesn't exist
             const receiptsDir = `${FileSystem.documentDirectory}receipts/`;
@@ -154,26 +140,49 @@ const CameraScreen = () => {
             const filename = `receipt_${Date.now()}.jpg`;
             const newUri = `${receiptsDir}${filename}`;
 
-            // Crop and save in one operation
-            const croppedImage = await ImageManipulator.manipulateAsync(
-                uri,
-                [
-                    {
-                        crop: validCropArea,
-                    },
-                ],
-                {
-                    compress: 0.8,
-                    format: ImageManipulator.SaveFormat.JPEG,
-                    base64: false,
-                }
-            );
+            if (isFromGallery) {
+                // For gallery images, just copy the file without cropping
+                await FileSystem.copyAsync({
+                    from: uri,
+                    to: newUri,
+                });
+            } else {
+                // For camera images, apply cropping
+                const cropArea = calculateCropArea(width, height);
+                const validCropArea = {
+                    originX: Math.max(0, Math.round(cropArea.originX)),
+                    originY: Math.max(0, Math.round(cropArea.originY)),
+                    width: Math.min(
+                        width - cropArea.originX,
+                        Math.round(cropArea.width)
+                    ),
+                    height: Math.min(
+                        height - cropArea.originY,
+                        Math.round(cropArea.height)
+                    ),
+                };
 
-            // Save the cropped image
-            await FileSystem.copyAsync({
-                from: croppedImage.uri,
-                to: newUri,
-            });
+                // Crop and save in one operation
+                const croppedImage = await ImageManipulator.manipulateAsync(
+                    uri,
+                    [
+                        {
+                            crop: validCropArea,
+                        },
+                    ],
+                    {
+                        compress: 0.8,
+                        format: ImageManipulator.SaveFormat.JPEG,
+                        base64: false,
+                    }
+                );
+
+                // Save the cropped image
+                await FileSystem.copyAsync({
+                    from: croppedImage.uri,
+                    to: newUri,
+                });
+            }
 
             return newUri;
         } catch (error) {
@@ -203,7 +212,7 @@ const CameraScreen = () => {
                 });
 
                 if (photo && photo.uri) {
-                    const processedUri = await processAndSaveImage(photo);
+                    const processedUri = await processAndSaveImage(photo, false);
                     router.back();
                     router.push(`/camera-modal?pictureUri=${processedUri}`);
                 }
@@ -226,7 +235,8 @@ const CameraScreen = () => {
 
             if (!result.canceled && result.assets[0]) {
                 const processedUri = await processAndSaveImage(
-                    result.assets[0]
+                    result.assets[0],
+                    true // Mark as gallery image
                 );
                 router.push(`/camera-modal?pictureUri=${processedUri}`);
             }
