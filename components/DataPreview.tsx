@@ -23,7 +23,7 @@ interface ReceiptItem {
     quantity: number;
     price: string;
     subtotal_expenditure: string;
-    deductable_amount: string;
+    deductible_amount: string;
     date_created: string;
     date_updated: string;
     receipt: number;
