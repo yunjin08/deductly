@@ -8,8 +8,10 @@ interface ReceiptModalProps {
     receipt: {
         title: string;
         category: string;
-        total_expediture: number;
+        total_expenditure: number;
         created_at: string;
+        is_deductible: boolean;
+        deductible_amount?: number;
         // Add more fields as needed
     } | null;
 }
@@ -49,12 +51,44 @@ export const ReceiptModal = ({ isVisible, onClose, receipt }: ReceiptModalProps)
 
                             <View className="bg-gray-50 p-4 rounded-xl">
                                 <Text className="text-gray-500 text-sm">Total Amount</Text>
-                                <Text className="text-lg font-semibold">P{receipt.total_expediture}</Text>
+                                <Text className="text-lg font-semibold">P{receipt.total_expenditure}</Text>
                             </View>
 
                             <View className="bg-gray-50 p-4 rounded-xl">
                                 <Text className="text-gray-500 text-sm">Date</Text>
                                 <Text className="text-lg font-semibold">{formatDate(receipt.created_at)}</Text>
+                            </View>
+
+                            {/* Deductibles Section */}
+                            <View className="bg-gray-50 p-4 rounded-xl">
+                                <Text className="text-gray-500 text-sm mb-2">Deductibles</Text>
+                                
+                                {/* Status */}
+                                <View className="flex-row justify-between items-center mb-2">
+                                    <Text className="text-gray-600">Status</Text>
+                                    <View className="flex-row items-center">
+                                        <Text className="mr-2 text-gray-800">
+                                            {receipt.is_deductible ? 'Eligible' : 'Not Eligible'}
+                                        </Text>
+                                        <FontAwesome6 
+                                            name={receipt.is_deductible ? "circle-check" : "circle-xmark"} 
+                                            size={20} 
+                                            color={receipt.is_deductible ? "#22c55e" : "#ef4444"} 
+                                        />
+                                    </View>
+                                </View>
+
+                                {/* Category */}
+                                <View className="flex-row justify-between items-center mb-2">
+                                    <Text className="text-gray-600">Category</Text>
+                                    <Text className="text-gray-800">{receipt.category}</Text>
+                                </View>
+
+                                {/* Deductible Amount */}
+                                <View className="flex-row justify-between items-center">
+                                    <Text className="text-gray-600">Deductible Amount</Text>
+                                    <Text className="text-gray-800 font-semibold">₱{receipt.deductible_amount || '0.00'}</Text>
+                                </View>
                             </View>
                         </View>
                     </ScrollView>

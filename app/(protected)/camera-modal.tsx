@@ -29,6 +29,9 @@ interface ExtractedData {
     service_charge?: string;
     discount?: string;
     total_amount?: string;
+    category?: 'FOOD' | 'TRANSPORTATION' | 'ENTERTAINMENT' | 'OTHER';
+    is_deductible?: boolean;
+    deductible_amount?: string;
     items: {
         name: string;
         price: string;
@@ -43,13 +46,6 @@ const CameraModalScreen = () => {
         null
     );
     const [isEditing, setIsEditing] = useState(false);
-    const [showDeductionModal, setShowDeductionModal] = useState(false);
-    const [deductionInfo, setDeductionInfo] = useState<{
-        isEligible: boolean;
-        amount: string;
-        reason: string;
-    } | null>(null);
-    const [hasShownDeduction, setHasShownDeduction] = useState(false);
     const [scrollViewHeight, setScrollViewHeight] = useState(0);
     const [contentHeight, setContentHeight] = useState(0);
 
@@ -60,7 +56,7 @@ const CameraModalScreen = () => {
                 pictureUri as string
             );
             if (response.success && response.data) {
-                const { store_info, transaction_info, items, totals } =
+                const { store_info, transaction_info, items, totals, metadata } =
                     response.data;
                 setExtractedData({
                     store_name: store_info?.name || '',
@@ -73,6 +69,9 @@ const CameraModalScreen = () => {
                     service_charge: totals?.service_charge || '',
                     discount: totals?.discount || '',
                     total_amount: totals?.total || '',
+                    category: (metadata?.transaction_category as 'FOOD' | 'TRANSPORTATION' | 'ENTERTAINMENT' | 'OTHER') || 'OTHER',
+                    is_deductible: metadata?.is_deductible || false,
+                    deductible_amount: metadata?.deductible_amount || '0',
                     items:
                         items?.map((item) => ({
                             name: item.name,
@@ -120,7 +119,7 @@ const CameraModalScreen = () => {
                         deductible_amount: '0',
                     })) || [],
                 totals: {
-                    total_expediture: extractedData.total_amount || '0',
+                    total_expenditure: extractedData.total_amount || '0',
                     value_added_tax: extractedData.vat || '0',
                     discount: extractedData.discount || '0',
                 },
@@ -167,41 +166,6 @@ const CameraModalScreen = () => {
             newItems[index] = { ...newItems[index], [field]: value };
             return { ...prev, items: newItems };
         });
-    };
-
-    // Calculate deduction info (moved to a function)
-    const calculateDeduction = () => {
-        if (!extractedData)
-            return { isEligible: false, amount: '0', reason: '' };
-        const totalAmount = parseFloat(extractedData.total_amount || '0');
-        const isEligible = totalAmount > 0;
-        const deductionAmount = isEligible
-            ? (totalAmount * 0.1).toFixed(2)
-            : '0';
-        return {
-            isEligible,
-            amount: deductionAmount,
-            reason: isEligible
-                ? 'This receipt may be eligible for tax deduction based on the total amount.'
-                : 'This receipt is not eligible for tax deduction.',
-        };
-    };
-
-    // Show deduction modal when scrolled to bottom
-    const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-        const { layoutMeasurement, contentOffset } = event.nativeEvent;
-        const paddingToBottom = 40;
-        if (
-            layoutMeasurement.height + contentOffset.y >=
-                contentHeight - paddingToBottom &&
-            !showDeductionModal &&
-            !hasShownDeduction &&
-            extractedData
-        ) {
-            setDeductionInfo(calculateDeduction());
-            setShowDeductionModal(true);
-            setHasShownDeduction(true);
-        }
     };
 
     if (extractedData) {
@@ -426,6 +390,38 @@ const CameraModalScreen = () => {
                         </View>
                     </View>
 
+                    {/* Deductibles Section */}
+                    <View className="bg-white rounded-2xl p-4 mb-6 shadow-sm">
+                        <Text className="text-lg font-semibold text-gray-800 mb-4">Deductibles</Text>
+                        
+                        {/* Deductible Status */}
+                        <View className="flex-row justify-between items-center mb-4">
+                            <Text className="text-gray-600">Status</Text>
+                            <View className="flex-row items-center">
+                                <Text className="mr-2 text-gray-800">
+                                    {extractedData.is_deductible ? 'Eligible' : 'Not Eligible'}
+                                </Text>
+                                <FontAwesome6 
+                                    name={extractedData.is_deductible ? "circle-check" : "circle-xmark"} 
+                                    size={20} 
+                                    color={extractedData.is_deductible ? "#22c55e" : "#ef4444"} 
+                                />
+                            </View>
+                        </View>
+
+                        {/* Category */}
+                        <View className="flex-row justify-between items-center mb-4">
+                            <Text className="text-gray-600">Category</Text>
+                            <Text className="text-gray-800">{extractedData.category || 'OTHER'}</Text>
+                        </View>
+
+                        {/* Deductible Amount */}
+                        <View className="flex-row justify-between items-center">
+                            <Text className="text-gray-600">Deductible Amount</Text>
+                            <Text className="text-gray-800 font-semibold">₱{extractedData.deductible_amount || '0.00'}</Text>
+                        </View>
+                    </View>
+
                     {/* Save Button */}
                     <TouchableOpacity
                         onPress={handleSave}
@@ -434,47 +430,6 @@ const CameraModalScreen = () => {
                         <FontAwesome6 name="save" size={20} color="white" className="mr-2" />
                         <Text className="text-white font-semibold text-lg">Save Receipt</Text>
                     </TouchableOpacity>
-
-                    {/* Tax Deduction Modal */}
-                    <Modal
-                        visible={showDeductionModal}
-                        transparent={true}
-                        animationType="slide"
-                        onRequestClose={() => setShowDeductionModal(false)}
-                    >
-                        <View className="flex-1 justify-center items-center bg-black/50">
-                            <View className="bg-white p-6 rounded-2xl w-[90%] max-w-[400px] shadow-lg">
-                                <Text className="text-2xl font-bold mb-4 text-center text-gray-800">
-                                    Tax Deduction Eligibility
-                                </Text>
-                                {deductionInfo && (
-                                    <>
-                                        <View className="mb-6">
-                                            <Text className="text-lg font-semibold mb-2 text-gray-800">
-                                                Status: {deductionInfo.isEligible ? 'Eligible' : 'Not Eligible'}
-                                            </Text>
-                                            <Text className="text-gray-600 mb-3">
-                                                {deductionInfo.reason}
-                                            </Text>
-                                            {deductionInfo.isEligible && (
-                                                <Text className="text-lg font-bold text-primary">
-                                                    Potential Deduction: ₱{deductionInfo.amount}
-                                                </Text>
-                                            )}
-                                        </View>
-                                        <TouchableOpacity
-                                            onPress={() => setShowDeductionModal(false)}
-                                            className="bg-primary py-4 rounded-xl"
-                                        >
-                                            <Text className="text-white text-center font-semibold text-lg">
-                                                Continue
-                                            </Text>
-                                        </TouchableOpacity>
-                                    </>
-                                )}
-                            </View>
-                        </View>
-                    </Modal>
                 </View>
             </ScrollableLayout>
         );
