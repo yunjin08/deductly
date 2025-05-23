@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useEffect } from 'react';
 import {
     View,
@@ -16,19 +17,32 @@ import { ReportGraph } from './ReportGraph';
 import { formatDate } from '@/utils/formatDate';
 import { router } from 'expo-router';
 
-// Custom interface that extends Receipt for our specific use case
+interface ReceiptItem {
+    id: number;
+    title: string;
+    quantity: number;
+    price: string;
+    subtotal_expenditure: string;
+    deductible_amount: string;
+    date_created: string;
+    date_updated: string;
+    receipt: number;
+}
+
 interface ReceiptDetails {
     id: string;
     title: string;
     user_id?: string;
-    category: string;
-    items?: any[];
-    total_expediture: string;
+    category: 'FOOD' | 'TRANSPORTATION' | 'ENTERTAINMENT' | 'OTHER';
+    items?: ReceiptItem[];
+    total_expenditure: string;
     created_at: string;
     updated_at: string;
     payment_method: string;
     discount: string;
     value_added_tax: string;
+    is_deductible: boolean;
+    deductible_amount: string;
 }
 
 // Custom interface for Document

@@ -241,7 +241,7 @@ const HomeScreen = () => {
                 </Text>
                 <Text className="text-xs">Category: {item.category}</Text>
                 <Text className="text-xs">
-                    Total Expenditure: P{item.total_expediture}
+                    Total Expenditure: P{item.total_expenditure}
                 </Text>
                 <Text className="text-xs text-gray-500">
                     {formatDate(item.created_at)}
