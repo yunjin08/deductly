@@ -20,7 +20,10 @@ const ProfileScreen = () => {
   }
 
   // Extract user data, handling both camelCase and snake_case property names
-  const { username, email, profilePicture } = session.user
+  const { username, email } = session.user
+
+  // Handle both naming conventions for profile picture
+  const profilePicture = session.user.profilePicture || session.user.profile_picture || null
 
   // Handle both naming conventions for first name and last name
   const firstName = session.user.firstName || session.user.first_name || ""

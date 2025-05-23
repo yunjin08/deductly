@@ -2,7 +2,9 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { register, login } from '@/services/api/auth';
 import { handleSignInWithGoogle } from '@/services/sso/google';
 import { isAxiosError } from 'axios';
+import { updateProfile } from "@/services/api/user";
 import { AuthSessionResult } from 'expo-auth-session';
+import { api } from "@/services/api/baseApi"
 import type {
     RegisterData,
     LoginData,
@@ -57,4 +59,29 @@ export const loginWithGoogle = createAsyncThunk(
             ]);
         }
     }
+);
+
+export const updateUserProfile = createAsyncThunk(
+  "auth/updateUserProfile",
+  async (userData: any, { rejectWithValue }) => {
+    try {
+      // Make sure to log what's being sent to the API
+      console.log("Updating user profile with data:", userData)
+
+      const response = await api.patch("/account/me/update/", userData)
+
+      // Log the response to see what's coming back
+      console.log("Profile update response:", response.data)
+
+      // Make sure both naming conventions are included in the return value
+      return {
+        ...response.data,
+        profilePicture: response.data.profilePicture || response.data.profile_picture,
+        profile_picture: response.data.profile_picture || response.data.profilePicture,
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error)
+      return rejectWithValue(error.response?.data?.message || "Failed to update profile")
+    }
+  },
 );
