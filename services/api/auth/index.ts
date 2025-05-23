@@ -23,7 +23,6 @@ export const login = async (username: string, password: string) => {
             user: user,
         };
     } catch (error) {
-        console.log('error inside catch', error);
         throw error;
     }
 };

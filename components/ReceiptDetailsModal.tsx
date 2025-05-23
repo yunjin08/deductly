@@ -19,14 +19,16 @@ interface ReceiptDetails {
     id: string;
     title: string;
     user_id?: string;
-    category: string;
+    category: 'FOOD' | 'TRANSPORTATION' | 'ENTERTAINMENT' | 'OTHER';
     items?: ReceiptItem[];
-    total_expediture: string;
+    total_expenditure: string;
     created_at: string;
     updated_at: string;
     payment_method: string;
     discount: string;
     value_added_tax: string;
+    is_deductible: boolean;
+    deductible_amount: string;
 }
 
 interface ReceiptDetailsModalProps {
@@ -40,7 +42,6 @@ export const ReceiptDetailsModal = ({
     onClose,
     receipt,
 }: ReceiptDetailsModalProps) => {
-    console.log('ReceiptDetailsModal received receipt:', receipt); // Debug log
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -121,8 +122,40 @@ export const ReceiptDetailsModal = ({
                                         Total Spendings
                                     </Text>
                                     <Text>
-                                        ₱{receipt.total_expediture || '0.00'}
+                                        ₱{receipt.total_expenditure || '0.00'}
                                     </Text>
+                                </View>
+                            </View>
+
+                            {/* Deductibles Section */}
+                            <View className="mb-6">
+                                <Text className="text-lg font-bold mb-3">Deductibles</Text>
+                                
+                                {/* Status */}
+                                <View className="flex-row justify-between mb-2">
+                                    <Text className="text-gray-500">Status</Text>
+                                    <View className="flex-row items-center">
+                                        <Text className="mr-2">
+                                            {receipt.is_deductible ? 'Eligible' : 'Not Eligible'}
+                                        </Text>
+                                        <FontAwesome6 
+                                            name={receipt.is_deductible ? "circle-check" : "circle-xmark"} 
+                                            size={20} 
+                                            color={receipt.is_deductible ? "#22c55e" : "#ef4444"} 
+                                        />
+                                    </View>
+                                </View>
+
+                                {/* Category */}
+                                <View className="flex-row justify-between mb-2">
+                                    <Text className="text-gray-500">Category</Text>
+                                    <Text>{receipt.category || 'OTHER'}</Text>
+                                </View>
+
+                                {/* Deductible Amount */}
+                                <View className="flex-row justify-between mb-2">
+                                    <Text className="text-gray-500">Deductible Amount</Text>
+                                    <Text className="font-semibold">₱{receipt.deductible_amount || '0.00'}</Text>
                                 </View>
                             </View>
 

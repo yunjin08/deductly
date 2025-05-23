@@ -19,9 +19,6 @@ const ProfileScreen = () => {
     )
   }
 
-  // Debug: Log the user object to see its structure
-  console.log("User object:", JSON.stringify(session.user, null, 2))
-
   // Extract user data, handling both camelCase and snake_case property names
   const { username, email } = session.user
 

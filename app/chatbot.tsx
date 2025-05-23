@@ -142,8 +142,8 @@ const ChatbotScreen = () => {
             setTotalPages(result.payload.num_pages);
             setCurrentPage((prev) => prev + 1);
 
-            // Add initial Cynerate message if this is the last page and there are no messages
-            if (currentPage >= result.payload.num_pages && formattedMessages.length === 0) {
+            // Only add initial message if there are no messages at all
+            if (messages.length === 0 && formattedMessages.length === 0) {
                 const initialMessage: ChatMessage = {
                     id: 'initial-message',
                     text: 'Hi, I am Cynerate. How may I help you?',
@@ -205,8 +205,10 @@ const ChatbotScreen = () => {
     const handleSend = async () => {
         if (inputText.trim()) {
             setInputText('...');
+            // Remove any initial message when starting a new conversation
+            const newMessages = messages.filter(msg => msg.id !== 'initial-message');
             setMessages([
-                ...messages,
+                ...newMessages,
                 {
                     id: Date.now().toString(),
                     text: inputText,

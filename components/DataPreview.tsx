@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useEffect } from 'react';
 import {
     View,
@@ -16,19 +17,32 @@ import { ReportGraph } from './ReportGraph';
 import { formatDate } from '@/utils/formatDate';
 import { router } from 'expo-router';
 
-// Custom interface that extends Receipt for our specific use case
+interface ReceiptItem {
+    id: number;
+    title: string;
+    quantity: number;
+    price: string;
+    subtotal_expenditure: string;
+    deductible_amount: string;
+    date_created: string;
+    date_updated: string;
+    receipt: number;
+}
+
 interface ReceiptDetails {
     id: string;
     title: string;
     user_id?: string;
-    category: string;
-    items?: any[];
-    total_expediture: string;
+    category: 'FOOD' | 'TRANSPORTATION' | 'ENTERTAINMENT' | 'OTHER';
+    items?: ReceiptItem[];
+    total_expenditure: string;
     created_at: string;
     updated_at: string;
     payment_method: string;
     discount: string;
     value_added_tax: string;
+    is_deductible: boolean;
+    deductible_amount: string;
 }
 
 // Custom interface for Document
@@ -144,8 +158,6 @@ export const DataPreview = ({
     onGenerateDocument,
     generateButtonText = 'Generate Tax Document',
 }: DataPreviewProps) => {
-    // Debug log to check incoming data
-    // console.log(`DataPreview received ${data.length} ${itemType} items:`, data);
 
     const [selectedItems, setSelectedItems] = useState<number[]>([]);
     const [isSelectionMode, setIsSelectionMode] = useState(false);
@@ -199,8 +211,6 @@ export const DataPreview = ({
                 setSelectedItems([...selectedItems, id]);
             }
         } else {
-            // Show modal with details based on item type
-            console.log('Item clicked:', item); // Debug log
 
             // Make sure the item is an object with an id before proceeding
             if (!item || typeof item !== 'object' || !item.id) {
@@ -209,15 +219,12 @@ export const DataPreview = ({
             }
 
             if (itemType === 'receipt') {
-                console.log('Setting receipt:', item); // Debug log
                 setSelectedReceipt(item as ReceiptDetails);
                 setReceiptModalVisible(true);
             } else if (itemType === 'document') {
-                console.log('Setting document:', item); // Debug log
                 setSelectedDocument(item as DocumentDetails);
                 setDocumentModalVisible(true);
             } else if (itemType === 'report') {
-                console.log('Setting report:', item); // Debug log
                 setSelectedReport(item as ReportDetails);
                 setReportModalVisible(true);
             }
@@ -372,7 +379,13 @@ export const DataPreview = ({
                     <FontAwesome6 name={iconName} size={24} color={iconColor} />
                 </View>
                 <View className="flex-1">
-                    <Text className="text-base font-medium">{item.title}</Text>
+                    <Text 
+                        className="text-base font-medium"
+                        numberOfLines={2}
+                        ellipsizeMode="tail"
+                    >
+                        {item.title}
+                    </Text>
                     <Text className="text-gray-500">
                         {formatDate(item.created_at)}
                     </Text>

@@ -46,7 +46,6 @@ interface BackendResponse {
 export const cameraService = {
     processReceipt: async (imageUri: string): Promise<BackendResponse> => {
         try {
-            console.log('Starting receipt processing...');
             // Create a permanent directory for receipts if it doesn't exist
             const receiptsDir = `${FileSystem.documentDirectory}receipts/`;
             const dirInfo = await FileSystem.getInfoAsync(receiptsDir);
@@ -74,7 +73,6 @@ export const cameraService = {
                 name: filename,
             } as any);
 
-            console.log('Sending image to backend...');
             // Make API call with multipart/form-data
             const response = await api.post<BackendResponse>(
                 '/camera/process_receipt/',
@@ -84,10 +82,6 @@ export const cameraService = {
                         'Content-Type': 'multipart/form-data',
                     },
                 }
-            );
-            console.log(
-                'Received response from backend:',
-                JSON.stringify(response.data, null, 2)
             );
 
             // Clean up - delete the copied image after processing
@@ -104,7 +98,6 @@ export const cameraService = {
         receiptData: any
     ): Promise<{ success: boolean; receipt_id?: number; error?: string }> => {
         try {
-            console.log('Starting to save receipt with data:', receiptData);
             
             // Transform the data to match backend expectations
             const transformedData = {
@@ -129,7 +122,7 @@ export const cameraService = {
                     deductible_amount: parseFloat(item.deductible_amount || '0'),
                 })),
                 totals: {
-                    total_expenditure: parseFloat(receiptData.totals.total_expediture),
+                    total_expenditure: parseFloat(receiptData.totals.total_expenditure),
                     value_added_tax: parseFloat(receiptData.totals.value_added_tax),
                     discount: parseFloat(receiptData.totals.discount),
                 },
@@ -140,15 +133,11 @@ export const cameraService = {
                 },
             };
 
-            console.log('Transformed data for saving:', transformedData);
-            console.log('Making POST request to /camera/save_receipt/');
-
             const response = await api.post(
                 '/camera/save_receipt/',
                 transformedData
             );
-            
-            console.log('Save receipt response:', response.data);
+
             return response.data;
         } catch (error: any) {
             console.error('Error saving receipt:', error);

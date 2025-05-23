@@ -49,7 +49,6 @@ export const loginWithGoogle = createAsyncThunk(
             if (!ssoResponse || !ssoResponse.token || !ssoResponse.email) {
                 throw new Error('Invalid SSO response');
             }
-            console.log('loginWithGoogle response', ssoResponse);
             return ssoResponse;
         } catch (error) {
             if (isAxiosError(error) || error instanceof Error) {

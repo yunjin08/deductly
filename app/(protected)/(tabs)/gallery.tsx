@@ -49,7 +49,6 @@ const GalleryScreen = () => {
     const images = useSelector((state: any) => state.gallery?.images);
     const isLoading = useSelector((state: any) => state.gallery?.isLoading);
     const error = useSelector((state: any) => state.gallery?.error);
-    console.log(images, 'images');
 
     useEffect(() => {
         dispatch(fetchImages());
@@ -139,41 +138,53 @@ const GalleryScreen = () => {
         </Modal>
     );
 
-    const renderGridItem = ({ item }: { item: GalleryImage }) => (
-        <View className="flex-1 mb-4">
-            <View
-                key={item.id}
-                className="bg-gray-50 rounded-xl overflow-hidden"
-            >
-                <TouchableOpacity onPress={() => setSelectedImage(item)}>
-                    <View className="h-48 bg-gray-200 items-center justify-center">
-                        <Image 
-                            source={{ uri: item.image_url }}
-                            className="w-full h-full"
-                            resizeMode="cover"
-                        />
-                    </View>
-                </TouchableOpacity>
-                <View className="p-4">
-                    <Text className="text-lg font-semibold">{item.title}</Text>
-                    <Text className="text-gray-500 mb-3">Created: {formatDate(item.created_at)}</Text>
-                    <TouchableOpacity 
-                        className="bg-white py-3 rounded-lg border border-primary"
-                        onPress={() => setSelectedImage(item)}
-                    >
-                        <Text className="text-primary text-center font-medium">
-                            View
-                        </Text>
+    const filteredImages = images?.objects?.filter((img: GalleryImage) => !!img.image_url) || [];
+
+    const renderGridItem = ({ item }: { item: GalleryImage }) => {
+        if (!item.image_url) return null;
+        
+        return (
+            <View className="flex-1 mb-4">
+                <View
+                    key={item.id}
+                    className="bg-gray-50 rounded-xl overflow-hidden"
+                >
+                    <TouchableOpacity onPress={() => setSelectedImage(item)}>
+                        <View className="h-48 bg-gray-200 items-center justify-center">
+                            <Image 
+                                source={{ uri: item.image_url }}
+                                className="w-full h-full"
+                                resizeMode="cover"
+                            />
+                        </View>
                     </TouchableOpacity>
-                </View>
-                <View className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full">
-                    <Text className="text-sm text-primary font-medium">
-                        {formatDate(item.updated_at)}
-                    </Text>
+                    <View className="p-4">
+                        <Text
+                            className="text-lg font-semibold"
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                        >
+                            {item.title}
+                        </Text>
+                        <Text className="text-gray-500 mb-3">Created: {formatDate(item.created_at)}</Text>
+                        <TouchableOpacity 
+                            className="bg-white py-3 rounded-lg border border-primary"
+                            onPress={() => setSelectedImage(item)}
+                        >
+                            <Text className="text-primary text-center font-medium">
+                                View
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full">
+                        <Text className="text-sm text-primary font-medium">
+                            {formatDate(item.updated_at)}
+                        </Text>
+                    </View>
                 </View>
             </View>
-        </View>
-    );
+        );
+    };
 
     const renderListItem = ({ item }: { item: GalleryImage }) => (
         <TouchableOpacity 
@@ -188,7 +199,13 @@ const GalleryScreen = () => {
                 />
             </View>
             <View className="flex-1 p-4 justify-center">
-                <Text className="text-lg font-semibold">{item.title}</Text>
+                <Text
+                    className="text-lg font-semibold"
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                >
+                    {item.title}
+                </Text>
                 <Text className="text-gray-500">Created: {formatDate(item.created_at)}</Text>
                 <Text className="text-primary text-sm mt-1">Updated: {formatDate(item.updated_at)}</Text>
             </View>
@@ -221,14 +238,14 @@ const GalleryScreen = () => {
     return (
         <ScrollableLayout>
             <Header />
-            {images && images?.objects?.length > 0 ? <ViewToggle /> : <Text className="text-2xl font-bold text-center">Images</Text>} 
-            {images?.length === 0 || !images ? (
+            {filteredImages && filteredImages?.objects?.length > 0 ? <ViewToggle /> : <Text className="text-2xl font-bold text-center">Images</Text>} 
+            {filteredImages?.length === 0 || !filteredImages ? (
                 <EmptyGalleryState />
             ) : (
                 <View className="flex-row flex-wrap gap-4">
                     <FlatList
                         key={isGridView ? 'grid' : 'list'}
-                        data={images.objects}
+                        data={filteredImages}
                         keyExtractor={(item) => item.id.toString()}
                         numColumns={isGridView ? 2 : 1}
                         scrollEnabled={false}
