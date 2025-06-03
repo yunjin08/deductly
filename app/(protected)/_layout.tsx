@@ -27,10 +27,33 @@ const ProtectedLayout = () => {
             <Stack>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen
-                    name="profile"
+                name="profile"
+                options={{
+                    headerBackTitle: 'Back',
+                    headerTitle: 'Profile',
+                    headerStyle: {
+                    backgroundColor: '#1fddee',
+                    },
+                    headerTitleStyle: {
+                    color: 'white',
+                    },
+                    headerTintColor: 'white', 
+                    headerTitleAlign: 'center',
+                }}
+                />
+                <Stack.Screen
+                    name="edit-profile"
                     options={{
                         headerBackTitle: 'Back',
-                        headerTitle: 'Profile',
+                        headerTitle: 'Edit Profile',
+                       headerStyle: {
+                        backgroundColor: '#1fddee',
+                        },
+                        headerTitleStyle: {
+                        color: 'white',
+                        },
+                        headerTintColor: 'white',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
