@@ -14,11 +14,12 @@ const WelcomeScreen = () => {
             />
             <View style={styles.contentContainer}>
                 <Text style={styles.headerText}>
-                    Streamline Tax Deduction Processes
+                    No accountant? No problem. Get started now!
+
+
                 </Text>
                 <Text style={styles.subHeaderText}>
-                    Automating data collection, categorization, and compliance
-                    to ensure accuracy and save time.
+                    AI-powered tax assistant built for Filipino freelancers, MSMEs, and students. Scan receipts to auto-track expenses, discover deductions, visualize finances with a smart dashboard, and generate BIR-ready documents — all in one simple platform.
                 </Text>
                 <Link href="/sign-in" asChild>
                     <TouchableOpacity style={styles.button}>
