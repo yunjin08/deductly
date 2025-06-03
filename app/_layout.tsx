@@ -45,8 +45,14 @@ const RootLayout = () => {
                             />
                             <Stack.Screen
                                 name="sign-up"
-                                options={{ headerTitle: 'Sign Up' }}
+                                options={{
+                                    headerTitle: 'Sign In',
+                                    headerStyle: { backgroundColor: '#1fddee' },
+                                    headerTintColor: '#ffffff',
+                                    headerTitleStyle: { color: '#1fddee' },
+                                }}
                             />
+
                             <Stack.Screen
                                 name="reset-password"
                                 options={{ headerTitle: 'Reset Password' }}
