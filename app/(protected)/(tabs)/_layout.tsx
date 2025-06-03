@@ -10,8 +10,8 @@ const TabsLayout = () => {
             <Tabs
                 screenOptions={{
                     tabBarStyle: {
-                        height: 64,
-                        paddingTop: 4,
+                        height: 75,
+                        paddingTop: 1,
                         display: 'flex',
                         paddingHorizontal: 12,
                         justifyContent: 'center',
@@ -24,7 +24,7 @@ const TabsLayout = () => {
                         <View className=" bg-primary h-full shadow-md" />
                     ),
                     tabBarIconStyle: {
-                        marginTop: 0,
+                        marginTop: 10,
                     },
                 }}
             >
