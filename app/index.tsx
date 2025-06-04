@@ -18,7 +18,7 @@ const WelcomeScreen = () => {
 
 
                 </Text>
-                <Text style={styles.subHeaderText}>
+                <Text style={[styles.subHeaderText, { textAlign: 'justify' }]}>
                     AI-powered tax assistant built for Filipino freelancers, MSMEs, and students. Scan receipts to auto-track expenses, discover deductions, visualize finances with a smart dashboard, and generate BIR-ready documents — all in one simple platform.
                 </Text>
                 <Link href="/sign-in" asChild>
