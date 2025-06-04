@@ -7,6 +7,7 @@ import {
     KeyboardAvoidingView,
     Platform,
     Keyboard,
+    Dimensions,
 } from 'react-native';
 import GoBackRoute from '@/components/GoBackRoute';
 import { useEffect, useRef, useState, useCallback } from 'react';
@@ -16,6 +17,7 @@ import { fetchChatHistory, sendMessage } from '@/contexts/actions/userActions';
 import { useAppSelector, useAppDispatch } from '@/hooks/useAuthHooks';
 import Markdown from 'react-native-markdown-display';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Dummy chat data type
 type ChatMessage = {
@@ -26,6 +28,7 @@ type ChatMessage = {
 };
 
 const ChatbotScreen = () => {
+    const insets = useSafeAreaInsets();
     const router = useRouter();
     const dispatch = useAppDispatch();
     const session = useAppSelector((state) => state.auth.session);
@@ -34,6 +37,7 @@ const ChatbotScreen = () => {
     const [inputText, setInputText] = useState('');
     const scrollViewRef = useRef<ScrollView>(null);
     const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+    const [keyboardHeight, setKeyboardHeight] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
@@ -43,6 +47,8 @@ const ChatbotScreen = () => {
     const [selectedMessage, setSelectedMessage] = useState<
         string | null | undefined
     >(null);
+
+    const screenHeight = Dimensions.get('window').height;
 
     const handleMessagePress = (messageId: string | undefined) => {
         setSelectedMessage(selectedMessage === messageId ? null : messageId);
@@ -55,6 +61,7 @@ const ChatbotScreen = () => {
             setMessages([]);
             setInputText('');
             setKeyboardVisible(false);
+            setKeyboardHeight(0);
             setCurrentPage(1);
             setIsLoading(false);
             setHasMore(true);
@@ -67,12 +74,11 @@ const ChatbotScreen = () => {
 
     // Handle keyboard events
     useEffect(() => {
-        setTimeout(() => {
-            scrollViewRef.current?.scrollToEnd({ animated: true });
-        }, 100);
         const keyboardDidShowListener = Keyboard.addListener(
             'keyboardDidShow',
-            () => {
+            (event) => {
+                const keyboardHeight = event.endCoordinates.height;
+                setKeyboardHeight(keyboardHeight);
                 setKeyboardVisible(true);
                 setTimeout(() => {
                     scrollViewRef.current?.scrollToEnd({ animated: true });
@@ -82,10 +88,8 @@ const ChatbotScreen = () => {
         const keyboardDidHideListener = Keyboard.addListener(
             'keyboardDidHide',
             () => {
+                setKeyboardHeight(0);
                 setKeyboardVisible(false);
-                setTimeout(() => {
-                    scrollViewRef.current?.scrollToEnd({ animated: true });
-                }, 100);
             }
         );
 
@@ -204,6 +208,7 @@ const ChatbotScreen = () => {
 
     const handleSend = async () => {
         if (inputText.trim()) {
+            const messageToSend = inputText;
             setInputText('...');
             // Remove any initial message when starting a new conversation
             const newMessages = messages.filter(msg => msg.id !== 'initial-message');
@@ -211,7 +216,7 @@ const ChatbotScreen = () => {
                 ...newMessages,
                 {
                     id: Date.now().toString(),
-                    text: inputText,
+                    text: messageToSend,
                     sender: session?.user?.first_name || 'Guest',
                 },
             ]);
@@ -220,7 +225,7 @@ const ChatbotScreen = () => {
                 sendMessage({
                     pk: session?.user?.id || 0,
                     filters: {
-                        question: inputText,
+                        question: messageToSend,
                     },
                 })
             );
@@ -309,195 +314,215 @@ const ChatbotScreen = () => {
         }
     };
 
-    return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0}
-            className="flex-1"
-        >
-            <SafeAreaView edges={['top']} className="flex-1 relative">
-                <View className="flex-1 relative">
-                    <GoBackRoute withScrollableLayout />
+    // Calculate the container height based on keyboard visibility
+    const containerHeight = isKeyboardVisible
+        ? screenHeight - keyboardHeight - insets.top
+        : screenHeight - insets.top - insets.bottom;
 
-                    {/* Chat Messages */}
-                    <View className="flex-1 mt-10 px-4">
-                        <ScrollView
-                            ref={scrollViewRef}
-                            className="flex-1"
-                            onScroll={handleScroll}
-                            scrollEventThrottle={300}
-                            showsVerticalScrollIndicator={false}
-                            onContentSizeChange={handleContentSizeChange}
-                            bounces={true}
-                            alwaysBounceVertical={true}
-                        >
-                            {isLoadingMore && (
-                                <View className="py-2 items-center">
-                                    <Text className="text-gray-500">
-                                        Loading more messages...
-                                    </Text>
-                                </View>
-                            )}
-                            {!hasMore && messages.length > 1 && (
-                                <TouchableOpacity
-                                    className="my-2 items-start"
-                                    activeOpacity={0.7}
-                                >
-                                    <Text className="text-gray-600 ml-2 text-xs mb-1">
-                                        Cynerate
-                                    </Text>
-                                    <View className="rounded-2xl p-3 py-2 max-w-[80%] bg-gray-200">
-                                        <Markdown
-                                            style={getMarkdownStyles(true)}
-                                        >
-                                            Hi, I am Cynerate. How may I help you?
-                                        </Markdown>
-                                        <View className="mt-3 border-t border-gray-300 pt-2">
-                                            <Text className="text-gray-600 text-xs mb-1">
-                                                You can try scanning your tax documents here:
-                                            </Text>
-                                            <TouchableOpacity
-                                                onPress={navigateToScan}
-                                                className="bg-primary py-1 px-3 rounded-full mt-1 self-start"
-                                            >
-                                                <Text className="text-white text-xs font-medium">Scan</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                    </View>
-                                </TouchableOpacity>
-                            )}
-                            {messages.length === 0 && !isLoading && (
-                                <TouchableOpacity
-                                    className="my-2 items-start"
-                                    activeOpacity={0.7}
-                                >
-                                    <Text className="text-gray-600 ml-2 text-xs mb-1">
-                                        Cynerate
-                                    </Text>
-                                    <View className="rounded-2xl p-3 py-2 max-w-[80%] bg-gray-200">
-                                        <Markdown
-                                            style={getMarkdownStyles(true)}
-                                        >
-                                            Hi, I am Cynerate. How may I help you?
-                                        </Markdown>
-                                        <View className="mt-3 border-t border-gray-300 pt-2">
-                                            <Text className="text-gray-600 text-xs mb-1">
-                                                You can try scanning your tax documents here:
-                                            </Text>
-                                            <TouchableOpacity
-                                                onPress={navigateToScan}
-                                                className="bg-primary py-1 px-3 rounded-full mt-1 self-start"
-                                            >
-                                                <Text className="text-white text-xs font-medium">Scan</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                    </View>
-                                </TouchableOpacity>
-                            )}
-                            {messages.map((message) => (
-                                <TouchableOpacity
-                                    key={message.id}
-                                    className={`my-2 ${
-                                        message.sender !== 'Cynerate'
-                                            ? 'items-end'
-                                            : 'items-start'
-                                    }`}
-                                    onPress={() =>
-                                        handleMessagePress(
-                                            message.id?.toString()
-                                        )
-                                    }
-                                    activeOpacity={0.7}
-                                >
-                                    <Text className="text-gray-600 ml-2 text-xs mb-1">
-                                        {message.sender}
-                                    </Text>
-                                    <View
-                                        className={`rounded-2xl p-3 py-2 max-w-[80%] ${
-                                            message.sender !== 'Cynerate'
-                                                ? 'bg-primary'
-                                                : 'bg-gray-200'
-                                        }`}
+    return (
+        <SafeAreaView edges={['top']} className="flex-1 bg-white">
+            <View className="flex-1" style={{ height: containerHeight }}>
+                <GoBackRoute withScrollableLayout />
+
+                {/* Chat Messages */}
+                <View className="flex-1 mt-10 px-4">
+                    <ScrollView
+                        ref={scrollViewRef}
+                        className="flex-1"
+                        onScroll={handleScroll}
+                        scrollEventThrottle={300}
+                        showsVerticalScrollIndicator={false}
+                        onContentSizeChange={handleContentSizeChange}
+                        bounces={true}
+                        alwaysBounceVertical={true}
+                        keyboardShouldPersistTaps="handled"
+                        contentContainerStyle={{
+                            paddingBottom: 20,
+                            flexGrow: 1,
+                        }}
+                    >
+                        {isLoadingMore && (
+                            <View className="py-2 items-center">
+                                <Text className="text-gray-500">
+                                    Loading more messages...
+                                </Text>
+                            </View>
+                        )}
+                        {!hasMore && messages.length > 1 && (
+                            <TouchableOpacity
+                                className="my-2 items-start"
+                                activeOpacity={0.7}
+                            >
+                                <Text className="text-gray-600 ml-2 text-xs mb-1">
+                                    Cynerate
+                                </Text>
+                                <View className="rounded-2xl p-3 py-2 max-w-[80%] bg-gray-200">
+                                    <Markdown
+                                        style={getMarkdownStyles(true)}
                                     >
-                                        <Markdown
-                                            style={getMarkdownStyles(
-                                                message.sender === 'Cynerate'
-                                            )}
+                                        Hi, I am Cynerate. How may I help you?
+                                    </Markdown>
+                                    <View className="mt-3 border-t border-gray-300 pt-2">
+                                        <Text className="text-gray-600 text-xs mb-1">
+                                            You can try scanning your tax documents here:
+                                        </Text>
+                                        <TouchableOpacity
+                                            onPress={navigateToScan}
+                                            className="bg-primary py-1 px-3 rounded-full mt-1 self-start"
                                         >
-                                            {message.text}
-                                        </Markdown>
-                                        {message.sender === 'Cynerate' && (
-                                            <View className="mt-3 border-t border-gray-300 pt-2">
-                                                <Text className="text-gray-600 text-xs mb-1">
-                                                    You can try scanning your
-                                                    tax documents here:
+                                            <Text className="text-white text-xs font-medium">Scan</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
+                        )}
+                        {messages.length === 0 && !isLoading && (
+                            <TouchableOpacity
+                                className="my-2 items-start"
+                                activeOpacity={0.7}
+                            >
+                                <Text className="text-gray-600 ml-2 text-xs mb-1">
+                                    Cynerate
+                                </Text>
+                                <View className="rounded-2xl p-3 py-2 max-w-[80%] bg-gray-200">
+                                    <Markdown
+                                        style={getMarkdownStyles(true)}
+                                    >
+                                        Hi, I am Cynerate. How may I help you?
+                                    </Markdown>
+                                    <View className="mt-3 border-t border-gray-300 pt-2">
+                                        <Text className="text-gray-600 text-xs mb-1">
+                                            You can try scanning your tax documents here:
+                                        </Text>
+                                        <TouchableOpacity
+                                            onPress={navigateToScan}
+                                            className="bg-primary py-1 px-3 rounded-full mt-1 self-start"
+                                        >
+                                            <Text className="text-white text-xs font-medium">Scan</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
+                        )}
+                        {messages.map((message) => (
+                            <TouchableOpacity
+                                key={message.id}
+                                className={`my-2 ${
+                                    message.sender !== 'Cynerate'
+                                        ? 'items-end'
+                                        : 'items-start'
+                                }`}
+                                onPress={() =>
+                                    handleMessagePress(
+                                        message.id?.toString()
+                                    )
+                                }
+                                activeOpacity={0.7}
+                            >
+                                <Text className="text-gray-600 ml-2 text-xs mb-1">
+                                    {message.sender}
+                                </Text>
+                                <View
+                                    className={`rounded-2xl p-3 py-2 max-w-[80%] ${
+                                        message.sender !== 'Cynerate'
+                                            ? 'bg-primary'
+                                            : 'bg-gray-200'
+                                    }`}
+                                >
+                                    <Markdown
+                                        style={getMarkdownStyles(
+                                            message.sender === 'Cynerate'
+                                        )}
+                                    >
+                                        {message.text}
+                                    </Markdown>
+                                    {message.sender === 'Cynerate' && (
+                                        <View className="mt-3 border-t border-gray-300 pt-2">
+                                            <Text className="text-gray-600 text-xs mb-1">
+                                                You can try scanning your
+                                                tax documents here:
+                                            </Text>
+                                            <TouchableOpacity
+                                                onPress={navigateToScan}
+                                                className="bg-primary py-1 px-3 rounded-full mt-1 self-start"
+                                            >
+                                                <Text className="text-white text-xs font-medium">
+                                                    Scan
                                                 </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )}
+                                </View>
+
+                                {/* Show date when message is selected */}
+                                {selectedMessage === message.id && (
+                                    <Text className="text-gray-500 px-2 text-[0.6rem] mt-1">
+                                        {new Date(
+                                            parseInt(message.id || '0')
+                                        ).toLocaleString()}
+                                    </Text>
+                                )}
+
+                                {message.options && (
+                                    <View className="mt-2">
+                                        {message.options.map(
+                                            (option, index) => (
                                                 <TouchableOpacity
-                                                    onPress={navigateToScan}
-                                                    className="bg-primary py-1 px-3 rounded-full mt-1 self-start"
+                                                    key={index}
+                                                    className="bg-gray-200 rounded-full px-4 py-2 mt-1"
                                                 >
-                                                    <Text className="text-white text-xs font-medium">
-                                                        Scan
-                                                    </Text>
+                                                    <Text>{option}</Text>
                                                 </TouchableOpacity>
-                                            </View>
+                                            )
                                         )}
                                     </View>
-
-                                    {/* Show date when message is selected */}
-                                    {selectedMessage === message.id && (
-                                        <Text className="text-gray-500 px-2 text-[0.6rem] mt-1">
-                                            {new Date(
-                                                parseInt(message.id || '0')
-                                            ).toLocaleString()}
-                                        </Text>
-                                    )}
-
-                                    {message.options && (
-                                        <View className="mt-2">
-                                            {message.options.map(
-                                                (option, index) => (
-                                                    <TouchableOpacity
-                                                        key={index}
-                                                        className="bg-gray-200 rounded-full px-4 py-2 mt-1"
-                                                    >
-                                                        <Text>{option}</Text>
-                                                    </TouchableOpacity>
-                                                )
-                                            )}
-                                        </View>
-                                    )}
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
-                    </View>
-
-                    {/* Input Area */}
-                    <View className="border-t border-gray-200 px-4 py-2 mb-2">
-                        <View className="flex-row items-center">
-                            <TextInput
-                                className="flex-1 border-primary border-[1px] bg-gray-100 rounded-full px-4 py-2 mr-2"
-                                placeholder="Type a message..."
-                                value={inputText}
-                                onChangeText={setInputText}
-                                multiline={false}
-                                disabled={inputText === '...'}
-                            />
-                            <TouchableOpacity
-                                onPress={handleSend}
-                                className="bg-primary p-2 rounded-full"
-                            >
-                                <FontAwesome6
-                                    name="paper-plane"
-                                    size={20}
-                                    color="white"
-                                />
+                                )}
                             </TouchableOpacity>
-                        </View>
+                        ))}
+                    </ScrollView>
+                </View>
+
+                {/* Input Area */}
+                <View 
+                    className="border-t border-gray-200 px-4 bg-white"
+                    style={{
+                        paddingTop: 12,
+                        paddingBottom: isKeyboardVisible ? 8 : Platform.OS === 'ios' ? insets.bottom + 8 : 16,
+                        position: 'absolute',
+                        bottom: isKeyboardVisible ? keyboardHeight + (Platform.OS === 'android' ? 50 : 0) : 0,
+                        left: 0,
+                        right: 0,
+                    }}
+                >
+                    <View className="flex-row items-center">
+                        <TextInput
+                            className="flex-1 border-primary border-[1px] bg-gray-100 rounded-full px-4 py-4 mr-2"
+                            placeholder="Type a message..."
+                            value={inputText}
+                            onChangeText={setInputText}
+                            multiline={false}
+                            editable={inputText !== '...'}
+                            onFocus={() => {
+                                setTimeout(() => {
+                                    scrollViewRef.current?.scrollToEnd({ animated: true });
+                                }, 100);
+                            }}
+                        />
+                        <TouchableOpacity
+                            onPress={handleSend}
+                            className="bg-primary p-2 rounded-full"
+                            disabled={inputText === '...'}
+                        >
+                            <FontAwesome6
+                                name="paper-plane"
+                                size={20}
+                                color="white"
+                            />
+                        </TouchableOpacity>
                     </View>
                 </View>
-            </SafeAreaView>
-        </KeyboardAvoidingView>
+            </View>
+        </SafeAreaView>
     );
 };
 

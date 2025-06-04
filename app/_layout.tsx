@@ -1,11 +1,10 @@
 import { Stack } from 'expo-router';
 import axios from 'axios';
+import React from 'react';
 import {
     Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    TouchableWithoutFeedback,
     StyleSheet,
+    TouchableWithoutFeedback,
 } from 'react-native';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -23,57 +22,49 @@ const RootLayout = () => {
         <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
                 <TouchableWithoutFeedback onPress={dismissKeyboard}>
-                    <KeyboardAvoidingView
-                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                        style={styles.container}
-                    >
-                        <Stack>
-                            {/* Public Routes */}
-                            <Stack.Screen
-                                name="index"
-                                options={{
-                                    headerTitle: 'Welcome',
-                                    headerShown: false,
-                                }}
-                            />
-                            <Stack.Screen
-                                name="sign-in"
-                                options={{
-                                    headerTitle: 'Sign In',
-                                    headerShown: false,
-                                }}
-                            />
-                            <Stack.Screen
-                                name="sign-up"
-                                options={{
-                                    headerTitle: 'Sign In',
-                                    headerStyle: { backgroundColor: '#1fddee' },
-                                    headerTintColor: '#ffffff',
-                                    headerTitleStyle: { color: '#1fddee' },
-                                }}
-                            />
+                    <Stack>
+                        {/* Public Routes */}
+                        <Stack.Screen
+                            name="index"
+                            options={{
+                                headerTitle: 'Welcome',
+                                headerShown: false,
+                            }}
+                        />
+                        <Stack.Screen
+                            name="sign-in"
+                            options={{
+                                headerTitle: 'Sign In',
+                                headerShown: false,
+                            }}
+                        />
+                        <Stack.Screen
+                            name="sign-up"
+                            options={{
+                                headerTitle: 'Sign In',
+                                headerStyle: { backgroundColor: '#1fddee' },
+                                headerTintColor: '#ffffff',
+                                headerTitleStyle: { color: '#1fddee' },
+                            }}
+                        />
+                        <Stack.Screen
+                            name="reset-password"
+                            options={{ headerTitle: 'Reset Password' }}
+                        />
+                        <Stack.Screen
+                            name="chatbot"
+                            options={{
+                                headerTitle: 'Chatbot',
+                                headerShown: false,
+                            }}
+                        />
 
-                            <Stack.Screen
-                                name="reset-password"
-                                options={{ headerTitle: 'Reset Password' }}
-                            />
-
-                            <Stack.Screen
-                                name="chatbot"
-                                options={{
-                                    headerTitle: 'Chatbot',
-                                    headerShown: false,
-                                }}
-                            />
-
-                            {/* Protected Routes */}
-
-                            <Stack.Screen
-                                name="(protected)"
-                                options={{ headerShown: false }}
-                            />
-                        </Stack>
-                    </KeyboardAvoidingView>
+                        {/* Protected Routes */}
+                        <Stack.Screen
+                            name="(protected)"
+                            options={{ headerShown: false }}
+                        />
+                    </Stack>
                 </TouchableWithoutFeedback>
             </PersistGate>
         </Provider>
