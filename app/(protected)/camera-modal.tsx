@@ -29,7 +29,7 @@ interface ExtractedData {
     service_charge?: string;
     discount?: string;
     total_amount?: string;
-    category?: 'FOOD' | 'TRANSPORTATION' | 'ENTERTAINMENT' | 'OTHER';
+    category?: 'UTILITIES' | 'FOOD' | 'TRANSPORTATION' | 'ENTERTAINMENT' | 'OTHER';
     is_deductible?: boolean;
     deductible_amount?: string;
     items: {
@@ -49,6 +49,11 @@ const CameraModalScreen = () => {
     const [scrollViewHeight, setScrollViewHeight] = useState(0);
     const [contentHeight, setContentHeight] = useState(0);
 
+    // Helper function to clean numeric input (remove any non-numeric characters except decimal)
+    const cleanNumericValue = (value: string) => {
+        return value.replace(/[^0-9.]/g, '');
+    };
+
     const handleAnalyze = async () => {
         try {
             setIsAnalyzing(true);
@@ -65,17 +70,17 @@ const CameraModalScreen = () => {
                     date: transaction_info?.date || '',
                     time: transaction_info?.time || '',
                     payment_method: transaction_info?.payment_method || '',
-                    vat: totals?.vat || '',
-                    service_charge: totals?.service_charge || '',
-                    discount: totals?.discount || '',
-                    total_amount: totals?.total || '',
-                    category: (metadata?.transaction_category as 'FOOD' | 'TRANSPORTATION' | 'ENTERTAINMENT' | 'OTHER') || 'OTHER',
+                    vat: cleanNumericValue(totals?.vat || '0'),
+                    service_charge: cleanNumericValue(totals?.service_charge || '0'),
+                    discount: cleanNumericValue(totals?.discount || '0'),
+                    total_amount: cleanNumericValue(totals?.total || '0'),
+                    category: (metadata?.transaction_category as 'UTILITIES' | 'FOOD' | 'TRANSPORTATION' | 'ENTERTAINMENT' | 'OTHER') || 'OTHER',
                     is_deductible: metadata?.is_deductible || false,
-                    deductible_amount: metadata?.deductible_amount || '0',
+                    deductible_amount: cleanNumericValue(metadata?.deductible_amount || '0'),
                     items:
                         items?.map((item) => ({
                             name: item.name,
-                            price: item.price,
+                            price: cleanNumericValue(item.price || '0'),
                             quantity: item.quantity,
                         })) || [],
                 });
@@ -124,9 +129,9 @@ const CameraModalScreen = () => {
                     discount: extractedData.discount || '0',
                 },
                 metadata: {
-                    transaction_category: 'OTHER',
-                    is_deductible: false,
-                    deductible_amount: '0',
+                    transaction_category: extractedData.category || 'OTHER',
+                    is_deductible: extractedData.is_deductible || false,
+                    deductible_amount: extractedData.deductible_amount || '0',
                 },
             };
 
@@ -305,7 +310,7 @@ const CameraModalScreen = () => {
                                             />
                                             <TextInput
                                                 value={item.price}
-                                                onChangeText={(value) => updateItem(index, 'price', value)}
+                                                onChangeText={(value) => updateItem(index, 'price', cleanNumericValue(value))}
                                                 className="border border-gray-300 rounded-xl p-3 bg-gray-50 flex-1"
                                                 placeholder="Price"
                                                 keyboardType="numeric"
@@ -335,9 +340,10 @@ const CameraModalScreen = () => {
                             {isEditing ? (
                                 <TextInput
                                     value={extractedData.vat}
-                                    onChangeText={(value) => updateField('vat', value)}
+                                    onChangeText={(value) => updateField('vat', cleanNumericValue(value))}
                                     className="border border-gray-300 rounded-xl p-3 bg-gray-50 w-32 text-right"
                                     keyboardType="numeric"
+                                    placeholder="0.00"
                                 />
                             ) : (
                                 <Text className="text-gray-800">₱{extractedData.vat}</Text>
@@ -350,9 +356,10 @@ const CameraModalScreen = () => {
                             {isEditing ? (
                                 <TextInput
                                     value={extractedData.service_charge}
-                                    onChangeText={(value) => updateField('service_charge', value)}
+                                    onChangeText={(value) => updateField('service_charge', cleanNumericValue(value))}
                                     className="border border-gray-300 rounded-xl p-3 bg-gray-50 w-32 text-right"
                                     keyboardType="numeric"
+                                    placeholder="0.00"
                                 />
                             ) : (
                                 <Text className="text-gray-800">₱{extractedData.service_charge}</Text>
@@ -365,9 +372,10 @@ const CameraModalScreen = () => {
                             {isEditing ? (
                                 <TextInput
                                     value={extractedData.discount}
-                                    onChangeText={(value) => updateField('discount', value)}
+                                    onChangeText={(value) => updateField('discount', cleanNumericValue(value))}
                                     className="border border-gray-300 rounded-xl p-3 bg-gray-50 w-32 text-right"
                                     keyboardType="numeric"
+                                    placeholder="0.00"
                                 />
                             ) : (
                                 <Text className="text-gray-800">₱{extractedData.discount}</Text>
@@ -380,9 +388,10 @@ const CameraModalScreen = () => {
                             {isEditing ? (
                                 <TextInput
                                     value={extractedData.total_amount}
-                                    onChangeText={(value) => updateField('total_amount', value)}
+                                    onChangeText={(value) => updateField('total_amount', cleanNumericValue(value))}
                                     className="border border-gray-300 rounded-xl p-3 bg-gray-50 w-32 text-right"
                                     keyboardType="numeric"
+                                    placeholder="0.00"
                                 />
                             ) : (
                                 <Text className="text-xl font-bold text-gray-800">₱{extractedData.total_amount}</Text>
