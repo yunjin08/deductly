@@ -17,6 +17,7 @@ import GoBackRoute from '@/components/GoBackRoute';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { cameraService } from '@/services/api/camera';
 import { ScrollableLayout } from '@/components/ScrollableLayout';
+import LottieView from 'lottie-react-native';
 
 interface ExtractedData {
     store_name?: string;
@@ -29,7 +30,7 @@ interface ExtractedData {
     service_charge?: string;
     discount?: string;
     total_amount?: string;
-    category?: 'FOOD' | 'TRANSPORTATION' | 'ENTERTAINMENT' | 'OTHER';
+    category?: 'UTILITIES' | 'FOOD' | 'TRANSPORTATION' | 'ENTERTAINMENT' | 'OTHER';
     is_deductible?: boolean;
     deductible_amount?: string;
     items: {
@@ -49,6 +50,11 @@ const CameraModalScreen = () => {
     const [scrollViewHeight, setScrollViewHeight] = useState(0);
     const [contentHeight, setContentHeight] = useState(0);
 
+    // Helper function to clean numeric input (remove any non-numeric characters except decimal)
+    const cleanNumericValue = (value: string) => {
+        return value.replace(/[^0-9.]/g, '');
+    };
+
     const handleAnalyze = async () => {
         try {
             setIsAnalyzing(true);
@@ -65,17 +71,17 @@ const CameraModalScreen = () => {
                     date: transaction_info?.date || '',
                     time: transaction_info?.time || '',
                     payment_method: transaction_info?.payment_method || '',
-                    vat: totals?.vat || '',
-                    service_charge: totals?.service_charge || '',
-                    discount: totals?.discount || '',
-                    total_amount: totals?.total || '',
-                    category: (metadata?.transaction_category as 'FOOD' | 'TRANSPORTATION' | 'ENTERTAINMENT' | 'OTHER') || 'OTHER',
+                    vat: cleanNumericValue(totals?.vat || '0'),
+                    service_charge: cleanNumericValue(totals?.service_charge || '0'),
+                    discount: cleanNumericValue(totals?.discount || '0'),
+                    total_amount: cleanNumericValue(totals?.total || '0'),
+                    category: (metadata?.transaction_category as 'UTILITIES' | 'FOOD' | 'TRANSPORTATION' | 'ENTERTAINMENT' | 'OTHER') || 'OTHER',
                     is_deductible: metadata?.is_deductible || false,
-                    deductible_amount: metadata?.deductible_amount || '0',
+                    deductible_amount: cleanNumericValue(metadata?.deductible_amount || '0'),
                     items:
                         items?.map((item) => ({
                             name: item.name,
-                            price: item.price,
+                            price: cleanNumericValue(item.price || '0'),
                             quantity: item.quantity,
                         })) || [],
                 });
@@ -124,9 +130,9 @@ const CameraModalScreen = () => {
                     discount: extractedData.discount || '0',
                 },
                 metadata: {
-                    transaction_category: 'OTHER',
-                    is_deductible: false,
-                    deductible_amount: '0',
+                    transaction_category: extractedData.category || 'OTHER',
+                    is_deductible: extractedData.is_deductible || false,
+                    deductible_amount: extractedData.deductible_amount || '0',
                 },
             };
 
@@ -305,7 +311,7 @@ const CameraModalScreen = () => {
                                             />
                                             <TextInput
                                                 value={item.price}
-                                                onChangeText={(value) => updateItem(index, 'price', value)}
+                                                onChangeText={(value) => updateItem(index, 'price', cleanNumericValue(value))}
                                                 className="border border-gray-300 rounded-xl p-3 bg-gray-50 flex-1"
                                                 placeholder="Price"
                                                 keyboardType="numeric"
@@ -335,9 +341,10 @@ const CameraModalScreen = () => {
                             {isEditing ? (
                                 <TextInput
                                     value={extractedData.vat}
-                                    onChangeText={(value) => updateField('vat', value)}
+                                    onChangeText={(value) => updateField('vat', cleanNumericValue(value))}
                                     className="border border-gray-300 rounded-xl p-3 bg-gray-50 w-32 text-right"
                                     keyboardType="numeric"
+                                    placeholder="0.00"
                                 />
                             ) : (
                                 <Text className="text-gray-800">₱{extractedData.vat}</Text>
@@ -350,9 +357,10 @@ const CameraModalScreen = () => {
                             {isEditing ? (
                                 <TextInput
                                     value={extractedData.service_charge}
-                                    onChangeText={(value) => updateField('service_charge', value)}
+                                    onChangeText={(value) => updateField('service_charge', cleanNumericValue(value))}
                                     className="border border-gray-300 rounded-xl p-3 bg-gray-50 w-32 text-right"
                                     keyboardType="numeric"
+                                    placeholder="0.00"
                                 />
                             ) : (
                                 <Text className="text-gray-800">₱{extractedData.service_charge}</Text>
@@ -365,9 +373,10 @@ const CameraModalScreen = () => {
                             {isEditing ? (
                                 <TextInput
                                     value={extractedData.discount}
-                                    onChangeText={(value) => updateField('discount', value)}
+                                    onChangeText={(value) => updateField('discount', cleanNumericValue(value))}
                                     className="border border-gray-300 rounded-xl p-3 bg-gray-50 w-32 text-right"
                                     keyboardType="numeric"
+                                    placeholder="0.00"
                                 />
                             ) : (
                                 <Text className="text-gray-800">₱{extractedData.discount}</Text>
@@ -380,9 +389,10 @@ const CameraModalScreen = () => {
                             {isEditing ? (
                                 <TextInput
                                     value={extractedData.total_amount}
-                                    onChangeText={(value) => updateField('total_amount', value)}
+                                    onChangeText={(value) => updateField('total_amount', cleanNumericValue(value))}
                                     className="border border-gray-300 rounded-xl p-3 bg-gray-50 w-32 text-right"
                                     keyboardType="numeric"
+                                    placeholder="0.00"
                                 />
                             ) : (
                                 <Text className="text-xl font-bold text-gray-800">₱{extractedData.total_amount}</Text>
@@ -443,10 +453,24 @@ const CameraModalScreen = () => {
                 style={styles.image}
                 contentFit="cover"
             />
+            
+            {/* Full-screen loading overlay */}
+            {isAnalyzing && (
+                <View style={styles.loadingOverlay}>
+                    <View className="items-center">
+                        <LottieView
+                            source={{ uri: 'https://lottie.host/aa5f8a20-5c8e-426e-b692-d871e93fddc8/5THFqPop43.lottie' }}
+                            style={styles.lottieCenter}
+                            autoPlay
+                            loop
+                        />
+                        <Text className="text-white mt-4 font-medium text-lg">Analyzing Receipt...</Text>
+                    </View>
+                </View>
+            )}
+            
             <View className="absolute bottom-20 flex-row justify-center space-x-4 w-full">
-                {isAnalyzing ? (
-                    <ActivityIndicator size="large" color="#1fddee" />
-                ) : (
+                {isAnalyzing ? null : (
                     <TouchableOpacity
                         className="bg-primary rounded-full size-20 flex items-center justify-center shadow-lg"
                         onPress={handleAnalyze}
@@ -471,5 +495,23 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         flex: 1,
+    },
+    lottie: {
+        width: 80,
+        height: 80,
+    },
+    loadingOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    lottieCenter: {
+        width: 150,
+        height: 150,
     },
 });

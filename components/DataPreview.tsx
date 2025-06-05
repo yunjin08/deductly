@@ -23,7 +23,7 @@ interface ReceiptItem {
     quantity: number;
     price: string;
     subtotal_expenditure: string;
-    deductible_amount: string;
+    deductable_amount: string;
     date_created: string;
     date_updated: string;
     receipt: number;
@@ -33,7 +33,7 @@ interface ReceiptDetails {
     id: string;
     title: string;
     user_id?: string;
-    category: 'FOOD' | 'TRANSPORTATION' | 'ENTERTAINMENT' | 'OTHER';
+    category: 'UTILITIES' | 'FOOD' | 'TRANSPORTATION' | 'ENTERTAINMENT' | 'OTHER';
     items?: ReceiptItem[];
     total_expenditure: string;
     created_at: string;

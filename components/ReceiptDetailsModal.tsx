@@ -19,7 +19,7 @@ interface ReceiptDetails {
     id: string;
     title: string;
     user_id?: string;
-    category: 'FOOD' | 'TRANSPORTATION' | 'ENTERTAINMENT' | 'OTHER';
+    category: 'UTILITIES' | 'FOOD' | 'TRANSPORTATION' | 'ENTERTAINMENT' | 'OTHER';
     items?: ReceiptItem[];
     total_expenditure: string;
     created_at: string;
