@@ -51,15 +51,22 @@ const ProfileScreen = () => {
         <Text style={styles.fullName}>
           {firstName} {lastName}
         </Text>
-        <Text style={styles.username}>{username}</Text>
+
       </View>
 
       <View style={styles.infoSection}>
         <View style={styles.infoItem}>
-          <FontAwesome6 name="envelope" size={20} color="#1fddee" />
-          <Text style={styles.infoText}>{email}</Text>
+          <View style={styles.infoRow}>
+            <FontAwesome6 name="user" size={20} color="#1fddee" />
+            <Text style={styles.infoText}>{username}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <FontAwesome6 name="envelope" size={20} color="#1fddee" />
+            <Text style={styles.infoText}>{email}</Text>
+          </View>
         </View>
       </View>
+
 
       <View style={styles.actionsSection}>
         <TouchableOpacity style={styles.actionButton} onPress={handleEditProfile}>
@@ -109,6 +116,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 5,
+    color: "#1fddee"
   },
   username: {
     fontSize: 16,
@@ -120,24 +128,29 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   infoSection: {
-    paddingHorizontal: 20,
-    paddingVertical: 25,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
+  paddingHorizontal: 20,
+  paddingTop: 15,
+  borderBottomWidth: 1,
+  borderBottomColor: "#f0f0f0",
+  backgroundColor: "#f9f9f9",
+},
   infoItem: {
+    paddingLeft: 15,
+  },
+  infoRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 20,
   },
   infoText: {
     marginLeft: 15,
     fontSize: 16,
     color: "#333",
   },
+
   actionsSection: {
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 30,
   },
   actionButton: {
     flexDirection: "row",

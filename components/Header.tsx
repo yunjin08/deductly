@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View, Image } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { usePathname } from 'expo-router';
@@ -40,12 +40,13 @@ const Header = () => {
                 </Link>
             )}
             <Link href="/(protected)/profile" asChild>
-                <FontAwesome6
-                    name="circle-user"
-                    size={32}
-                    color="#1fddee"
-                    solid
-                />
+                <TouchableOpacity>
+                    <Image
+                        source={require('@/assets/images/logo.png')}
+                        style={{ width: 32, height: 32 }} 
+                        resizeMode="contain"
+                    />
+                </TouchableOpacity>
             </Link>
         </View>
     );
