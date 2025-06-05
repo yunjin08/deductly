@@ -17,6 +17,7 @@ import GoBackRoute from '@/components/GoBackRoute';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { cameraService } from '@/services/api/camera';
 import { ScrollableLayout } from '@/components/ScrollableLayout';
+import LottieView from 'lottie-react-native';
 
 interface ExtractedData {
     store_name?: string;
@@ -452,10 +453,24 @@ const CameraModalScreen = () => {
                 style={styles.image}
                 contentFit="cover"
             />
+            
+            {/* Full-screen loading overlay */}
+            {isAnalyzing && (
+                <View style={styles.loadingOverlay}>
+                    <View className="items-center">
+                        <LottieView
+                            source={{ uri: 'https://lottie.host/aa5f8a20-5c8e-426e-b692-d871e93fddc8/5THFqPop43.lottie' }}
+                            style={styles.lottieCenter}
+                            autoPlay
+                            loop
+                        />
+                        <Text className="text-white mt-4 font-medium text-lg">Analyzing Receipt...</Text>
+                    </View>
+                </View>
+            )}
+            
             <View className="absolute bottom-20 flex-row justify-center space-x-4 w-full">
-                {isAnalyzing ? (
-                    <ActivityIndicator size="large" color="#1fddee" />
-                ) : (
+                {isAnalyzing ? null : (
                     <TouchableOpacity
                         className="bg-primary rounded-full size-20 flex items-center justify-center shadow-lg"
                         onPress={handleAnalyze}
@@ -480,5 +495,23 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         flex: 1,
+    },
+    lottie: {
+        width: 80,
+        height: 80,
+    },
+    loadingOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    lottieCenter: {
+        width: 150,
+        height: 150,
     },
 });
